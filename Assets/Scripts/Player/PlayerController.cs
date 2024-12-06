@@ -75,7 +75,6 @@ public class PlayerController : NetworkBehaviour
 
     public void OnTeamAssigned()
     {
-
         if (!IsLocalPlayer)
         {
             if (NetworkManager.Singleton.LocalClient.PlayerObject.gameObject.layer != gameObject.layer)

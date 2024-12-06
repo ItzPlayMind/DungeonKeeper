@@ -12,12 +12,12 @@ public class HealSpecial : AbstractSpecial
     List<GameObject> alreadyHealed = new List<GameObject>();
     public override void OnSpecialFinish(PlayerController controller)
     {
-        SpawnAxeHealFieldServerRPC(OwnerClientId);
+        SpawnHealFieldServerRPC(OwnerClientId);
         StartCooldown();
     }
 
     [ServerRpc]
-    private void SpawnAxeHealFieldServerRPC(ulong owner)
+    private void SpawnHealFieldServerRPC(ulong owner)
     {
         var networkObject = Instantiate(healFieldPrefab, transform.position, Quaternion.identity);
         networkObject.SpawnWithOwnership(owner);
@@ -32,7 +32,7 @@ public class HealSpecial : AbstractSpecial
         var healFieldNetwork = NetworkManager.Singleton.SpawnManager.SpawnedObjects[id];
         healFieldNetwork.GetComponentInChildren<SpriteRenderer>().material = GameManager.instance.UNLIT_MATERIAL;
         Vector2 dir = (mouseWorldPos - (Vector2)transform.position).normalized;
-        if (dir.magnitude > healRange)
+        if (Vector2.Distance(transform.position,mouseWorldPos) > healRange)
             healFieldNetwork.transform.position = (Vector2)transform.position + dir * healRange;
         else
             healFieldNetwork.transform.position = mouseWorldPos;

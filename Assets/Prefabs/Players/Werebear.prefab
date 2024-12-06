@@ -209,11 +209,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 72607127917136858, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: attackSettings.Array.data[1].knockBack
-      value: 2
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 72607127917136858, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: attackSettings.Array.data[0].damageMultiplier
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 72607127917136858, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: attackSettings.Array.data[1].damageMultiplier
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 826661276144605644, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[0].x
@@ -449,8 +453,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4274812cb0be8e47801907d1969841a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxCooldown: 15
   damage: 5
   damageMultiplier: 1
+  MaxCooldown: 15
   knockBackForce: 55
   hitbox: {fileID: 7405058435747487577}

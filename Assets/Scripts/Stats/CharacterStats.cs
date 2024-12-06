@@ -119,7 +119,10 @@ public class CharacterStats : NetworkBehaviour
     [ClientRpc]
     private void HealClientRPC(int health)
     {
+        if (IsDead)
+            return;
         currentHealth += health;
+        currentHealth = Mathf.Clamp(currentHealth, 0, stats.health.Value);
         healthBar.UpdateBar(currentHealth / (float)stats.health.Value);
     }
 

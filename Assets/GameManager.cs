@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -200,8 +201,16 @@ public class GameManager : NetworkBehaviour
         network.SpawnAsPlayerObject(id);
         SetTeamLayerClientRPC(teamLayer, network.NetworkObjectId);
         clientSetupCount++;
-        if(clientSetupCount == playerCount)
-            AllClientsSetupClientRPC();
+        if (clientSetupCount == playerCount)
+        {
+            var clients = NetworkManager.Singleton.ConnectedClients;
+            List<ulong> ids = new List<ulong>();
+            foreach (var item in clients.Keys)
+            {
+                ids.Add(clients[item].PlayerObject.NetworkObjectId);
+            }
+            AllClientsSetupClientRPC(ids.ToArray());
+        }
     }
 
     [ClientRpc]
@@ -212,9 +221,12 @@ public class GameManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void AllClientsSetupClientRPC()
+    private void AllClientsSetupClientRPC(ulong[] clientIDs)
     {
-        NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerController>().OnTeamAssigned();
+        foreach (var client in clientIDs)
+        {
+            NetworkManager.Singleton.SpawnManager.SpawnedObjects[client].GetComponent<PlayerController>().OnTeamAssigned();
+        }
     }
 
     public Transform GetSpawnPoint(int layer)
