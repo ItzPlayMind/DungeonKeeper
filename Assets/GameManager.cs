@@ -18,14 +18,22 @@ public class GameManager : NetworkBehaviour
 
     [SerializeField] private Transform redTeamSpawn;
     [SerializeField] private Transform blueTeamSpawn;
+    [SerializeField] private Transform redTeamNexusSpawn;
+    [SerializeField] private Transform blueTeamNexusSpawn;
+    [SerializeField] private NetworkObject nexusPrefab;
     [SerializeField] private LobbyPanel lobbyPanel;
     [SerializeField] private Button startButton;
     [SerializeField] private Button readyButton;
     [SerializeField] private GameObject NetworkUI;
     [SerializeField] private string redTeamlayer;
     [SerializeField] private string blueTeamlayer;
+    [SerializeField] private GameObject nexusUI;
+    [SerializeField] private UIBar redNexusHealthbar;
+    [SerializeField] private UIBar blueNexusHealthbar;
     public Material UNLIT_MATERIAL;
     public Material LIT_MATERIAL;
+    public int GOLD_FOR_KILL;
+    public int GOLD_PER_SECOND;
 
     List<ulong> redTeam = new List<ulong>();
     List<ulong> blueTeam = new List<ulong>();
@@ -34,7 +42,6 @@ public class GameManager : NetworkBehaviour
     private int playerCount;
     private bool isStarted;
     private bool isShuttingDown;
-    private bool isSetup;
     private int clientSetupCount = 0;
 
     private void Start()
@@ -49,6 +56,7 @@ public class GameManager : NetworkBehaviour
     {
         while (NetworkManager.Singleton.ShutdownInProgress)
             yield return new WaitForEndOfFrame();
+        nexusUI.SetActive(false);
         redTeam = new List<ulong>();
         blueTeam = new List<ulong>();
         inRedTeam = false;
@@ -62,6 +70,8 @@ public class GameManager : NetworkBehaviour
         NetworkUI.SetActive(true);
         isShuttingDown = false;
         clientSetupCount = 0;
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
     }
 
     public override void OnNetworkSpawn()
@@ -96,45 +106,70 @@ public class GameManager : NetworkBehaviour
     [ServerRpc]
     private void SetupServerRpc()
     {
-        if (isSetup) return;
-        NetworkManager.Singleton.OnClientConnectedCallback += (id) =>
-        {
-            if (playerCount == 6 || isStarted)
-            {
-                NetworkManager.Singleton.DisconnectClient(id);
-                return;
-            }
-
-            if (inRedTeam)
-                redTeam.Add(id);
-            else
-                blueTeam.Add(id);
-            inRedTeam = !inRedTeam;
-
-            if (id != 0)
-            {
-                readyState.Add(id, false);
-                lobbyPanel.AddReadyState(id);
-                startButton.interactable = false;
-            }
-            playerCount++;
-            UpdatePlayerCountServerRpc(playerCount);
-        };
-        NetworkManager.Singleton.OnClientDisconnectCallback += (id) =>
-        {
-            if (redTeam.Contains(id))
-                redTeam.Remove(id);
-            if (blueTeam.Contains(id))
-                blueTeam.Remove(id);
-            readyState.Remove(id); 
-            lobbyPanel.RemoveReadyState(id);
-            inRedTeam = !inRedTeam;
-            playerCount--;
-            UpdatePlayerCountServerRpc(playerCount);
-        };
-        isSetup = true;
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+        var redNexus = Instantiate(nexusPrefab, redTeamNexusSpawn.position, Quaternion.identity);
+        redNexus.gameObject.layer = LayerMask.NameToLayer(redTeamlayer);
+        redNexus.Spawn();
+        var blueNexus = Instantiate(nexusPrefab, blueTeamNexusSpawn.position, Quaternion.identity);
+        blueNexus.gameObject.layer = LayerMask.NameToLayer(blueTeamlayer);
+        blueNexus.Spawn();
+        SetupClientRPC(redNexus.NetworkObjectId, blueNexus.NetworkObjectId);
     }
 
+    [ClientRpc]
+    private void SetupClientRPC(ulong redNexusID, ulong blueNexusID)
+    {
+        var redNexusStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[redNexusID].GetComponent<CharacterStats>();
+        redNexusStats.OnTakeDamage += (ulong damager) =>
+        {
+            redNexusHealthbar.UpdateBar((float)redNexusStats.Health / redNexusStats.stats.health.Value);
+        };
+        var blueNexusStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[blueNexusID].GetComponent<CharacterStats>();
+        blueNexusStats.OnTakeDamage += (ulong damager) =>
+        {
+            blueNexusHealthbar.UpdateBar((float)blueNexusStats.Health / blueNexusStats.stats.health.Value);
+        };
+        redNexusHealthbar.UpdateBar(1);
+        blueNexusHealthbar.UpdateBar(1);
+    }
+
+    private void OnClientConnected(ulong id)
+    {
+        if (playerCount == 6 || isStarted)
+        {
+            NetworkManager.Singleton.DisconnectClient(id);
+            return;
+        }
+
+        if (inRedTeam)
+            redTeam.Add(id);
+        else
+            blueTeam.Add(id);
+        inRedTeam = !inRedTeam;
+
+        if (id != 0)
+        {
+            readyState.Add(id, false);
+            lobbyPanel.AddReadyState(id);
+            startButton.interactable = false;
+        }
+        playerCount++;
+        UpdatePlayerCountServerRpc(playerCount);
+    }
+
+    private void OnClientDisconnected(ulong id)
+    {
+        if (redTeam.Contains(id))
+            redTeam.Remove(id);
+        if (blueTeam.Contains(id))
+            blueTeam.Remove(id);
+        readyState.Remove(id);
+        lobbyPanel.RemoveReadyState(id);
+        inRedTeam = !inRedTeam;
+        playerCount--;
+        UpdatePlayerCountServerRpc(playerCount);
+    }
     public void ChangeReadyState()
     {
         ChangeReadyStateServerRpc(NetworkManager.Singleton.LocalClientId);
@@ -189,6 +224,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void SpawnCharacterClientRPC()
     {
+        nexusUI.SetActive(true);
         lobbyPanel.gameObject.SetActive(false);
         SpawnCharacterServerRPC(lobbyPanel.GetSelectedIndex(), NetworkManager.Singleton.LocalClientId);
     }
@@ -240,6 +276,12 @@ public class GameManager : NetworkBehaviour
         {
             NetworkManager.Singleton.SpawnManager.SpawnedObjects[client].GetComponent<PlayerController>().OnTeamAssigned();
         }
+    }
+
+    public void Win(int team)
+    {
+        Debug.Log(LayerMask.LayerToName(team) + " win");
+        Shutdown();
     }
 
     public Transform GetSpawnPoint(int layer)

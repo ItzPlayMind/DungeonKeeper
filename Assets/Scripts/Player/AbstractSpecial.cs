@@ -5,7 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public abstract class AbstractSpecial: NetworkBehaviour
+public abstract class AbstractSpecial : NetworkBehaviour
 {
 
     [SerializeField] private Sprite icon;
@@ -36,7 +36,12 @@ public abstract class AbstractSpecial: NetworkBehaviour
         _Start();
     }
 
-    protected void UpdateAmountText(string value) => amountText.text = value;
+    protected void UpdateAmountText(string value)
+    {
+        if (IsLocalPlayer) { 
+            amountText.text = value;
+        }
+    }
 
     protected virtual void _Start() { }
 
@@ -45,7 +50,8 @@ public abstract class AbstractSpecial: NetworkBehaviour
 
     public bool UseRotation { get; protected set; }
 
-    public void Use() {
+    public void Use()
+    {
         used = true;
     }
 
@@ -56,12 +62,12 @@ public abstract class AbstractSpecial: NetworkBehaviour
         used = false;
     }
 
-    protected virtual void FinishedCooldown(){}
+    protected virtual void FinishedCooldown() { }
 
     private void Update()
     {
-        if(!IsLocalPlayer) return;
-        
+        if (!IsLocalPlayer) return;
+
         if (cooldown > 0)
         {
             cooldown -= Time.deltaTime;

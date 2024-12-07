@@ -18,7 +18,7 @@ public class HealHitSpecial : AbstractSpecial
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
-                stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform, transform, 0));
+                stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform, transform, 0), OwnerClientId);
             }
             var colliders = Physics2D.OverlapCircleAll(transform.position, healRadius);
             foreach (var item in colliders)

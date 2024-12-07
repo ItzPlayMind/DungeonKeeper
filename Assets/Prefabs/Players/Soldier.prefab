@@ -136,6 +136,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5050626976743532495}
   - component: {fileID: 7744259726815766372}
+  - component: {fileID: 8370343492658521668}
   - component: {fileID: 72607127917136858}
   - component: {fileID: 3328234273386232486}
   - component: {fileID: 1506020554426997674}
@@ -179,7 +180,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2490300795773199028}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 579760e63eee3144fb14d392d25adfa2, type: 3}
+  m_Script: {fileID: 11500000, guid: 984bf1382e239e64bb42c03d098e200e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   stats:
@@ -190,10 +191,25 @@ MonoBehaviour:
     speed:
       baseValue: {x: 120, y: 110}
     health:
-      baseValue: 2000
+      baseValue: 1000
+  deathTimer: 5
   playerUI: {fileID: 2361307619152776698}
   otherPlayerUI: {fileID: 1952066011564997911}
-  deathTimer: 5
+--- !u!114 &8370343492658521668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2490300795773199028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 182243a81a3d7024597c77dbe0b3d1b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cash:
+    m_InternalValue: 0
+  items: []
 --- !u!114 &72607127917136858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,7 +222,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c93ff2d9ada72ab44aed9f66679317db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 0.1
   gfx: {fileID: 3619899937381543572}
   attackComboTime: 0.2
   attackSettings:

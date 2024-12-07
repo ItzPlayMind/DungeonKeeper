@@ -79,7 +79,7 @@ public class ArrowSpecial : AbstractSpecial
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
-                stats.TakeDamage(Damage, Vector2.zero);
+                stats.TakeDamage(Damage, Vector2.zero, NetworkManager.Singleton.LocalClientId);
             }
             DespawnArrowServerRPC(arrow.GetComponent<NetworkBehaviour>().NetworkObjectId);
         };

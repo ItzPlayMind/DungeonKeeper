@@ -6,84 +6,70 @@ using UnityEngine;
 public class CharacterStats : NetworkBehaviour
 {
     public StatBlock stats;
-    [SerializeField] private Canvas playerUI;
-    [SerializeField] private Canvas otherPlayerUI;
     [SerializeField] private float deathTimer = 5f;
     private int currentHealth;
     public int Health { get => currentHealth; }
-    public System.Action OnTakeDamage;
-    public System.Action OnDeath;
+    public System.Action<ulong> OnTakeDamage;
+    public System.Action<ulong> OnDeath;
     public System.Action OnRespawn;
-    public bool CanBeHit { get; private set; } = true;
-    private Animator animator;
-    private AnimationEventSender animatorEvent;
+    public bool CanBeHit { get; protected set; } = true;
     Rigidbody2D rb;
-    Canvas ui;
-    UIBar healthBar;
-    public bool IsDead { get; private set; }
+    public bool IsDead { get; protected set; }
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
-        if (IsLocalPlayer)
-        {
-            Destroy(otherPlayerUI.gameObject);
-            ui = playerUI;
-            
-        }
-        else
-        {
-            Destroy(playerUI.gameObject);
-            ui = otherPlayerUI;
-        }
         currentHealth = stats.health.Value;
-        animator = GetComponentInChildren<Animator>();
-        animatorEvent = animator.GetComponent<AnimationEventSender>();
-        animatorEvent.OnAnimationEvent += (AnimationEventSender.AnimationEvent e) =>
-        {
-            if (e == AnimationEventSender.AnimationEvent.Hit)
-            {
-                CanBeHit = true;
-            }
-        };
         rb = GetComponent<Rigidbody2D>();
-        healthBar = ui.transform.Find("Healthbar").GetComponent<UIBar>();
-        healthBar.UpdateBar(1f);
     }
 
-    public void TakeDamage(int damage, Vector2 knockback)
+    protected virtual bool CanBeHitConstantly() { return true; }
+
+    public void TakeDamage(int damage, Vector2 knockback, ulong damagerID = ulong.MaxValue)
     {
-        if (!CanBeHit || IsDead)
+        if ((!CanBeHit && !CanBeHitConstantly()) || IsDead)
             return;
-        TakeDamageServerRPC(damage,knockback);
+        TakeDamageServerRPC(damage,knockback,damagerID);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void TakeDamageServerRPC(int damage, Vector2 knockback)
+    private void TakeDamageServerRPC(int damage, Vector2 knockback,ulong damagerID)
     {
-        TakeDamageClientRPC(damage, knockback);
+        TakeDamageClientRPC(damage, knockback, damagerID);
     }
 
     [ClientRpc]
-    private void TakeDamageClientRPC(int damage, Vector2 knockback)
+    protected virtual void TakeDamageClientRPC(int damage, Vector2 knockback,ulong damagerID)
     {
         CanBeHit = false;
+        currentHealth -= (int)(damage * (1-(stats.damageReduction.Value/100f)));
         if (IsLocalPlayer)
         {
             rb.velocity = Vector2.zero;
             rb.AddForce(knockback, ForceMode2D.Impulse);
-            OnTakeDamage?.Invoke();
         }
-        currentHealth -= damage;
-        healthBar.UpdateBar(currentHealth / (float)stats.health.Value);
-        animator.SetTrigger("hit");
-        if(currentHealth <= 0)
+        OnTakeDamage?.Invoke(damagerID);
+        if (currentHealth <= 0)
         {
-            animator.SetBool("death",true);
-            OnDeath?.Invoke();
-            IsDead = true;
-            timer = deathTimer;
+            Die(damagerID);
         }
+    }
+
+    protected virtual void Die(ulong damagerID)
+    {
+        if (IsLocalPlayer)
+            OnDeathServerRPC(damagerID);
+        OnDeath?.Invoke(damagerID);
+        IsDead = true;
+        timer = deathTimer;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void OnDeathServerRPC(ulong damagerID)
+    {
+        if (damagerID == ulong.MaxValue)
+            return;
+        NetworkManager.Singleton.ConnectedClients[damagerID].PlayerObject.GetComponent<Inventory>().AddCash(GameManager.instance.GOLD_FOR_KILL);
     }
 
     private float timer = 0f;
@@ -95,14 +81,17 @@ public class CharacterStats : NetworkBehaviour
             timer -= Time.deltaTime;
             if(timer <= 0)
             {
-                CanBeHit = true;
-                animator.SetBool("death",false);
-                IsDead = false;
-                currentHealth = stats.health.Value;
-                healthBar.UpdateBar(1);
-                OnRespawn?.Invoke();
+                Respawn();
             }
         }
+    }
+
+    protected virtual void Respawn()
+    {
+        CanBeHit = true;
+        IsDead = false;
+        currentHealth = stats.health.Value;
+        OnRespawn?.Invoke();
     }
 
     public void Heal(int health)
@@ -117,13 +106,12 @@ public class CharacterStats : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void HealClientRPC(int health)
+    protected virtual void HealClientRPC(int health)
     {
         if (IsDead)
             return;
         currentHealth += health;
         currentHealth = Mathf.Clamp(currentHealth, 0, stats.health.Value);
-        healthBar.UpdateBar(currentHealth / (float)stats.health.Value);
     }
 
     public Vector2 GenerateKnockBack(Transform hit, Transform damager, float force)

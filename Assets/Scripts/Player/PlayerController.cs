@@ -16,12 +16,11 @@ public class PlayerController : NetworkBehaviour
         public float selfKnockBack = 0;
     }
 
-    [SerializeField] private float acceleration = 0.1f;
     [SerializeField] private SpriteRenderer gfx;
     [SerializeField] private float attackComboTime = 0.2f;
     [SerializeField] private AttackSetting[] attackSettings = new AttackSetting[2];
     [SerializeField] private Transform hitboxes;
-
+    private Inventory inventory;
     private NetworkVariable<bool> isFlipped = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private AbstractSpecial special;
     private AnimationEventSender animatorEvent;
@@ -30,7 +29,6 @@ public class PlayerController : NetworkBehaviour
     private Animator animator;
     private bool isAttacking;
     private CharacterStats stats;
-    private static int LocalClientTeam;
     private int currentAttack = 0;
     private float attackComboTimer = 0;
 
@@ -40,6 +38,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (!IsLocalPlayer)
             return;
+        inventory = GetComponent<Inventory>();
         var camera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
         camera.Follow = transform;
         special = GetComponent<AbstractSpecial>();
@@ -48,7 +47,7 @@ public class PlayerController : NetworkBehaviour
         animator = GetComponentInChildren<Animator>();
         animatorEvent = animator.GetComponent<AnimationEventSender>();
         stats = GetComponent<CharacterStats>();
-        stats.OnTakeDamage += () =>
+        stats.OnTakeDamage += (_) =>
         {
             isAttacking = false;
         };
@@ -67,7 +66,7 @@ public class PlayerController : NetworkBehaviour
                 var stats = collider.GetComponent<CharacterStats>();
                 if (stats != null)
                 {
-                    stats.TakeDamage((int)(stats.stats.damage.Value * attackSettings[currentAttack].damageMultiplier), stats.GenerateKnockBack(stats.transform, transform, attackSettings[currentAttack].knockBack));
+                    stats.TakeDamage((int)(this.stats.stats.damage.Value * attackSettings[currentAttack].damageMultiplier), stats.GenerateKnockBack(stats.transform, transform, attackSettings[currentAttack].knockBack),NetworkManager.Singleton.LocalClientId);
                 }
             };
         }
@@ -83,7 +82,6 @@ public class PlayerController : NetworkBehaviour
             }
             return;
         }
-        LocalClientTeam = gameObject.layer;
         for (int i = 0; i < hitboxes.childCount; i++)
             hitboxes.GetChild(i).gameObject.layer = gameObject.layer;
     }

@@ -18,7 +18,7 @@ public class KnockBackSpecial : AbstractSpecial
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
-                stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce));
+                stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), OwnerClientId);
             }
         };
     }

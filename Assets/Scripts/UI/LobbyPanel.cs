@@ -40,10 +40,19 @@ public class LobbyPanel : MonoBehaviour
     public void ResetOnDisconnect()
     {
         clientReadyStates = new List<ClientReadyState>();
+    }
+
+    public void ClearClientReadyStates()
+    {
         for (int i = 0; i < readyStateTransform.childCount; i++)
         {
-            Destroy(readyStateTransform.GetChild(0).gameObject);
+            Destroy(readyStateTransform.GetChild(i).gameObject);
         }
+    }
+
+    private void OnEnable()
+    {
+        ClearClientReadyStates();
     }
 
     private void Start()
