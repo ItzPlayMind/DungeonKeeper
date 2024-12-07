@@ -19,7 +19,7 @@ public class ChargeSpecial : AbstractSpecial
         sender = GetComponent<CollisionSender>();
     }
 
-    public override void OnSpecialFinish(PlayerController controller)
+    protected override void _OnSpecialFinish(PlayerController controller)
     {
         isCharging = false;
         StartCooldown();
@@ -38,7 +38,7 @@ public class ChargeSpecial : AbstractSpecial
         }
     }
 
-    public override void OnSpecialPress(PlayerController controller)
+    protected override void _OnSpecialPress(PlayerController controller)
     {
         Use();
         if (!IsLocalPlayer) return;

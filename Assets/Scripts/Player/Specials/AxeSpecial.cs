@@ -15,7 +15,7 @@ public class AxeSpecial : AbstractSpecial
     Vector2 originalPos;
     [SerializeField] Rigidbody2D axe;
     bool returning = false;
-    public override void OnSpecialFinish(PlayerController controller)
+    protected override void _OnSpecialFinish(PlayerController controller)
     {
         SpawnAxeServerRPC(OwnerClientId, gameObject.layer);
     }
@@ -86,7 +86,7 @@ public class AxeSpecial : AbstractSpecial
         Destroy(NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].gameObject);
     }
 
-    public override void OnSpecialPress(PlayerController controller)
+    protected override void _OnSpecialPress(PlayerController controller)
     {
         Use();
         returning = false;

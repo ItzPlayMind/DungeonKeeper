@@ -19,12 +19,32 @@ public class LobbyPanel : MonoBehaviour
         [HideInInspector] public GameObject characterPotrait;
         [HideInInspector] public GameObject selectionObject;
     }
+
+    private class ClientReadyState
+    {
+        public ulong clientID;
+        public UICheckbox readyStateObject;
+    }
+
     [SerializeField] private TMPro.TextMeshProUGUI playerText;
     [SerializeField] private GameObject characterPortraitPrefab;
     [SerializeField] private Transform[] characterSelection = new Transform[3];
-    [SerializeField] private List<CharacterPortrait> characterPortraits = new List<CharacterPortrait>(); 
+    [SerializeField] private List<CharacterPortrait> characterPortraits = new List<CharacterPortrait>();
+    [SerializeField] private UICheckbox readyStatePrefab;
+    [SerializeField] private Transform readyStateTransform;
+    
+    private List<ClientReadyState> clientReadyStates = new List<ClientReadyState>();
 
     private int characterSelectionIndex = 0;
+
+    public void ResetOnDisconnect()
+    {
+        clientReadyStates = new List<ClientReadyState>();
+        for (int i = 0; i < readyStateTransform.childCount; i++)
+        {
+            Destroy(readyStateTransform.GetChild(0).gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -64,5 +84,34 @@ public class LobbyPanel : MonoBehaviour
     public void SetPlayerCount(int player)
     {
         playerText.text = "Players: " + player + "/6"; 
+    }
+
+    public void AddReadyState(ulong client)
+    {
+        var newReadyState = Instantiate(readyStatePrefab, readyStateTransform);
+        clientReadyStates.Add(new ClientReadyState()
+        {
+            clientID = client,
+            readyStateObject = newReadyState
+        });
+    }
+
+    public void SetReadyState(ulong client, bool value)
+    {
+        var state = clientReadyStates.Find(x => x.clientID == client);
+        if(state != null)
+        {
+            state.readyStateObject.SetChecked(value);
+        }
+    }
+
+    public void RemoveReadyState(ulong client)
+    {
+        var state = clientReadyStates.Find(x => x.clientID == client);
+        if (state != null)
+        {
+            clientReadyStates.Remove(state);
+            Destroy(state.readyStateObject.gameObject);
+        }
     }
 }

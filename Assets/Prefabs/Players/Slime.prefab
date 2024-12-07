@@ -271,7 +271,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.specialDamage.baseValue
-      value: 30
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8189507989608339147, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Controller
@@ -316,9 +316,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f9e91291f6567d45b135e5bb49ec234, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: efc3b6f008d6c4646aa846871efcd4c9, type: 3}
   damage: 5
   damageMultiplier: 0.5
-  MaxCooldown: 5
+  MaxCooldown: 10
   hitbox: {fileID: 6785767255287506124}
   healRadius: 3
 --- !u!70 &25747311634228506

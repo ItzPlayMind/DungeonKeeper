@@ -116,7 +116,7 @@ public class PlayerController : NetworkBehaviour
         if (!IsLocalPlayer)
             return;
         if (stats.IsDead) return;
-        if (!isAttacking || (special != null && special.UseRotation && !special.canUse()))
+        if (!isAttacking || (special != null && special.UseRotation && special.isUsing))
         {
             Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(inputManager.MousePosition);
             if (transform.position.x > mouseWorldPos.x)

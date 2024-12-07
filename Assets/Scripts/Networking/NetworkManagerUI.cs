@@ -8,6 +8,8 @@ public class NetworkManagerUI : MonoBehaviour
 {
     UnityTransport transport;
     NetworkManager networkManager;
+    [SerializeField] private LobbyPanel lobbyPanel;
+    [SerializeField] private GameObject loadingScreen;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,12 +19,33 @@ public class NetworkManagerUI : MonoBehaviour
 
     public void StartClient()
     {
-        networkManager.StartClient();
+        loadingScreen.SetActive(true);
+        gameObject.SetActive(false);
+        if (networkManager.StartClient())
+        {
+            lobbyPanel.gameObject.SetActive(true);
+            loadingScreen.SetActive(false);
+        }
+        else
+        {
+            gameObject.SetActive(true);
+            loadingScreen.SetActive(false);
+        }
     }
-
     public void StartHost()
     {
-        networkManager.StartHost();
+        loadingScreen.SetActive(true);
+        gameObject.SetActive(false);
+        if (networkManager.StartHost())
+        {
+            lobbyPanel.gameObject.SetActive(true);
+            loadingScreen.SetActive(false);
+        }
+        else
+        {
+            gameObject.SetActive(true);
+            loadingScreen.SetActive(false);
+        }
     }
 
     public void ChangeIP(string ip)

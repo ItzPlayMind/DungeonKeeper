@@ -54,6 +54,9 @@ public class GameManager : NetworkBehaviour
         inRedTeam = false;
         isStarted = false;
         playerCount = 0;
+        readyButton.interactable = true;
+        readyButton.GetComponent<Image>().color = Color.red;
+        startButton.interactable = true;
         readyState = new Dictionary<ulong, bool>();
         lobbyPanel.gameObject.SetActive(false);
         NetworkUI.SetActive(true);
@@ -67,11 +70,13 @@ public class GameManager : NetworkBehaviour
             SetupServerRpc();
         startButton.gameObject.SetActive(IsHost);
         readyButton.gameObject.SetActive(!IsHost);
+        readyButton.GetComponent<Image>().color = Color.red;
     }
 
     public override void OnNetworkDespawn()
     {
         Shutdown();
+        lobbyPanel.ResetOnDisconnect();
     }
 
     private void Shutdown()
@@ -109,7 +114,8 @@ public class GameManager : NetworkBehaviour
             if (id != 0)
             {
                 readyState.Add(id, false);
-                startButton.enabled = false;
+                lobbyPanel.AddReadyState(id);
+                startButton.interactable = false;
             }
             playerCount++;
             UpdatePlayerCountServerRpc(playerCount);
@@ -120,7 +126,8 @@ public class GameManager : NetworkBehaviour
                 redTeam.Remove(id);
             if (blueTeam.Contains(id))
                 blueTeam.Remove(id);
-            readyState.Remove(id);
+            readyState.Remove(id); 
+            lobbyPanel.RemoveReadyState(id);
             inRedTeam = !inRedTeam;
             playerCount--;
             UpdatePlayerCountServerRpc(playerCount);
@@ -137,21 +144,27 @@ public class GameManager : NetworkBehaviour
     private void ChangeReadyStateServerRpc(ulong client)
     {
         readyState[client] = !readyState[client];
-        foreach (var item in readyState.Keys)
-        {
-            if (!readyState[item]) return;
-        }
-        startButton.enabled = true;
+        lobbyPanel.SetReadyState(client, readyState[client]);
         ChangeReadyStateClientRpc(client, readyState[client], new ClientRpcParams()
         {
             Send = new ClientRpcSendParams() { TargetClientIds = new ulong[] { client } }
         });
+        foreach (var item in readyState.Keys)
+        {
+            if (!readyState[item])
+            {
+                startButton.interactable = false;
+                return;
+            }
+        }
+        startButton.interactable = true;
+        
     }
 
     [ClientRpc]
     private void ChangeReadyStateClientRpc(ulong client, bool value, ClientRpcParams clientRpcParams)
     {
-        readyButton.enabled = false;
+        readyButton.GetComponent<Image>().color = value ? Color.green : Color.red;
     }
 
     [ServerRpc]

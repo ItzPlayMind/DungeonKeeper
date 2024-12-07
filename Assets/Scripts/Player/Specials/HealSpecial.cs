@@ -10,7 +10,7 @@ public class HealSpecial : AbstractSpecial
     [SerializeField] private float healDuration;
     Vector2 mouseWorldPos;
     List<GameObject> alreadyHealed = new List<GameObject>();
-    public override void OnSpecialFinish(PlayerController controller)
+    protected override void _OnSpecialFinish(PlayerController controller)
     {
         SpawnHealFieldServerRPC(OwnerClientId);
         StartCooldown();
@@ -61,7 +61,7 @@ public class HealSpecial : AbstractSpecial
         Destroy(NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].gameObject, healDuration);
     }
 
-    public override void OnSpecialPress(PlayerController controller)
+    protected override void _OnSpecialPress(PlayerController controller)
     {
         Use();
         alreadyHealed.Clear();

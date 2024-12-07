@@ -209,6 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d41b2813d598864aaca4894ba19ca78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: d6c972728cb5510479e6a2deb591266f, type: 3}
   damage: 20
   damageMultiplier: 0.5
   MaxCooldown: 15

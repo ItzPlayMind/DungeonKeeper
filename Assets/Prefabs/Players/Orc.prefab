@@ -362,13 +362,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7f866e8b7b9b8d4e8267ace520c0063, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxCooldown: 20
+  icon: {fileID: 21300000, guid: 23aadc8fc66066f40b3f0da2983e2cad, type: 3}
   damage: 10
   damageMultiplier: 1
+  MaxCooldown: 20
   returnDamage: 5
   returnDamageMultiplier: 0.5
   axePrefab: {fileID: 7681882757018740699, guid: 94fe09e140d0c4246b26e026a567c81d, type: 3}
-  axeSpeed: 5
+  axeSpeed: 8
   axeReturnSpeed: 5
   axeDistance: 3
   axe: {fileID: 0}

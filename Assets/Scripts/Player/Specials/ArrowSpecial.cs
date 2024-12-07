@@ -14,6 +14,7 @@ public class ArrowSpecial : AbstractSpecial
     protected override void _Start()
     {
         currentArrowAmount = arrowAmount;
+        UpdateAmountText(currentArrowAmount.ToString());
     }
 
     public override bool canUse()
@@ -21,21 +22,23 @@ public class ArrowSpecial : AbstractSpecial
         return currentArrowAmount > 0;
     }
 
-    public override void OnSpecialPress(PlayerController controller)
+    protected override void _OnSpecialPress(PlayerController controller)
     {
         Use();
         mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
     }
 
-    public override void OnSpecialFinish(PlayerController controller)
+    protected override void _OnSpecialFinish(PlayerController controller)
     {
         currentArrowAmount--;
+        UpdateAmountText(currentArrowAmount.ToString());
         SpawnArrowServerRPC(OwnerClientId,gameObject.layer);
     }
 
     protected override void FinishedCooldown()
     {
         currentArrowAmount++;
+        UpdateAmountText(currentArrowAmount.ToString());
         if (currentArrowAmount < arrowAmount)
         {
             StartCooldown();

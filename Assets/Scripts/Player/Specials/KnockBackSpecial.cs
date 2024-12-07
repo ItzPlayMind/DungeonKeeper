@@ -23,12 +23,12 @@ public class KnockBackSpecial : AbstractSpecial
         };
     }
 
-    public override void OnSpecialFinish(PlayerController controller)
+    protected override void _OnSpecialFinish(PlayerController controller)
     {
         StartCooldown();
     }
 
-    public override void OnSpecialPress(PlayerController controller)
+    protected override void _OnSpecialPress(PlayerController controller)
     {
         Use();
     }

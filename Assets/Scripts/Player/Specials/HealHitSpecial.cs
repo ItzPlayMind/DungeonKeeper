@@ -25,6 +25,7 @@ public class HealHitSpecial : AbstractSpecial
             {
                 if (item.gameObject.layer != gameObject.layer)
                     continue;
+                if (item.gameObject == gameObject) continue;
                 var itemStats = item.GetComponent<CharacterStats>();
                 if(itemStats != null)
                 {
@@ -34,12 +35,12 @@ public class HealHitSpecial : AbstractSpecial
         };
     }
 
-    public override void OnSpecialFinish(PlayerController controller)
+    protected override void _OnSpecialFinish(PlayerController controller)
     {
         StartCooldown();
     }
 
-    public override void OnSpecialPress(PlayerController controller)
+    protected override void _OnSpecialPress(PlayerController controller)
     {
         Use();
     }
