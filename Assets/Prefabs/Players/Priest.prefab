@@ -196,6 +196,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 5063536754964832444}
   m_SourcePrefab: {fileID: 100100000, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+--- !u!114 &1082956763760468577 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7792046669044073865, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 7144264100949780456}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c56032a774e5474b89364bbb0c6abb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4731828795626014044 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2490300795773199028, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
@@ -217,6 +228,8 @@ MonoBehaviour:
   damage: 20
   damageMultiplier: 0.5
   MaxCooldown: 15
+  specialIcon: {fileID: 1082956763760468577}
+  specialInUseIcon: {fileID: 7055204575020921467}
   healFieldPrefab: {fileID: 7306826740333165070, guid: 9d4197140f9821f42b82f6d654e5e581, type: 3}
   healRange: 3
   healDuration: 5
@@ -327,3 +340,14 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
+--- !u!114 &7055204575020921467 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 201704820803556755, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 7144264100949780456}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c56032a774e5474b89364bbb0c6abb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

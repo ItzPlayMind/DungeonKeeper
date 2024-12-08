@@ -345,6 +345,17 @@ PrefabInstance:
       insertIndex: 2
       addedObject: {fileID: 5181650421618914322}
   m_SourcePrefab: {fileID: 100100000, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+--- !u!114 &325994319357208020 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7792046669044073865, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 7540366297280258141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c56032a774e5474b89364bbb0c6abb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5344524070209225449 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2490300795773199028, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
@@ -363,9 +374,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: 23aadc8fc66066f40b3f0da2983e2cad, type: 3}
-  damage: 10
+  damage: 50
   damageMultiplier: 1
   MaxCooldown: 20
+  specialIcon: {fileID: 325994319357208020}
+  specialInUseIcon: {fileID: 7667477618547848654}
   returnDamage: 5
   returnDamageMultiplier: 0.5
   axePrefab: {fileID: 7681882757018740699, guid: 94fe09e140d0c4246b26e026a567c81d, type: 3}
@@ -373,3 +386,14 @@ MonoBehaviour:
   axeReturnSpeed: 5
   axeDistance: 3
   axe: {fileID: 0}
+--- !u!114 &7667477618547848654 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 201704820803556755, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 7540366297280258141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c56032a774e5474b89364bbb0c6abb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

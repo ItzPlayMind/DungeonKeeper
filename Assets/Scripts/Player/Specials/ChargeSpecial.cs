@@ -53,7 +53,7 @@ public class ChargeSpecial : AbstractSpecial
         var stats = collision.GetComponent<CharacterStats>();
         if(stats != null)
         {
-            stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), NetworkManager.Singleton.LocalClientId);
+            stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), characterStats);
         }
     }
 }

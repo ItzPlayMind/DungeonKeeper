@@ -9,7 +9,7 @@ public class CharacterStats : NetworkBehaviour
     [SerializeField] private float deathTimer = 5f;
     private int currentHealth;
     public int Health { get => currentHealth; }
-    public System.Action<ulong> OnTakeDamage;
+    public System.Action<ulong,int> OnTakeDamage;
     public System.Action<ulong> OnDeath;
     public System.Action OnRespawn;
     public bool CanBeHit { get; protected set; } = true;
@@ -30,11 +30,11 @@ public class CharacterStats : NetworkBehaviour
 
     protected virtual bool CanBeHitConstantly() { return true; }
 
-    public void TakeDamage(int damage, Vector2 knockback, ulong damagerID = ulong.MaxValue)
+    public void TakeDamage(int damage, Vector2 knockback, CharacterStats damager)
     {
         if ((!CanBeHit && !CanBeHitConstantly()) || IsDead)
             return;
-        TakeDamageServerRPC(damage,knockback,damagerID);
+        TakeDamageServerRPC(damage,knockback,damager == null ? ulong.MaxValue : damager.NetworkObjectId);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -53,7 +53,7 @@ public class CharacterStats : NetworkBehaviour
             rb.velocity = Vector2.zero;
             rb.AddForce(knockback, ForceMode2D.Impulse);
         }
-        OnTakeDamage?.Invoke(damagerID);
+        OnTakeDamage?.Invoke(damagerID,damage);
         if (currentHealth <= 0)
         {
             Die(damagerID);
@@ -74,7 +74,7 @@ public class CharacterStats : NetworkBehaviour
     {
         if (damagerID == ulong.MaxValue)
             return;
-        NetworkManager.Singleton.ConnectedClients[damagerID].PlayerObject.GetComponent<Inventory>().AddCash(GameManager.instance.GOLD_FOR_KILL);
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerID].GetComponent<Inventory>().AddCash(GameManager.instance.GOLD_FOR_KILL);
     }
 
     private float timer = 0f;

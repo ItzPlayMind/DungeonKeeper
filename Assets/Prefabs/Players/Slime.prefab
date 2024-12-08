@@ -294,6 +294,28 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 25747311634228506}
   m_SourcePrefab: {fileID: 100100000, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+--- !u!114 &2657698992768915383 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7792046669044073865, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 5242438517262701118}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c56032a774e5474b89364bbb0c6abb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5335775418337068973 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 201704820803556755, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 5242438517262701118}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c56032a774e5474b89364bbb0c6abb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &7612959964252657405 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2406691104180667587, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
@@ -320,6 +342,8 @@ MonoBehaviour:
   damage: 5
   damageMultiplier: 0.5
   MaxCooldown: 10
+  specialIcon: {fileID: 2657698992768915383}
+  specialInUseIcon: {fileID: 5335775418337068973}
   hitbox: {fileID: 6785767255287506124}
   healRadius: 3
 --- !u!70 &25747311634228506

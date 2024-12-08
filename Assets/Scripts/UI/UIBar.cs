@@ -14,6 +14,11 @@ public class UIBar : MonoBehaviour
         newValue = value;
     }
 
+    public void SetBar(float value) { 
+        newValue = value;
+        fill.fillAmount = value;
+    }
+
     private void Update()
     {
         if(newValue != fill.fillAmount)

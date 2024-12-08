@@ -16,8 +16,7 @@ public class LobbyPanel : MonoBehaviour
         public GameObject character;
         public Type type;
         public Sprite characterSprite;
-        public bool locked;
-        //public AnimatorOverrideController characterAnimation;
+        [HideInInspector] public bool locked;
         [HideInInspector] public Button characterPotrait;
         [HideInInspector] public GameObject selectionObject;
     }

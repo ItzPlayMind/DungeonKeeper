@@ -46,9 +46,9 @@ public class AxeSpecial : AbstractSpecial
             if (stats != null)
             {
                 if(!returning)
-                    stats.TakeDamage(Damage, axe.velocity.normalized*10, NetworkManager.Singleton.LocalClientId);
+                    stats.TakeDamage(Damage, axe.velocity.normalized*10, characterStats);
                 else
-                    stats.TakeDamage(returnDamage + (int)(characterStats.stats.specialDamage.Value * returnDamageMultiplier), axe.velocity.normalized * 3, NetworkManager.Singleton.LocalClientId);
+                    stats.TakeDamage(returnDamage + (int)(characterStats.stats.specialDamage.Value * returnDamageMultiplier), axe.velocity.normalized * 3, characterStats);
             }
             if (!returning)
                 axe.velocity = Vector2.zero;

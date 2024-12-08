@@ -141,13 +141,13 @@ public class GameManager : NetworkBehaviour
     {
         var redNexusStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[redNexusID].GetComponent<CharacterStats>();
         redNexusStats.gameObject.layer = LayerMask.NameToLayer(redTeamlayer);
-        redNexusStats.OnTakeDamage += (ulong damager) =>
+        redNexusStats.OnTakeDamage += (ulong damager, int damage) =>
         {
             redNexusHealthbar.UpdateBar((float)redNexusStats.Health / redNexusStats.stats.health.Value);
         };
         var blueNexusStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[blueNexusID].GetComponent<CharacterStats>();
         blueNexusStats.gameObject.layer = LayerMask.NameToLayer(blueTeamlayer);
-        blueNexusStats.OnTakeDamage += (ulong damager) =>
+        blueNexusStats.OnTakeDamage += (ulong damager, int damage) =>
         {
             blueNexusHealthbar.UpdateBar((float)blueNexusStats.Health / blueNexusStats.stats.health.Value);
         };

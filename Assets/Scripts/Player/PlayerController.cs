@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using static UnityEngine.Rendering.DebugUI;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -34,6 +36,8 @@ public class PlayerController : NetworkBehaviour
 
     public bool canMove { get => !isAttacking && stats.CanBeHit; }
 
+    private List<ulong> hitsPerAttack = new List<ulong>();
+
     public override void OnNetworkSpawn()
     {
         if (!IsLocalPlayer)
@@ -47,7 +51,7 @@ public class PlayerController : NetworkBehaviour
         animator = GetComponentInChildren<Animator>();
         animatorEvent = animator.GetComponent<AnimationEventSender>();
         stats = GetComponent<CharacterStats>();
-        stats.OnTakeDamage += (_) =>
+        stats.OnTakeDamage += (_, _) =>
         {
             isAttacking = false;
         };
@@ -66,10 +70,22 @@ public class PlayerController : NetworkBehaviour
                 var stats = collider.GetComponent<CharacterStats>();
                 if (stats != null)
                 {
-                    stats.TakeDamage((int)(this.stats.stats.damage.Value * attackSettings[currentAttack].damageMultiplier), stats.GenerateKnockBack(stats.transform, transform, attackSettings[currentAttack].knockBack),NetworkManager.Singleton.LocalClientId);
+                    stats.TakeDamage((int)(this.stats.stats.damage.Value * attackSettings[currentAttack].damageMultiplier), stats.GenerateKnockBack(stats.transform, transform, attackSettings[currentAttack].knockBack),this.stats);
                 }
             };
         }
+    }
+
+    public void HitTarget(CharacterStats target, int damage, float knockBackForce)
+    {
+        if (target == null) return;
+        if (target.gameObject == gameObject) return;
+        if (target.gameObject.layer == gameObject.layer)
+            return;
+        if (hitsPerAttack.Contains(target.NetworkObjectId))
+            return;
+        hitsPerAttack.Add(target.NetworkObjectId);
+        target.TakeDamage(damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), this.stats);
     }
 
     public void OnTeamAssigned()
@@ -94,6 +110,8 @@ public class PlayerController : NetworkBehaviour
                 animator.ResetTrigger("attacking");
                 attackComboTimer = attackComboTime;
                 currentAttack = (currentAttack + 1) % attackSettings.Length;
+                if(IsLocalPlayer)
+                    hitsPerAttack.Clear();
                 isAttacking = false;
                 break;
             case AnimationEventSender.AnimationEvent.SelfKnockBack:

@@ -12,7 +12,8 @@ public abstract class AbstractSpecial : NetworkBehaviour
     [SerializeField] private int damage = 5;
     [SerializeField] private float damageMultiplier = 1;
     [SerializeField] private float MaxCooldown;
-    private UIBar specialIcon;
+    [SerializeField] private UIBar specialIcon;
+    [SerializeField] private UIBar specialInUseIcon;
     private TMPro.TextMeshProUGUI amountText;
 
     protected CharacterStats characterStats;
@@ -35,7 +36,6 @@ public abstract class AbstractSpecial : NetworkBehaviour
                 cooldown = 0;
                 specialIcon.UpdateBar(0);
             };
-            specialIcon = transform.Find("PlayerUI")?.Find("Special")?.GetComponentInChildren<UIBar>();
             specialIcon.GetComponent<Image>().sprite = icon;
             amountText = specialIcon.GetComponentInChildren<TMPro.TextMeshProUGUI>();
             amountText.text = "";
@@ -62,12 +62,21 @@ public abstract class AbstractSpecial : NetworkBehaviour
         used = true;
     }
 
-    public void StartCooldown()
+    protected void Finish()
     {
         isUsing = false;
-        cooldown = MaxCooldown;
         used = false;
     }
+
+    public void StartCooldown()
+    {
+        ResetActive();
+        cooldown = MaxCooldown;
+        Finish();
+    }
+
+    protected void UpdateActive(float value) => specialInUseIcon.UpdateBar(value);
+    protected void ResetActive() => specialInUseIcon.SetBar(0);
 
     protected virtual void FinishedCooldown() { }
 

@@ -9011,6 +9011,18 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+  - character: {fileID: 1906092422870518006, guid: f5a0ecd3112333f4ba58bd9957056d4f, type: 3}
+    type: 1
+    characterSprite: {fileID: -985385338, guid: d883d3593c5be5f41b1f89f6f89d253c, type: 3}
+    locked: 0
+    characterPotrait: {fileID: 0}
+    selectionObject: {fileID: 0}
+  - character: {fileID: 4373359943049224201, guid: 2a382c56a39d2cf468e003e9b5f21b93, type: 3}
+    type: 1
+    characterSprite: {fileID: -517473135, guid: 9a5a90346123b1b4c8667334ab68b5ef, type: 3}
+    locked: 0
+    characterPotrait: {fileID: 0}
+    selectionObject: {fileID: 0}
   readyStatePrefab: {fileID: 8413485153226263575, guid: cb1058b744870904180cf3fc8e3c8a75, type: 3}
   readyStateTransform: {fileID: 1604459201}
 --- !u!1 &1478894012

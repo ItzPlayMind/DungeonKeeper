@@ -8,7 +8,6 @@ public class Nexus : NetworkBehaviour
     [SerializeField] private float attackTime = 2f;
     [SerializeField] private float attackRange = 3f;
     private CharacterStats stats;
-    private CharacterStats characterStats;
     private PlayerStats target;
 
     private float attackTimer = 0f;
@@ -16,13 +15,12 @@ public class Nexus : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsServer) return;
-        characterStats = GetComponent<CharacterStats>();
-        characterStats.stats.damageReduction.ChangeValue += (ref float value, float _) =>
+        stats = GetComponent<CharacterStats>();
+        stats.stats.damageReduction.ChangeValue += (ref float value, float _) =>
         {
             if (target == null) value = 90;
             else value = 0;
         };
-        stats = GetComponent<CharacterStats>();
         stats.OnDeath += (ulong id) =>
         {
             var team = NetworkManager.Singleton.ConnectedClients[id].PlayerObject.gameObject.layer;
@@ -60,7 +58,7 @@ public class Nexus : NetworkBehaviour
                 }
                 else
                 {
-                    target.TakeDamage(characterStats.stats.damage.Value, Vector2.zero);
+                    target.TakeDamage(stats.stats.damage.Value, Vector2.zero, stats);
                     attackTimer = attackTime;
                 }
             }
