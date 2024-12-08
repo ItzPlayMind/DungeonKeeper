@@ -24,6 +24,7 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private LobbyPanel lobbyPanel;
     [SerializeField] private Button startButton;
     [SerializeField] private Button readyButton;
+    [SerializeField] private Button nextButton;
     [SerializeField] private GameObject NetworkUI;
     [SerializeField] private string redTeamlayer;
     [SerializeField] private string blueTeamlayer;
@@ -52,6 +53,30 @@ public class GameManager : NetworkBehaviour
         };
     }
 
+    public void SwitchToCharacterSelection()
+    {
+        SwitchToCharacterSelectionServerRPC();
+    }
+
+    [ServerRpc]
+    private void SwitchToCharacterSelectionServerRPC()
+    {
+        isStarted = true;
+        SwitchToCharacterSelectionClientRpc();
+    }
+
+    [ClientRpc]
+    private void SwitchToCharacterSelectionClientRpc()
+    {
+        lobbyPanel.SwitchToCharacterSelection();
+    }
+
+    [ClientRpc]
+    private void UpdateTeamPanelClientRpc(ulong[] redTeam, ulong[] blueTeam)
+    {
+        lobbyPanel.UpdateTeamPanel(redTeam, blueTeam);
+    }
+
     private IEnumerator WaitForShutdown()
     {
         while (NetworkManager.Singleton.ShutdownInProgress)
@@ -78,6 +103,7 @@ public class GameManager : NetworkBehaviour
     {
         if (IsServer)
             SetupServerRpc();
+        nextButton.gameObject.SetActive(IsHost);
         startButton.gameObject.SetActive(IsHost);
         readyButton.gameObject.SetActive(!IsHost);
         readyButton.GetComponent<Image>().color = Color.red;
@@ -108,24 +134,19 @@ public class GameManager : NetworkBehaviour
     {
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-        var redNexus = Instantiate(nexusPrefab, redTeamNexusSpawn.position, Quaternion.identity);
-        redNexus.gameObject.layer = LayerMask.NameToLayer(redTeamlayer);
-        redNexus.Spawn();
-        var blueNexus = Instantiate(nexusPrefab, blueTeamNexusSpawn.position, Quaternion.identity);
-        blueNexus.gameObject.layer = LayerMask.NameToLayer(blueTeamlayer);
-        blueNexus.Spawn();
-        SetupClientRPC(redNexus.NetworkObjectId, blueNexus.NetworkObjectId);
     }
 
     [ClientRpc]
-    private void SetupClientRPC(ulong redNexusID, ulong blueNexusID)
+    private void SpawnNexusClientRPC(ulong redNexusID, ulong blueNexusID)
     {
         var redNexusStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[redNexusID].GetComponent<CharacterStats>();
+        redNexusStats.gameObject.layer = LayerMask.NameToLayer(redTeamlayer);
         redNexusStats.OnTakeDamage += (ulong damager) =>
         {
             redNexusHealthbar.UpdateBar((float)redNexusStats.Health / redNexusStats.stats.health.Value);
         };
         var blueNexusStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[blueNexusID].GetComponent<CharacterStats>();
+        blueNexusStats.gameObject.layer = LayerMask.NameToLayer(blueTeamlayer);
         blueNexusStats.OnTakeDamage += (ulong damager) =>
         {
             blueNexusHealthbar.UpdateBar((float)blueNexusStats.Health / blueNexusStats.stats.health.Value);
@@ -154,6 +175,7 @@ public class GameManager : NetworkBehaviour
             lobbyPanel.AddReadyState(id);
             startButton.interactable = false;
         }
+        UpdateTeamPanelClientRpc(redTeam.ToArray(), blueTeam.ToArray());
         playerCount++;
         UpdatePlayerCountServerRpc(playerCount);
     }
@@ -167,20 +189,22 @@ public class GameManager : NetworkBehaviour
         readyState.Remove(id);
         lobbyPanel.RemoveReadyState(id);
         inRedTeam = !inRedTeam;
+        UpdateTeamPanelClientRpc(redTeam.ToArray(), blueTeam.ToArray());
         playerCount--;
         UpdatePlayerCountServerRpc(playerCount);
     }
-    public void ChangeReadyState()
+    public void ChangeReadyState(int characterIndex)
     {
-        ChangeReadyStateServerRpc(NetworkManager.Singleton.LocalClientId);
+        ChangeReadyStateServerRpc(NetworkManager.Singleton.LocalClientId, characterIndex);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void ChangeReadyStateServerRpc(ulong client)
+    private void ChangeReadyStateServerRpc(ulong client, int characterIndex)
     {
         readyState[client] = !readyState[client];
         lobbyPanel.SetReadyState(client, readyState[client]);
-        ChangeReadyStateClientRpc(client, readyState[client], new ClientRpcParams()
+        ChangeLockStateClientRpc(characterIndex, readyState[client]);
+        ChangeReadyStateClientRpc(readyState[client], new ClientRpcParams()
         {
             Send = new ClientRpcSendParams() { TargetClientIds = new ulong[] { client } }
         });
@@ -197,9 +221,15 @@ public class GameManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void ChangeReadyStateClientRpc(ulong client, bool value, ClientRpcParams clientRpcParams)
+    private void ChangeReadyStateClientRpc(bool value, ClientRpcParams clientRpcParams)
     {
         readyButton.GetComponent<Image>().color = value ? Color.green : Color.red;
+    }
+
+    [ClientRpc]
+    private void ChangeLockStateClientRpc(int characterIndex, bool value)
+    {
+        lobbyPanel.ChangeLockStateByIndex(characterIndex, value);
     }
 
     [ServerRpc]
@@ -217,8 +247,12 @@ public class GameManager : NetworkBehaviour
     [ServerRpc]
     private void StartGameServerRPC()
     {
-        isStarted = true;
         SpawnCharacterClientRPC();
+        var redNexus = Instantiate(nexusPrefab, redTeamNexusSpawn.position, Quaternion.identity);
+        redNexus.Spawn();
+        var blueNexus = Instantiate(nexusPrefab, blueTeamNexusSpawn.position, Quaternion.identity);
+        blueNexus.Spawn();
+        SpawnNexusClientRPC(redNexus.NetworkObjectId, blueNexus.NetworkObjectId);
     }
 
     [ClientRpc]

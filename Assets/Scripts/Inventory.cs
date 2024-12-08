@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Inventory : NetworkBehaviour
 {
-    [SerializeField] private NetworkVariable<int> cash = new NetworkVariable<int>(0);
+    [SerializeField] private NetworkVariable<int> cash = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Owner);
     [SerializeField] private List<Item> items = new List<Item>();
     public int Cash { get => cash.Value; }
 

@@ -28,6 +28,13 @@ public abstract class AbstractSpecial : NetworkBehaviour
         characterStats = GetComponent<CharacterStats>();
         if (IsLocalPlayer)
         {
+            characterStats.OnRespawn += () =>
+            {
+                used = false;
+                isUsing = false;
+                cooldown = 0;
+                specialIcon.UpdateBar(0);
+            };
             specialIcon = transform.Find("PlayerUI")?.Find("Special")?.GetComponentInChildren<UIBar>();
             specialIcon.GetComponent<Image>().sprite = icon;
             amountText = specialIcon.GetComponentInChildren<TMPro.TextMeshProUGUI>();

@@ -93,6 +93,7 @@ GameObject:
   - component: {fileID: 804763088038121465}
   - component: {fileID: 551455586680752632}
   - component: {fileID: 7080877991864629938}
+  - component: {fileID: 74208209431592863}
   m_Layer: 8
   m_Name: GFX
   m_TagString: Untagged
@@ -189,6 +190,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &74208209431592863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7828860403413115776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bddfd5c76c4a9d64a9d2f0854f5aa44b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7917338219625416889
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,7 +318,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7917338219625416889}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 579760e63eee3144fb14d392d25adfa2, type: 3}
+  m_Script: {fileID: 11500000, guid: a124e97c35348da4cbc6bca6c053189f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   stats:

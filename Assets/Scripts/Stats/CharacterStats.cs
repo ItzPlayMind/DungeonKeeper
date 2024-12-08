@@ -23,6 +23,11 @@ public class CharacterStats : NetworkBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
+    public void ResetCanBeHit()
+    {
+        CanBeHit = true;
+    }
+
     protected virtual bool CanBeHitConstantly() { return true; }
 
     public void TakeDamage(int damage, Vector2 knockback, ulong damagerID = ulong.MaxValue)
