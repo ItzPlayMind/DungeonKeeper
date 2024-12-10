@@ -35,13 +35,13 @@ public class ItemRegistry : MonoBehaviour
     private void Start()
     {
 
-        AddItemWithVariables("HP Potion", "hp_potion", "On use gain {HP} Health", null, 200, 0, new Dictionary<string, object>() { { "HP", 100 } }, null, (Item item, CharacterStats stats, int slot) =>
+        AddItemWithVariables("HP Potion", "hp_potion", "On use gain {HP} Health", null, 100, 0, new Dictionary<string, object>() { { "HP", 100 } }, null, (Item item, CharacterStats stats, int slot) =>
         {
             stats.Heal((int)item.variables["HP"]);
             stats.GetComponent<Inventory>().RemoveItem(slot);
         });
 
-        AddItem("Torch", "torch_1", "On use place a torch", null, 200, 0, null, (Item item, CharacterStats stats, int slot) =>
+        AddItem("Torch", "torch_1", "On use place a torch", null, 50, 0, null, (Item item, CharacterStats stats, int slot) =>
         {
             var mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
             var dir = (mouseWorldPos - stats.transform.position);

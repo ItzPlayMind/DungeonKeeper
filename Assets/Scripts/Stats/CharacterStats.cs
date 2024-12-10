@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class CharacterStats : NetworkBehaviour
 {
+    [SerializeField] protected float respawnTime = 0;
+    [SerializeField] private bool CanRevive = true;
     public StatBlock stats;
     private int currentHealth;
     public int Health { get => currentHealth; }
@@ -65,7 +67,7 @@ public class CharacterStats : NetworkBehaviour
             OnDeathServerRPC(damagerID);
         OnDeath?.Invoke(damagerID);
         IsDead = true;
-        timer = GameManager.instance.RESPAWN_TIME.Value;
+        timer = respawnTime;
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -80,7 +82,7 @@ public class CharacterStats : NetworkBehaviour
 
     private void Update()
     {
-        if (IsDead)
+        if (IsDead && CanRevive)
         {
             timer -= Time.deltaTime;
             if(timer <= 0)

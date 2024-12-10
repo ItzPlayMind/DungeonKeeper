@@ -13,6 +13,7 @@ public class ItemHoverOver : MonoBehaviour
     }
 
     [SerializeField] private TMPro.TextMeshProUGUI nameText;
+    [SerializeField] private TMPro.TextMeshProUGUI cashText;
     [SerializeField] private RectTransform statBlock;
     [SerializeField] private TMPro.TextMeshProUGUI damageText;
     [SerializeField] private GameObject damageIcon;
@@ -41,7 +42,8 @@ public class ItemHoverOver : MonoBehaviour
     private void _Show(Item item)
     {
         nameText.text = item.Name;
-        if(item.stats != null) {
+        cashText.text = item.cost.ToString();
+        if (item.stats != null) {
             damageText.text = item.stats.damage.Value.ToString();
             damageIcon.SetActive(item.stats.damage.Value > 0);
             specialDamageText.text =  item.stats.specialDamage.Value.ToString();
@@ -70,13 +72,13 @@ public class ItemHoverOver : MonoBehaviour
         var height = Mathf.Ceil(activeChildren / 2f) * 30;
         statBlock.sizeDelta = new Vector2(statBlock.sizeDelta.x,height);
         descriptionText.text = item.Description;
-        description.offsetMax = new Vector2(description.offsetMax.x, -(20+15+height));
+        description.offsetMax = new Vector2(description.offsetMax.x, -(20+20+15+height));
         if (!string.IsNullOrEmpty(item.Description)) {
             height += 200;
         }
         description.gameObject.SetActive(!string.IsNullOrEmpty(item.Description));
         var rectTransform = (transform as RectTransform);
-        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, (20 + 15 + height+30));
+        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, (20 + 20 + 15 + height+30));
     }
 
     private void Update()

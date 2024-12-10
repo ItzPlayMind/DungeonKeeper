@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class GameManager : NetworkBehaviour
@@ -20,7 +21,12 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private Transform blueTeamSpawn;
     [SerializeField] private Transform redTeamNexusSpawn;
     [SerializeField] private Transform blueTeamNexusSpawn;
+    [SerializeField] private Transform[] redTeamTurretSpawns;
+    [SerializeField] private Transform[] blueTeamTurretSpawns;
+    [SerializeField] private Transform[] objectivesSpawns;
     [SerializeField] private NetworkObject nexusPrefab;
+    [SerializeField] private NetworkObject turretPrefab;
+    [SerializeField] private NetworkObject[] objectivesPrefabs;
     [SerializeField] private LobbyPanel lobbyPanel;
     [SerializeField] private Button startButton;
     [SerializeField] private Button readyButton;
@@ -30,12 +36,16 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private string blueTeamlayer;
     [SerializeField] private GameObject nexusUI;
     [SerializeField] private UIBar redNexusHealthbar;
+    [SerializeField] private UIBar[] redTurretHealthbars;
     [SerializeField] private UIBar blueNexusHealthbar;
+    [SerializeField] private UIBar[] blueTurretHealthbars;
+    [SerializeField] private Light2D globalLight;
     public NetworkObject TORCH_PREFAB;
     public Material UNLIT_MATERIAL;
     public Material LIT_MATERIAL;
     public int GOLD_FOR_KILL;
     public int GOLD_PER_SECOND;
+    public int GOLD_PER_TURRET;
     public NetworkVariable<int> RESPAWN_TIME = new NetworkVariable<int>(5);
 
     List<ulong> redTeam = new List<ulong>();
@@ -47,6 +57,10 @@ public class GameManager : NetworkBehaviour
     private bool isShuttingDown;
     private int clientSetupCount = 0;
 
+    public void SetGlobalLight(bool value)
+    {
+        globalLight.enabled = value;
+    }
     private void Start()
     {
         InputManager.Instance.PlayerControls.UI.Close.performed += (_) =>
@@ -94,6 +108,7 @@ public class GameManager : NetworkBehaviour
     {
         while (NetworkManager.Singleton.ShutdownInProgress)
             yield return new WaitForEndOfFrame();
+        SetGlobalLight(true);
         nexusUI.SetActive(false);
         redTeam = new List<ulong>();
         blueTeam = new List<ulong>();
@@ -165,22 +180,33 @@ public class GameManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void SpawnNexusClientRPC(ulong redNexusID, ulong blueNexusID)
+    private void SpawnNexusClientRPC(ulong redNexusID, ulong blueNexusID, ulong[] redTurrets, ulong[] blueTurrets)
     {
-        var redNexusStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[redNexusID].GetComponent<CharacterStats>();
-        redNexusStats.gameObject.layer = LayerMask.NameToLayer(redTeamlayer);
-        redNexusStats.OnTakeDamage += (ulong damager, int damage) =>
+        SetGlobalLight(false);
+        SetupTeamBasedObjective(redNexusID, redTeamlayer, redNexusHealthbar);
+        SetupTeamBasedObjective(blueNexusID, blueTeamlayer, blueNexusHealthbar);
+        for (int i = 0; i < redTurrets.Length; i++)
         {
-            redNexusHealthbar.UpdateBar((float)redNexusStats.Health / redNexusStats.stats.health.Value);
-        };
-        var blueNexusStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[blueNexusID].GetComponent<CharacterStats>();
-        blueNexusStats.gameObject.layer = LayerMask.NameToLayer(blueTeamlayer);
-        blueNexusStats.OnTakeDamage += (ulong damager, int damage) =>
+            SetupTeamBasedObjective(redTurrets[i], redTeamlayer, redTurretHealthbars[i]);
+            redTurretHealthbars[i].UpdateBar(1);
+        }
+        for (int i = 0; i < blueTurrets.Length; i++)
         {
-            blueNexusHealthbar.UpdateBar((float)blueNexusStats.Health / blueNexusStats.stats.health.Value);
-        };
+            SetupTeamBasedObjective(blueTurrets[i], blueTeamlayer, blueTurretHealthbars[i]);
+            blueTurretHealthbars[i].UpdateBar(1);
+        }
         redNexusHealthbar.UpdateBar(1);
         blueNexusHealthbar.UpdateBar(1);
+    }
+
+    public void SetupTeamBasedObjective(ulong id, string layer, UIBar healthBar)
+    {
+        var objective = NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].GetComponent<CharacterStats>();
+        objective.gameObject.layer = LayerMask.NameToLayer(layer);
+        objective.OnTakeDamage += (ulong damager, int damage) =>
+        {
+            healthBar.UpdateBar((float)objective.Health / objective.stats.health.Value);
+        };
     }
 
     private void OnClientConnected(ulong id)
@@ -280,7 +306,23 @@ public class GameManager : NetworkBehaviour
         redNexus.Spawn();
         var blueNexus = Instantiate(nexusPrefab, blueTeamNexusSpawn.position, Quaternion.identity);
         blueNexus.Spawn();
-        SpawnNexusClientRPC(redNexus.NetworkObjectId, blueNexus.NetworkObjectId);
+        var redTurrets = new ulong[redTeamTurretSpawns.Length];
+        for (int i = 0; i < redTeamTurretSpawns.Length; i++)
+        {
+            var turret = Instantiate(turretPrefab, redTeamTurretSpawns[i].position, Quaternion.identity);
+            turret.Spawn();
+            redTurrets[i] = turret.NetworkObjectId;
+        }
+        var blueTurrets = new ulong[blueTeamTurretSpawns.Length];
+        for (int i = 0; i < blueTeamTurretSpawns.Length; i++)
+        {
+            var turret = Instantiate(turretPrefab, blueTeamTurretSpawns[i].position, Quaternion.identity);
+            turret.Spawn();
+            blueTurrets[i] = turret.NetworkObjectId;
+        }
+        for (int i = 0; i < objectivesPrefabs.Length; i++)
+            Instantiate(objectivesPrefabs[i], objectivesSpawns[i].position, Quaternion.identity).Spawn();
+        SpawnNexusClientRPC(redNexus.NetworkObjectId, blueNexus.NetworkObjectId, redTurrets, blueTurrets);
     }
 
     [ClientRpc]

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -48,8 +49,11 @@ public class PlayerStats : CharacterStats
 
     protected override void Die(ulong damagerID)
     {
+        respawnTime = GameManager.instance.RESPAWN_TIME.Value;
         base.Die(damagerID);
         animator.SetBool("death", true);
+
+
     }
 
     protected override void Respawn()
