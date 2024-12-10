@@ -465,6 +465,18 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 951099334
       objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.speed.baseValue
+      value: 105
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.damage.baseValue
+      value: 65
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.health.baseValue
+      value: 900
+      objectReference: {fileID: 0}
     - target: {fileID: 8189507989608339147, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Controller
       value: 
@@ -513,6 +525,7 @@ MonoBehaviour:
   damage: 50
   damageMultiplier: 1
   MaxCooldown: 10
+  activeTime: 5
   specialIcon: {fileID: 6115455901627232203}
   specialInUseIcon: {fileID: 4192858828411715537}
   hitboxes:
@@ -532,7 +545,6 @@ MonoBehaviour:
     hitbox: {fileID: 3572432952164073544}
     clip: {fileID: 7400000, guid: b6c99f00d05872240847e6f90b8fa409, type: 2}
   originalAnimator: {fileID: 22100000, guid: c8d27d47b08063244b2cc8bf70bcd1ea, type: 2}
-  automaticResetTime: 5
 --- !u!114 &4192858828411715537 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 201704820803556755, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}

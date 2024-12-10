@@ -323,7 +323,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stats:
     damage:
-      baseValue: 10
+      baseValue: 30
     specialDamage:
       baseValue: 0
     speed:

@@ -6,7 +6,6 @@ using UnityEngine;
 public class CharacterStats : NetworkBehaviour
 {
     public StatBlock stats;
-    [SerializeField] private float deathTimer = 5f;
     private int currentHealth;
     public int Health { get => currentHealth; }
     public System.Action<ulong,int> OnTakeDamage;
@@ -66,7 +65,7 @@ public class CharacterStats : NetworkBehaviour
             OnDeathServerRPC(damagerID);
         OnDeath?.Invoke(damagerID);
         IsDead = true;
-        timer = deathTimer;
+        timer = GameManager.instance.RESPAWN_TIME.Value;
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -93,10 +92,10 @@ public class CharacterStats : NetworkBehaviour
 
     protected virtual void Respawn()
     {
+        OnRespawn?.Invoke();
         CanBeHit = true;
         IsDead = false;
         currentHealth = stats.health.Value;
-        OnRespawn?.Invoke();
     }
 
     public void Heal(int health)

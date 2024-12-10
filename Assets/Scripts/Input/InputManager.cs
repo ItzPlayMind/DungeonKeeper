@@ -19,7 +19,7 @@ public class InputManager : MonoBehaviour
 
     public enum ActionMap
     {
-        Movement, Camera, Combat
+        Movement, Camera, Combat, UI
     }
 
     [SerializeField] private float bufferTime;
@@ -39,6 +39,8 @@ public class InputManager : MonoBehaviour
                 return playerControls.Camera.Get();
             case ActionMap.Combat:
                 return playerControls.Combat.Get();
+            case ActionMap.UI:
+                return playerControls.UI.Get();
         }
         return null;
     }
@@ -53,6 +55,9 @@ public class InputManager : MonoBehaviour
         if (action != null)
             return action;
         action = playerControls.Combat.Get().FindAction(name);
+        if (action != null)
+            return action;
+        action = playerControls.UI.Get().FindAction(name);
         if (action != null)
             return action;
         return null;
@@ -74,7 +79,8 @@ public class InputManager : MonoBehaviour
     public Vector2 MousePosition { get => playerControls.Camera.MousePosition.ReadValue<Vector2>(); }
 
     public Vector2 PlayerMovement { get { return playerControls.Movement.Movement.ReadValue<Vector2>(); } }
-    public bool PlayerDashTrigger { get { return GetValueOrDefault(playerControls.Movement.Dash, -1) > 0; } }
+    public bool PlayerShopTrigger { get { return playerControls.Camera.Shop.triggered; } }
+    public bool PlayerInventoryActiveItemTriggered(int slot) => FindAction("Active Item " + slot).triggered;
     //public Vector2 MouseDelta { get { return playerControls.Camera.Look.ReadValue<Vector2>(); } }
     //public Vector2 MousePosition { get { return playerControls.Additional.MousePosition.ReadValue<Vector2>(); } }
     //public bool PlayerDashTriggered { get { return GetValueOrDefault(playerControls.Movement.Dash, -1) > 0; } }
@@ -135,6 +141,7 @@ public class InputManager : MonoBehaviour
         CheckForTriggerInActionMap(playerControls.Movement.Get());
         CheckForTriggerInActionMap(playerControls.Camera.Get());
         CheckForTriggerInActionMap(playerControls.Combat.Get());
+        CheckForTriggerInActionMap(playerControls.UI.Get());
 
         List<InputAction> removeActions = new List<InputAction>();
 

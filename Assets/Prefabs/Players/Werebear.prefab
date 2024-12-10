@@ -392,12 +392,16 @@ PrefabInstance:
       value: 951099334
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.speed.baseValue
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.damage.baseValue
       value: 65
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.health.baseValue
-      value: 1250
+      value: 1450
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.speed.baseValue.x

@@ -12,6 +12,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
     [SerializeField] private int damage = 5;
     [SerializeField] private float damageMultiplier = 1;
     [SerializeField] private float MaxCooldown;
+    [SerializeField] private float activeTime;
     [SerializeField] private UIBar specialIcon;
     [SerializeField] private UIBar specialInUseIcon;
     private TMPro.TextMeshProUGUI amountText;
@@ -45,7 +46,8 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     protected void UpdateAmountText(string value)
     {
-        if (IsLocalPlayer) { 
+        if (IsLocalPlayer)
+        {
             amountText.text = value;
         }
     }
@@ -75,10 +77,28 @@ public abstract class AbstractSpecial : NetworkBehaviour
         Finish();
     }
 
+    public void SetCooldown(float cooldown)
+    {
+        this.cooldown = cooldown;
+        if (cooldown <= 0)
+        {
+            FinishedCooldown();
+        }
+        ResetActive();
+        if (specialIcon != null)
+            specialIcon.UpdateBar(cooldown / MaxCooldown);
+    }
+
     protected void UpdateActive(float value) => specialInUseIcon.UpdateBar(value);
-    protected void ResetActive() => specialInUseIcon.SetBar(0);
+    protected void ResetActive() {
+        specialInUseIcon.SetBar(0);
+        activeTimer = 0;
+    }
+
 
     protected virtual void FinishedCooldown() { }
+
+    float activeTimer = 0;
 
     private void Update()
     {
@@ -94,7 +114,27 @@ public abstract class AbstractSpecial : NetworkBehaviour
             if (specialIcon != null)
                 specialIcon.UpdateBar(cooldown / MaxCooldown);
         }
+        if (activeTimer > 0)
+        {
+            activeTimer -= Time.deltaTime;
+            if (!OnCooldown)
+                UpdateActive(activeTimer / activeTime);
+            if (activeTimer <= 0 && !OnCooldown)
+            {
+                OnActiveOver();
+            }
+        }
         _Update();
+    }
+
+    protected virtual void OnActiveOver()
+    {
+
+    }
+
+    protected void StartActive()
+    {
+        activeTimer = activeTime;
     }
 
     protected virtual void _Update()
@@ -114,4 +154,6 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     protected abstract void _OnSpecialPress(PlayerController controller);
     protected abstract void _OnSpecialFinish(PlayerController controller);
+
+
 }

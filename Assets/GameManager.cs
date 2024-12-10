@@ -31,10 +31,12 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private GameObject nexusUI;
     [SerializeField] private UIBar redNexusHealthbar;
     [SerializeField] private UIBar blueNexusHealthbar;
+    public NetworkObject TORCH_PREFAB;
     public Material UNLIT_MATERIAL;
     public Material LIT_MATERIAL;
     public int GOLD_FOR_KILL;
     public int GOLD_PER_SECOND;
+    public NetworkVariable<int> RESPAWN_TIME = new NetworkVariable<int>(5);
 
     List<ulong> redTeam = new List<ulong>();
     List<ulong> blueTeam = new List<ulong>();
@@ -51,6 +53,17 @@ public class GameManager : NetworkBehaviour
         {
             Shutdown();
         };
+    }
+
+    public void SetTorch(Vector2 pos)
+    {
+        SetTorchServerRpc(pos);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetTorchServerRpc(Vector2 pos)
+    {
+        Instantiate(TORCH_PREFAB, pos, Quaternion.identity).Spawn();
     }
 
     public void SwitchToCharacterSelection()
@@ -99,6 +112,20 @@ public class GameManager : NetworkBehaviour
         NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
     }
 
+    private float respawnTimeTimer = 10f;
+
+    private void Update()
+    {
+        if (!IsServer) return;
+        if (!isStarted) return;
+        if(respawnTimeTimer <= 0)
+        {
+            RESPAWN_TIME.Value++;
+            respawnTimeTimer = 10f;
+        }
+        respawnTimeTimer -= Time.deltaTime;
+    }
+
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -126,6 +153,7 @@ public class GameManager : NetworkBehaviour
 
     public void StartGame()
     {
+        if (!IsServer) respawnTimeTimer = 10f;
         StartGameServerRPC();
     }
 

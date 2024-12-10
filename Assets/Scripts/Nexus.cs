@@ -23,7 +23,7 @@ public class Nexus : NetworkBehaviour
         };
         stats.OnDeath += (ulong id) =>
         {
-            var team = NetworkManager.Singleton.ConnectedClients[id].PlayerObject.gameObject.layer;
+            var team = NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].gameObject.layer;
             GameManager.instance.Win(team);
         };
     }

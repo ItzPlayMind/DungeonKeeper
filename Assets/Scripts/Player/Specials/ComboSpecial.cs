@@ -17,7 +17,6 @@ public class ComboSpecial : AbstractSpecial
 
     [SerializeField] private ComboHitbox[] hitboxes;
     [SerializeField] private AnimatorOverrideController originalAnimator;
-    [SerializeField] private float automaticResetTime = 5f;
     private PlayerController controller;
     Rigidbody2D rb;
     Vector2 mouseWorldPos;
@@ -48,6 +47,7 @@ public class ComboSpecial : AbstractSpecial
             dir.y = 0;
             rb.AddForce(dir * hitboxes[currentComboIndex].dashForce, ForceMode2D.Impulse);
             currentComboIndex = (currentComboIndex + 1) % hitboxes.Length;
+            StartActive();
         }
         if (currentComboIndex == 0)
             StartCooldown();
@@ -55,26 +55,15 @@ public class ComboSpecial : AbstractSpecial
             Finish();
     }
 
-    float automaticResetTimer = 0;
-    protected override void _Update()
-    {
-        if (!IsLocalPlayer) return;
-        if(automaticResetTimer > 0)
-        {
-            automaticResetTimer -= Time.deltaTime;
-            if(!OnCooldown)
-                UpdateActive(automaticResetTimer / automaticResetTime);
-            if(automaticResetTimer <= 0 && !OnCooldown)
-            {
-                ResetAllServerRPC(NetworkObjectId);
-                StartCooldown();
-            }
-        }
-    }
-
     public void ResetComboIndex()
     {
         currentComboIndex = 0;
+    }
+
+    protected override void OnActiveOver()
+    {
+        ResetAllServerRPC(NetworkObjectId);
+        StartCooldown();
     }
 
     [ServerRpc]
@@ -91,7 +80,6 @@ public class ComboSpecial : AbstractSpecial
 
     protected override void _OnSpecialPress(PlayerController controller)
     {
-        automaticResetTimer = automaticResetTime;
         UpdateActive(1);
         mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
         ChangeAnimatiorServerRPC(NetworkObjectId, currentComboIndex);

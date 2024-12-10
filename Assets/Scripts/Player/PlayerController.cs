@@ -10,6 +10,9 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class PlayerController : NetworkBehaviour
 {
+    public static PlayerController LocalPlayer { get; private set; }
+    public static System.Action OnLocalPlayerSetup;
+
     [System.Serializable]
     private class AttackSetting
     {
@@ -22,6 +25,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float attackComboTime = 0.2f;
     [SerializeField] private AttackSetting[] attackSettings = new AttackSetting[2];
     [SerializeField] private Transform hitboxes;
+    [SerializeField] private ShopPanel shopPanel;
     private Inventory inventory;
     private NetworkVariable<bool> isFlipped = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private AbstractSpecial special;
@@ -34,6 +38,8 @@ public class PlayerController : NetworkBehaviour
     private int currentAttack = 0;
     private float attackComboTimer = 0;
 
+    public Action<ulong, ulong, int> OnAttack;
+
     public bool canMove { get => !isAttacking && stats.CanBeHit; }
 
     private List<ulong> hitsPerAttack = new List<ulong>();
@@ -41,7 +47,11 @@ public class PlayerController : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsLocalPlayer)
+        {
             return;
+        }
+        LocalPlayer = this;
+        OnLocalPlayerSetup?.Invoke();
         inventory = GetComponent<Inventory>();
         var camera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
         camera.Follow = transform;
@@ -54,6 +64,7 @@ public class PlayerController : NetworkBehaviour
         stats.OnTakeDamage += (_, _) =>
         {
             isAttacking = false;
+            currentAttack = 0;
         };
         stats.OnRespawn += () =>
         {
@@ -70,7 +81,9 @@ public class PlayerController : NetworkBehaviour
                 var stats = collider.GetComponent<CharacterStats>();
                 if (stats != null)
                 {
-                    stats.TakeDamage((int)(this.stats.stats.damage.Value * attackSettings[currentAttack].damageMultiplier), stats.GenerateKnockBack(stats.transform, transform, attackSettings[currentAttack].knockBack),this.stats);
+                    var damage = (int)(this.stats.stats.damage.Value * attackSettings[currentAttack].damageMultiplier);
+                    OnAttack?.Invoke(stats.NetworkObjectId, this.stats.NetworkObjectId, damage);
+                    stats.TakeDamage(damage, stats.GenerateKnockBack(stats.transform, transform, attackSettings[currentAttack].knockBack),this.stats);
                 }
             };
         }
@@ -132,6 +145,7 @@ public class PlayerController : NetworkBehaviour
         if (!IsLocalPlayer)
             return;
         if (stats.IsDead) return;
+        inventory.UpdateItems();
         if (!isAttacking || (special != null && special.UseRotation && special.isUsing))
         {
             Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(inputManager.MousePosition);
@@ -161,6 +175,13 @@ public class PlayerController : NetworkBehaviour
                 }
             }
         }
+        if (inputManager.PlayerShopTrigger)
+        {
+            shopPanel.Toggle();
+        }
+        for (int i = 0; i < 6; i++)
+            if(InputManager.Instance.PlayerInventoryActiveItemTriggered(i+1))
+                inventory.UseItem(i);
         if (attackComboTimer > 0)
             attackComboTimer -= Time.deltaTime;
         else if (currentAttack != 0)
@@ -188,6 +209,6 @@ public class PlayerController : NetworkBehaviour
     void Move(Vector2 input)
     {
         if (canMove)
-            rb.AddForce(input*stats.stats.speed.Value, ForceMode2D.Force);
+            rb.AddForce(input*new Vector2(stats.stats.speed.Value, stats.stats.speed.Value-10), ForceMode2D.Force);
     }
 }

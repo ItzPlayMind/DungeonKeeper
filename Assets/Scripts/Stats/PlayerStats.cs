@@ -6,8 +6,6 @@ using UnityEngine;
 public class PlayerStats : CharacterStats
 {
     [SerializeField] private Canvas playerUI;
-    [SerializeField] private Canvas otherPlayerUI;
-    private Canvas ui;
     private UIBar healthBar;
     private Animator animator;
     private AnimationEventSender animatorEvent;
@@ -21,7 +19,7 @@ public class PlayerStats : CharacterStats
     protected override void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID)
     {
         base.TakeDamageClientRPC(damage, knockback, damagerID);
-        healthBar.UpdateBar(Health / (float)stats.health.Value);
+        healthBar?.UpdateBar(Health / (float)stats.health.Value);
         animator.SetTrigger("hit");
     }
     protected override void Start()
@@ -29,13 +27,13 @@ public class PlayerStats : CharacterStats
         base.Start();
         if (IsLocalPlayer)
         {
-            Destroy(otherPlayerUI.gameObject);
-            ui = playerUI;
+            healthBar = playerUI.transform.Find("Healthbar").GetComponent<UIBar>();
+            healthBar.UpdateBar(1f);
+            stats.OnValuesChange += () => healthBar.UpdateBar(Health/(float)stats.health.Value);
         }
         else
         {
-            Destroy(playerUI.gameObject);
-            ui = otherPlayerUI;
+            playerUI.gameObject.SetActive(false);
         }
         animator = GetComponentInChildren<Animator>();
         animatorEvent = animator.GetComponent<AnimationEventSender>();
@@ -46,8 +44,6 @@ public class PlayerStats : CharacterStats
                 CanBeHit = true;
             }
         };
-        healthBar = ui.transform.Find("Healthbar").GetComponent<UIBar>();
-        healthBar.UpdateBar(1f);
     }
 
     protected override void Die(ulong damagerID)
@@ -60,13 +56,15 @@ public class PlayerStats : CharacterStats
     {
         base.Respawn();
         animator.SetBool("death", false);
-        healthBar.UpdateBar(1);
+        if(IsLocalPlayer)
+            healthBar.UpdateBar(1);
     }
 
     [ClientRpc]
     protected override void HealClientRPC(int health)
     {
         base.HealClientRPC(health);
-        healthBar.UpdateBar(Health / (float)stats.health.Value);
+        if(IsLocalPlayer)
+            healthBar.UpdateBar(Health / (float)stats.health.Value);
     }
 }
