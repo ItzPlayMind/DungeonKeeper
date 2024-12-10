@@ -30,6 +30,7 @@ public class StatBlock
             set => this.baseValue = value;
         }
     }
+
     public Stat<int> damage = new Stat<int>(80);
     public Stat<int> specialDamage = new Stat<int>(0);
     public Stat<int> speed = new Stat<int>(0);

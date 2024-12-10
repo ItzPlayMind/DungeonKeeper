@@ -41,6 +41,7 @@ public class Ghost : NetworkBehaviour
         stats.OnRespawn += () =>
         {
             healthbar.gameObject.SetActive(true);
+            healthbar.UpdateBar(1f);
         };
     }
 
@@ -61,6 +62,7 @@ public class Ghost : NetworkBehaviour
         if (isReturning)
         {
             stats.Heal((int)(stats.stats.health.Value / 100f));
+            healthbar.UpdateBar(stats.Health/(float)stats.stats.health.Value);
             var originalPosDir = (originalPos - (Vector2)transform.position).normalized;
             rb.velocity = (originalPosDir * stats.stats.speed.Value * 2 * Time.deltaTime);
             if (Vector2.Distance(transform.position, originalPos) <= 0.1)

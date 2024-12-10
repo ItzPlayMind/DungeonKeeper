@@ -10,6 +10,7 @@ public class PlayerStats : CharacterStats
     private UIBar healthBar;
     private Animator animator;
     private AnimationEventSender animatorEvent;
+    private TMPro.TextMeshProUGUI healthText;
 
     protected override bool CanBeHitConstantly()
     {
@@ -21,6 +22,7 @@ public class PlayerStats : CharacterStats
     {
         base.TakeDamageClientRPC(damage, knockback, damagerID);
         healthBar?.UpdateBar(Health / (float)stats.health.Value);
+        healthText.text = Health + "/" + stats.health.Value;
         animator.SetTrigger("hit");
     }
     protected override void Start()
@@ -29,8 +31,14 @@ public class PlayerStats : CharacterStats
         if (IsLocalPlayer)
         {
             healthBar = playerUI.transform.Find("Healthbar").GetComponent<UIBar>();
+            healthText = healthBar.GetComponentInChildren<TMPro.TextMeshProUGUI>();
             healthBar.UpdateBar(1f);
-            stats.OnValuesChange += () => healthBar.UpdateBar(Health/(float)stats.health.Value);
+            healthText.text = Health + "/" + stats.health.Value;
+            stats.OnValuesChange += () =>
+            {
+                healthBar.UpdateBar(Health / (float)stats.health.Value);
+                healthText.text = Health + "/" + stats.health.Value;
+            };
         }
         else
         {
@@ -60,15 +68,21 @@ public class PlayerStats : CharacterStats
     {
         base.Respawn();
         animator.SetBool("death", false);
-        if(IsLocalPlayer)
+        if (IsLocalPlayer)
+        {
             healthBar.UpdateBar(1);
+            healthText.text = Health + "/" + stats.health.Value;
+        }
     }
 
     [ClientRpc]
     protected override void HealClientRPC(int health)
     {
         base.HealClientRPC(health);
-        if(IsLocalPlayer)
+        if (IsLocalPlayer)
+        {
             healthBar.UpdateBar(Health / (float)stats.health.Value);
+            healthText.text = Health + "/" + stats.health.Value;
+        }
     }
 }

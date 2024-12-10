@@ -75,6 +75,13 @@ public class InputManager : MonoBehaviour
         return defaultValue;
     }
 
+    private bool isOverUI = false;
+
+    public void SetIsOverUI(bool value)
+    {
+        isOverUI = value;
+    }
+
     public float Sensitivity { get; set; } = 1f;
     public Vector2 MousePosition { get => playerControls.Camera.MousePosition.ReadValue<Vector2>(); }
 
@@ -87,9 +94,9 @@ public class InputManager : MonoBehaviour
 
     //public bool PlayerSprinting { get { return GetValueOrDefault(playerControls.Movement.Sprint, -1) > 0; } }
 
-    public bool PlayerAttackTrigger { get { return GetValueOrDefault(playerControls.Combat.Attack, -1) > 0; } }
+    public bool PlayerAttackTrigger { get { return GetValueOrDefault(playerControls.Combat.Attack, -1) > 0 && !isOverUI; } }
     public bool PlayerAttackHold { get; private set; }
-    public bool PlayerSpecialTrigger { get { return GetValueOrDefault(playerControls.Combat.Special, -1) > 0; } }
+    public bool PlayerSpecialTrigger { get { return GetValueOrDefault(playerControls.Combat.Special, -1) > 0 && !isOverUI; } }
 
     private bool playerInteractTrigger;
     private bool playerInteractHold;
@@ -111,7 +118,7 @@ public class InputManager : MonoBehaviour
             instance = this;
         playerControls = new PlayerInput();
 
-        playerControls.Combat.Attack.started += (state) => PlayerAttackHold = true;
+        playerControls.Combat.Attack.started += (state) => PlayerAttackHold = !isOverUI;
         playerControls.Combat.Attack.canceled += (state) => PlayerAttackHold = false;
         //playerControls.Combat.Scope.started += (state) => AimDownSightsHold = true;
         //playerControls.Combat.Scope.canceled += (state) => AimDownSightsHold = false;

@@ -57,18 +57,19 @@ public class GameManager : NetworkBehaviour
     private bool isShuttingDown;
     private int clientSetupCount = 0;
 
-    public void SetGlobalLight(bool value)
-    {
-        globalLight.enabled = value;
-    }
     private void Start()
     {
         InputManager.Instance.PlayerControls.UI.Close.performed += (_) =>
         {
-            Shutdown();
+            if (!isStarted)
+                Shutdown();
         };
     }
 
+    public void SetGlobalLight(bool value)
+    {
+        globalLight.enabled = value;
+    }
     public void SetTorch(Vector2 pos)
     {
         SetTorchServerRpc(pos);
@@ -157,7 +158,7 @@ public class GameManager : NetworkBehaviour
         lobbyPanel.ResetOnDisconnect();
     }
 
-    private void Shutdown()
+    public void Shutdown()
     {
         if (isShuttingDown)
             return;

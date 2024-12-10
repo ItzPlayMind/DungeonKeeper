@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ShopPanel : MonoBehaviour
+public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Button iconButtonPrefab;
     [SerializeField] private Transform shopTransform;
     [SerializeField] private TMPro.TextMeshProUGUI cashText;
+    [SerializeField] private GameObject panel;
+
+    public bool IsActive { get => panel.activeSelf; }
 
     private void Start()
     {
+        panel = transform.GetChild(0).gameObject;
         var inventory = GetComponentInParent<Inventory>();
         inventory.OnCashChange((value) =>
         {
@@ -42,7 +47,18 @@ public class ShopPanel : MonoBehaviour
 
     public void Toggle()
     {
-        var panel = transform.GetChild(0);
-        panel.gameObject.SetActive(!panel.gameObject.activeSelf);
+        panel.SetActive(!panel.activeSelf);
+        if (!panel.activeSelf)
+            ItemHoverOver.Hide();
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        InputManager.Instance.SetIsOverUI(true);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        InputManager.Instance.SetIsOverUI(false);
     }
 }

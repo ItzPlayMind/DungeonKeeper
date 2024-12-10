@@ -37,7 +37,6 @@ public class PlayerController : NetworkBehaviour
     private CharacterStats stats;
     private int currentAttack = 0;
     private float attackComboTimer = 0;
-
     public Action<ulong, ulong, int> OnAttack;
 
     public bool canMove { get => !isAttacking && stats.CanBeHit; }
@@ -50,6 +49,7 @@ public class PlayerController : NetworkBehaviour
         {
             return;
         }
+        InputManager.Instance.PlayerControls.UI.Close.performed += CloseShopOrExit;
         LocalPlayer = this;
         OnLocalPlayerSetup?.Invoke();
         inventory = GetComponent<Inventory>();
@@ -87,6 +87,19 @@ public class PlayerController : NetworkBehaviour
                 }
             };
         }
+    }
+
+    private void CloseShopOrExit(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    {
+        if (shopPanel.IsActive)
+            shopPanel.Toggle();
+        else
+            GameManager.instance.Shutdown();
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        InputManager.Instance.PlayerControls.UI.Close.performed -= CloseShopOrExit;
     }
 
     public void HitTarget(CharacterStats target, int damage, float knockBackForce)
