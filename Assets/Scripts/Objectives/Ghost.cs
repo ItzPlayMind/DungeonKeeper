@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class Ghost : NetworkBehaviour
 {
@@ -14,14 +15,34 @@ public class Ghost : NetworkBehaviour
     private Rigidbody2D rb;
     private CharacterStats target;
     private Vector2 originalPos;
+    private SpriteRenderer spriteRenderer;
+    private Light2D ownLight;
+    private Collider2D coll;
 
     public override void OnNetworkSpawn()
     {
         healthbar = GetComponentInChildren<UIBar>();
         stats = GetComponent<CharacterStats>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        ownLight = GetComponentInChildren<Light2D>();
+        coll = GetComponent<Collider2D>();
+
         stats.OnTakeDamage += (ulong damager, int damage) =>
         {
             healthbar.UpdateBar(stats.Health / (float)stats.stats.health.Value);
+        };
+        stats.OnDeath += (ulong damager) =>
+        {
+            spriteRenderer.enabled = false;
+            ownLight.enabled = false;
+            coll.enabled = false;
+        }; 
+        stats.OnRespawn += () =>
+        {
+            GameManager.instance.Chat.AddMessage($"<color=green>{gameObject.name}</color> has spawned!");
+            spriteRenderer.enabled = true;
+            ownLight.enabled = true;
+            coll.enabled = true;
         };
         healthbar.UpdateBar(1f);
         if (!IsServer) return;
@@ -76,6 +97,7 @@ public class Ghost : NetworkBehaviour
         var dir = (target.transform.position - transform.position).normalized;
         if (Vector2.Distance(transform.position, target.transform.position) <= attackRange)
         {
+            rb.velocity = Vector2.zero;
             if (timer > 0)
             {
                 timer -= Time.deltaTime;

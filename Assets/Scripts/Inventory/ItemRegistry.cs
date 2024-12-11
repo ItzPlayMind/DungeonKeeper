@@ -9,16 +9,6 @@ using static Item;
 
 public class ItemRegistry : MonoBehaviour
 {
-    [System.Serializable]
-    private class ItemSetting
-    {
-        public string name;
-        [Multiline] public string description;
-        public Sprite icon;
-        public StatBlock statBlock;
-        public int cost;
-        public float cooldown;
-    }
 
     public static ItemRegistry Instance;
 
@@ -35,13 +25,13 @@ public class ItemRegistry : MonoBehaviour
     private void Start()
     {
 
-        AddItemWithVariables("HP Potion", "hp_potion", "On use gain {HP} Health", null, 100, 0, new Dictionary<string, object>() { { "HP", 100 } }, null, (Item item, CharacterStats stats, int slot) =>
+        AddItemWithVariables("HP Potion", "hp_potion", CharacterType.None, "On use gain {HP} Health", null, 100, 0, new Dictionary<string, object>() { { "HP", 100 } }, null, (Item item, CharacterStats stats, int slot) =>
         {
             stats.Heal((int)item.variables["HP"]);
             stats.GetComponent<Inventory>().RemoveItem(slot);
         });
 
-        AddItem("Torch", "torch_1", "On use place a torch", null, 50, 0, null, (Item item, CharacterStats stats, int slot) =>
+        AddItem("Torch", "torch_1", CharacterType.None, "On use place a torch", null, 50, 0, null, (Item item, CharacterStats stats, int slot) =>
         {
             var mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
             var dir = (mouseWorldPos - stats.transform.position);
@@ -55,12 +45,12 @@ public class ItemRegistry : MonoBehaviour
             stats.GetComponent<Inventory>().RemoveItem(slot);
         });
 
-        AddItem("Knights Sandles", "boots_01", "", new StatBlock(10,0,10,0,0), 500);
-        AddItem("Magical Sandles", "boots_02", "", new StatBlock(0, 10, 10, 0, 0), 500);
-        AddItem("Giant Boots", "leather_boots_01", "", new StatBlock(0, 0, 10, 50, 0), 500);
-        AddItem("Plated Boots", "leather_boots_02", "", new StatBlock(0, 0, 10, 0, 5), 500);
+        AddItem("Knights Sandles", "boots_01", CharacterType.Damage, "", new StatBlock(10,0,10,0,0), 500);
+        AddItem("Magical Sandles", "boots_02", CharacterType.Support, "", new StatBlock(0, 10, 10, 0, 0), 500);
+        AddItem("Giant Boots", "leather_boots_01", CharacterType.Tank, "", new StatBlock(0, 0, 10, 50, 0), 500);
+        AddItem("Plated Boots", "leather_boots_02", CharacterType.Tank, "", new StatBlock(0, 0, 10, 0, 5), 500);
 
-        AddItemWithVariables("Knights Chestplate", "iron_armor", "On beeing hit the damager takes {BaseDamage} + {MaxHealthPerc}% Max HP damage.", new StatBlock(0, 0, 0, 150, 10), 1500, 0,
+        AddItemWithVariables("Knights Chestplate", "iron_armor", CharacterType.Tank, "On beeing hit the damager takes {BaseDamage} + {MaxHealthPerc}% Max HP damage.", new StatBlock(0, 0, 0, 150, 10), 1500, 0,
             new Dictionary<string, object>() { { "BaseDamage", 10 }, { "MaxHealthPerc", 10 } },(Item item, CharacterStats stats, int slot) =>
         {
             stats.OnTakeDamage += (ulong damager, int damage) =>
@@ -69,7 +59,7 @@ public class ItemRegistry : MonoBehaviour
             };
         });
 
-        AddItemWithVariables("Lifeline", "leather_armor", "After not beeing in combat for {HitTime} seconds, start regenerating 5% Max HP every {Time} seconds.", new StatBlock(0, 0, 0, 200, 0), 1500, 0,
+        AddItemWithVariables("Lifeline", "leather_armor", CharacterType.Tank, "After not beeing in combat for {HitTime} seconds, start regenerating 5% Max HP every {Time} seconds.", new StatBlock(0, 0, 0, 200, 0), 1500, 0,
             new Dictionary<string, object>() { { "Timer", 1f}, { "HitTimer", 0f }, { "Time", 2f }, { "HitTime", 10f } },  (item, stats, _) =>
         {
             stats.OnTakeDamage += (_, _) =>
@@ -97,13 +87,13 @@ public class ItemRegistry : MonoBehaviour
             }
         });
 
-        AddItemWithVariables("Miners Ring", "ring_02", "Increase own light range by {LightMult}x", new StatBlock(0, 15, 5, 50, 0), 1200, 0,
+        AddItemWithVariables("Miners Ring", "ring_02", CharacterType.Support, "Increase own light range by {LightMult}x", new StatBlock(0, 15, 5, 50, 0), 1200, 0,
             new Dictionary<string, object>() { { "LightMult", 2f } }, (item,stats,_) =>
         {
             stats.GetComponentInChildren<Light2D>().pointLightOuterRadius *= (float)item.variables["LightMult"];
         });
 
-        AddItemWithVariables("Bloodlords Blade", "sword_02", "Gain {LifeSteal}% Lifesteal", new StatBlock(20, 0, 10, 50, 0), 1700, 0,
+        AddItemWithVariables("Bloodlords Blade", "sword_02", CharacterType.Damage, "Gain {LifeSteal}% Lifesteal", new StatBlock(20, 0, 10, 50, 0), 1700, 0,
             new Dictionary<string, object>() { { "LifeSteal", 15f } }, (item, stats, _) =>
         {
             stats.GetComponent<PlayerController>().OnAttack += (_,_,damage) =>
@@ -112,7 +102,7 @@ public class ItemRegistry : MonoBehaviour
             };
         });
 
-        AddItemWithVariables("Last Stand", "arm_guard", "Convert {HealthPerc}% of damage taken into a charge\r\nOn use heal for the amount of charge built up\r\nCharges fall of after {FallOfTimer} seconds",
+        AddItemWithVariables("Last Stand", "arm_guard", CharacterType.Tank, "Convert {HealthPerc}% of damage taken into a charge\r\nOn use heal for the amount of charge built up\r\nCharges fall of after {FallOfTimer} seconds",
             new StatBlock(5, 0, 0, 300, 5), 2000, 0,
             new Dictionary<string, object>() { { "HealthPerc", 15f }, { "FallOfTimer", 10f }, { "DamageTaken", 0}, { "Timer", 0f } }, (item, stats, _) =>
         {
@@ -139,14 +129,14 @@ public class ItemRegistry : MonoBehaviour
             }
         });
 
-        AddItem("Battlemage Spear", "spear_01", "On use reset current special cooldown", new StatBlock(0, 20, 0, 50, 0), 2000, 0,
+        AddItem("Battlemage Spear", "spear_01", CharacterType.Support, "On use reset current special cooldown", new StatBlock(0, 20, 0, 50, 0), 2000, 0,
             null, (item, stats, _) =>
         {
             stats.GetComponent<AbstractSpecial>().SetCooldown(0);
             item.StartCooldown();
         });
 
-        AddItem("Wind Sigil", "circlet", "On use dash towards the targeted position", new StatBlock(5, 5, 5, 50, 0), 1200, 20,
+        AddItem("Wind Sigil", "circlet", CharacterType.Damage, "On use dash towards the targeted position", new StatBlock(5, 5, 5, 50, 0), 1200, 20,
             null, (item, stats, _) =>
             {
                 var mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
@@ -163,10 +153,11 @@ public class ItemRegistry : MonoBehaviour
         return new Item(items[id]);
     }
 
-    public Item AddItem(string name, string spritePath, string description = "", StatBlock stats = null,
+    public Item AddItem(string name, string spritePath, CharacterType type = CharacterType.None, string description = "", StatBlock stats = null,
         int cost = 0, float cooldown = 0, ItemFunction onEquip = null, ItemFunction onUse = null, ItemFunction onUpdate = null)
     {
         Item item = new Item(name);
+        item.type = type;
         item.onUse = onUse;
         item.onUpdate = onUpdate;
         item.onEquip = onEquip;
@@ -179,10 +170,10 @@ public class ItemRegistry : MonoBehaviour
         return item;
     }
 
-    public Item AddItemWithVariables(string name, string spritePath, string description = "", StatBlock stats = null,
+    public Item AddItemWithVariables(string name, string spritePath, CharacterType type = CharacterType.None, string description = "", StatBlock stats = null,
         int cost = 0, float cooldown = 0, Dictionary<string,object> variables = null, ItemFunction onEquip = null, ItemFunction onUse = null, ItemFunction onUpdate = null)
     {
-        var item = AddItem(name, spritePath, description, stats, cost, cooldown, onEquip, onUse, onUpdate);
+        var item = AddItem(name, spritePath, type, description, stats, cost, cooldown, onEquip, onUse, onUpdate);
         item.variables = variables;
         return item;
     }

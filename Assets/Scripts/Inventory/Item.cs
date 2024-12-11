@@ -13,6 +13,7 @@ public class Item
     public string Name { get => name; }
     public delegate void ItemFunction(Item item, CharacterStats stats, int slot);
 
+    public CharacterType type;
     public ItemFunction onUse;
     public ItemFunction onUpdate;
     public ItemFunction onEquip;
@@ -63,6 +64,7 @@ public class Item
     public Item(Item item) : this(item.name)
     {
         this.id = item.id;
+        this.type = item.type;
         this.onUse = item.onUse;
         this.onUpdate = item.onUpdate;
         this.onEquip = item.onEquip;

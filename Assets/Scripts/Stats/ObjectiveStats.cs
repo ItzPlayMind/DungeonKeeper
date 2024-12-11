@@ -25,6 +25,12 @@ public class ObjectiveStats : CharacterStats
         };
     }
 
+    protected override void Die(ulong damagerID)
+    {
+        base.Die(damagerID);
+        GameManager.instance.Chat.AddMessage($"{damagerID} <color=red>killed</color> {gameObject.name}");
+    }
+
     [ClientRpc]
     protected override void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID)
     {

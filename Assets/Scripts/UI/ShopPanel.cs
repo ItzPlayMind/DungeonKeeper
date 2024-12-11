@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Button iconButtonPrefab;
-    [SerializeField] private Transform shopTransform;
+    [SerializeField] private Transform[] shopTransforms;
     [SerializeField] private TMPro.TextMeshProUGUI cashText;
     [SerializeField] private GameObject panel;
 
@@ -26,7 +26,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         var allItems = ItemRegistry.Instance.GetItems();
         foreach (var item in allItems)
         {
-            var iconButton = Instantiate(iconButtonPrefab, shopTransform);
+            var iconButton = Instantiate(iconButtonPrefab, shopTransforms[(int)item.type]);
             iconButton.transform.GetChild(0).GetComponent<Image>().sprite = item.icon;
             var hoverEvent = iconButton.GetComponent<HoverEvent>();
             hoverEvent.onPointerEnter += () => ItemHoverOver.Show(item);

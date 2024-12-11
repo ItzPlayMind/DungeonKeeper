@@ -9,12 +9,8 @@ public class LobbyPanel : MonoBehaviour
     [System.Serializable]
     private class CharacterPortrait
     {
-        public enum Type
-        {
-            Tank, Damage, Support
-        }
         public GameObject character;
-        public Type type;
+        public CharacterType type;
         public Sprite characterSprite;
         [HideInInspector] public bool locked;
         [HideInInspector] public Button characterPotrait;

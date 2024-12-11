@@ -89,6 +89,17 @@ public abstract class AbstractSpecial : NetworkBehaviour
             specialIcon.UpdateBar(cooldown / MaxCooldown);
     }
 
+    public void ReduceCooldown(int seconds)
+    {
+        cooldown -= seconds; 
+        if (cooldown <= 0)
+        {
+            FinishedCooldown();
+        }
+        if (specialIcon != null)
+            specialIcon.UpdateBar(cooldown / MaxCooldown);
+    }
+
     protected void UpdateActive(float value) => specialInUseIcon.UpdateBar(value);
     protected void ResetActive() {
         specialInUseIcon.SetBar(0);

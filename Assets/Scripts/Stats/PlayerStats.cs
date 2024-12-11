@@ -60,8 +60,7 @@ public class PlayerStats : CharacterStats
         respawnTime = GameManager.instance.RESPAWN_TIME.Value;
         base.Die(damagerID);
         animator.SetBool("death", true);
-
-
+        GameManager.instance.Chat.AddMessage($"{damagerID} <color=red>killed</color> {NetworkObjectId}");
     }
 
     protected override void Respawn()
