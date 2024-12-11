@@ -5,6 +5,12 @@ using UnityEngine;
 
 public class ObjectiveSystem : NetworkBehaviour
 {
+    [SerializeField] private float waveSpawnTimer = 5f;
+    [SerializeField] private float minionsPerWave = 3f;
+    [SerializeField] private NetworkObject redMinionPrefab;
+    [SerializeField] private NetworkObject blueMinionPrefab;
+    [SerializeField] private Transform redMinionSpawn;
+    [SerializeField] private Transform blueMinionSpawn;
     [SerializeField] private Transform redTeamNexusSpawn;
     [SerializeField] private Transform blueTeamNexusSpawn;
     [SerializeField] private Transform[] redTeamTurretSpawns;
@@ -25,6 +31,11 @@ public class ObjectiveSystem : NetworkBehaviour
     {
         this.redTeamlayer = redTeamlayer;
         this.blueTeamlayer = blueTeamlayer;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        StopAllCoroutines();
     }
 
     public void SpawnObjectives()
@@ -51,6 +62,23 @@ public class ObjectiveSystem : NetworkBehaviour
         for (int i = 0; i < objectivesPrefabs.Length; i++)
             Instantiate(objectivesPrefabs[i], objectivesSpawns[i].position, Quaternion.identity).Spawn();
         SpawnNexusClientRPC(redNexus.NetworkObjectId, blueNexus.NetworkObjectId, redTurrets, blueTurrets);
+        StartCoroutine(SpawnMinionWave(redMinionPrefab, redMinionSpawn, blueNexus.GetComponent<CharacterStats>()));
+        StartCoroutine(SpawnMinionWave(blueMinionPrefab, blueMinionSpawn, redNexus.GetComponent<CharacterStats>()));
+    }
+
+    private IEnumerator SpawnMinionWave(NetworkObject minionPrefab, Transform spawn, CharacterStats target)
+    {
+        while (true)
+        {
+            for (int i = 0; i < minionsPerWave; i++)
+            {
+                var minion = Instantiate(minionPrefab, spawn.transform.position, Quaternion.identity);
+                minion.GetComponent<MinionAI>().SetBaseTarget(target);
+                minion.Spawn();
+                yield return new WaitForSeconds(1f);
+            }
+            yield return new WaitForSeconds(waveSpawnTimer);
+        }
     }
 
     public void SetupTeamBasedObjective(ulong id, string layer, UIBar healthBar)

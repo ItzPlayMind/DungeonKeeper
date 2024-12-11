@@ -6,11 +6,19 @@ using UnityEngine;
 public abstract class ObjectiveAI : NetworkBehaviour
 {
     [SerializeField] private float attackTime = 2f;
-    [SerializeField] private float attackRange = 3f;
+    [SerializeField] private float detectionRange = 2f;
+    [SerializeField] protected float attackRange = 3f;
+    protected CharacterStats baseTarget = null;
     protected CharacterStats stats;
-    protected PlayerStats target;
+    protected CharacterStats target;
 
     private float attackTimer = 0f;
+
+    public void SetBaseTarget(CharacterStats target)
+    {
+        baseTarget = target;
+        this.target = baseTarget;
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -26,33 +34,34 @@ public abstract class ObjectiveAI : NetworkBehaviour
 
     protected abstract void OnDeath(ulong id);
 
-    private void Update()
+    protected virtual void Update()
     {
         if (!IsServer) return;
+        if(target == null && baseTarget != null) target = baseTarget;
         attackTimer -= Time.deltaTime;
         if (attackTimer < 0f)
         {
-            if (target == null)
+            if (target == baseTarget)
             {
-                var collisions = Physics2D.OverlapCircleAll(transform.position, attackRange);
+                var collisions = Physics2D.OverlapCircleAll(transform.position, detectionRange);
                 foreach (var item in collisions)
                 {
                     if (gameObject.layer == item.gameObject.layer) continue;
-                    var playerController = item.GetComponent<PlayerStats>();
+                    var playerController = item.GetComponent<CharacterStats>();
                     if (playerController != null)
                     {
                         target = playerController;
                         attackTimer = attackTime;
                     }
                 }
-                if (target == null)
+                if (target == baseTarget)
                     attackTimer = 0.1f;
             }
             else
             {
                 if (Vector2.Distance(target.transform.position, transform.position) > attackRange)
                 {
-                    target = null;
+                    target = baseTarget;
                 }
                 else
                 {

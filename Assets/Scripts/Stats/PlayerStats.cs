@@ -22,7 +22,8 @@ public class PlayerStats : CharacterStats
     {
         base.TakeDamageClientRPC(damage, knockback, damagerID);
         healthBar?.UpdateBar(Health / (float)stats.health.Value);
-        healthText.text = Health + "/" + stats.health.Value;
+        if(healthText != null )
+            healthText.text = Health + "/" + stats.health.Value;
         animator.SetTrigger("hit");
     }
     protected override void Start()

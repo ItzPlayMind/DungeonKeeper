@@ -136,9 +136,10 @@ MonoBehaviour:
     speed:
       baseValue: 0
     health:
-      baseValue: 5000
+      baseValue: 1500
     damageReduction:
       baseValue: 0
+  showDeathInChat: 1
 --- !u!114 &5632688786390999861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,6 +173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackTime: 2
+  detectionRange: 2
   attackRange: 3
 --- !u!70 &7968198002115930260
 CapsuleCollider2D:
