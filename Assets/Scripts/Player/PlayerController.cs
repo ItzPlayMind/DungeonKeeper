@@ -26,6 +26,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private AttackSetting[] attackSettings = new AttackSetting[2];
     [SerializeField] private Transform hitboxes;
     [SerializeField] private ShopPanel shopPanel;
+    [SerializeField] private GameObject pausePanel;
     private Inventory inventory;
     private NetworkVariable<bool> isFlipped = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private AbstractSpecial special;
@@ -94,7 +95,12 @@ public class PlayerController : NetworkBehaviour
         if (shopPanel.IsActive)
             shopPanel.Toggle();
         else
-            GameManager.instance.Shutdown();
+            pausePanel.SetActive(!pausePanel.activeSelf);
+    }
+
+    public void ExitGame()
+    {
+        GameManager.instance.Shutdown();
     }
 
     public override void OnNetworkDespawn()

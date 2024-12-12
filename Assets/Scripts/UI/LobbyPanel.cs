@@ -60,12 +60,14 @@ public class LobbyPanel : MonoBehaviour
         for (int i = 0; i < redTeam.Length; i++)
         {
             redTeamPlayerCards[i].gameObject.SetActive(true);
-            redTeamPlayerCards[i].GetComponentInChildren<TMPro.TextMeshProUGUI>().text = redTeam[i].ToString();
+            var playerName = GameManager.instance.PlayerStatistics.GetNameByClientID(redTeam[i]);
+            redTeamPlayerCards[i].GetComponentInChildren<TMPro.TextMeshProUGUI>().text = playerName;
         }
         for (int i = 0; i < blueTeam.Length; i++)
         {
-            blueTeamPlayerCards[i].gameObject.SetActive(true);
-            blueTeamPlayerCards[i].GetComponentInChildren<TMPro.TextMeshProUGUI>().text = blueTeam[i].ToString();
+            blueTeamPlayerCards[i].gameObject.SetActive(true); 
+            var playerName = GameManager.instance.PlayerStatistics.GetNameByClientID(blueTeam[i]);
+            blueTeamPlayerCards[i].GetComponentInChildren<TMPro.TextMeshProUGUI>().text = playerName;
         }
     }
 

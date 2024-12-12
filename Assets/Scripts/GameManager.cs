@@ -1,3 +1,4 @@
+using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,6 +6,7 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.Playables;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
@@ -15,6 +17,9 @@ public class GameManager : NetworkBehaviour
     private void Awake()
     {
         if (instance == null) { instance = this; }
+        Chat = GetComponent<ChatSystem>();
+        Objectives = GetComponent<ObjectiveSystem>();
+        PlayerStatistics = GetComponent<PlayerStatisticsSystem>();
     }
 
     [SerializeField] private Transform redTeamSpawn;
@@ -38,6 +43,7 @@ public class GameManager : NetworkBehaviour
 
     public ChatSystem Chat { get; private set; }
     public ObjectiveSystem Objectives { get; private set; }
+    public PlayerStatisticsSystem PlayerStatistics { get; private set; }
 
     List<ulong> redTeam = new List<ulong>();
     List<ulong> blueTeam = new List<ulong>();
@@ -50,8 +56,6 @@ public class GameManager : NetworkBehaviour
 
     private void Start()
     {
-        Chat = GetComponent<ChatSystem>();
-        Objectives = GetComponent<ObjectiveSystem>();
         Objectives.Setup(redTeamlayer,blueTeamlayer);
         InputManager.Instance.PlayerControls.UI.Close.performed += (_) =>
         {
@@ -103,7 +107,11 @@ public class GameManager : NetworkBehaviour
     {
         while (NetworkManager.Singleton.ShutdownInProgress)
             yield return new WaitForEndOfFrame();
+        var virtualCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
+        virtualCamera.Follow = null;
+        virtualCamera.transform.position = new Vector3(0, 0,virtualCamera.transform.position.z);
         SetGlobalLight(true);
+        PlayerStatistics.Clear();
         Chat.Clear();
         nexusUI.SetActive(false);
         redTeam = new List<ulong>();
