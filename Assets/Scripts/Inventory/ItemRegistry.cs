@@ -53,7 +53,7 @@ public class ItemRegistry : MonoBehaviour
         AddItemWithVariables("Knights Chestplate", "iron_armor", CharacterType.Tank, "On beeing hit the damager takes {BaseDamage} + {MaxHealthPerc}% Max HP damage.", new StatBlock(0, 0, 0, 150, 10), 1500, 0,
             new Dictionary<string, object>() { { "BaseDamage", 10 }, { "MaxHealthPerc", 10 } },(Item item, CharacterStats stats, int slot) =>
         {
-            stats.OnTakeDamage += (ulong damager, int damage) =>
+            stats.OnServerTakeDamage += (ulong damager, int damage) =>
             {
                 NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<CharacterStats>().TakeDamage((int)item.variables["BaseDamage"] +(int)(stats.stats.health.Value* ((float)item.variables["BaseDamage"]/100)),Vector2.zero,stats);
             };
@@ -62,7 +62,7 @@ public class ItemRegistry : MonoBehaviour
         AddItemWithVariables("Lifeline", "leather_armor", CharacterType.Tank, "After not beeing in combat for {HitTime} seconds, start regenerating 5% Max HP every {Time} seconds.", new StatBlock(0, 0, 0, 200, 0), 1500, 0,
             new Dictionary<string, object>() { { "Timer", 1f}, { "HitTimer", 0f }, { "Time", 2f }, { "HitTime", 10f } },  (item, stats, _) =>
         {
-            stats.OnTakeDamage += (_, _) =>
+            stats.OnServerTakeDamage += (_, _) =>
             {
                 item.variables["HitTimer"] = item.variables["HitTime"];
                 item.variables["Timer"] = item.variables["Time"];
@@ -106,7 +106,7 @@ public class ItemRegistry : MonoBehaviour
             new StatBlock(5, 0, 0, 300, 5), 2000, 0,
             new Dictionary<string, object>() { { "HealthPerc", 15f }, { "FallOfTimer", 10f }, { "DamageTaken", 0}, { "Timer", 0f } }, (item, stats, _) =>
         {
-            stats.OnTakeDamage += (ulong damager, int damage) =>
+            stats.OnServerTakeDamage += (ulong damager, int damage) =>
             {
                 item.variables["DamageTaken"] = (int)((int)item.variables["DamageTaken"] + damage * ((float)item.variables["HealthPerc"] / 100f));
                 item.variables["Timer"] = item.variables["FallOfTimer"];

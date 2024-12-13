@@ -12,9 +12,10 @@ public class MinionAI : ObjectiveAI
 
     public override void OnNetworkSpawn()
     {
+        if (!IsServer) return;
         stats = GetComponent<CharacterStats>();
         agent = GetComponent<NavMeshAgent>();
-        stats.OnDeath += OnDeath;
+        stats.OnServerDeath += OnDeath;
         agent.updateUpAxis = false;
         agent.updateRotation = false;
         agent.speed = stats.stats.speed.Value / 10f;
@@ -24,12 +25,6 @@ public class MinionAI : ObjectiveAI
     protected override void OnDeath(ulong id)
     {
         NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].GetComponent<Inventory>()?.AddCash(cash);
-        DespawnServerRPC();
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void DespawnServerRPC()
-    {
         Destroy(gameObject);
     }
 

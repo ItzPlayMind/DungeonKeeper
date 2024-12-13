@@ -11,20 +11,32 @@ public class CharacterStats : NetworkBehaviour
     [SerializeField] private Color hitColor = new Color(248/255f, 156/255f, 156/255f,1f);
     private Coroutine hitCoroutine;
     public StatBlock stats;
-    private int currentHealth;
-    public int Health { get => currentHealth; }
-    public System.Action<ulong,int> OnTakeDamage;
-    public System.Action<ulong> OnDeath;
-    public System.Action OnRespawn;
+    protected NetworkVariable<int> currentHealth = new NetworkVariable<int>(0);
+    public int Health { get => currentHealth.Value; }
+    public System.Action<int, int> OnHealthChange;
+    public System.Action<ulong,int> OnServerTakeDamage;
+    public System.Action<ulong> OnServerDeath;
+    public System.Action OnServerRespawn;
     Rigidbody2D rb;
-    public bool IsDead { get; protected set; }
+    public bool IsDead { get => dead.Value; }
+
+    private NetworkVariable<bool> dead = new NetworkVariable<bool>();
+
+    protected NetworkVariable<float> respawnTimer = new NetworkVariable<float>(0);
 
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        currentHealth = stats.health.Value;
         rb = GetComponent<Rigidbody2D>();
     }
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+            currentHealth.Value = stats.health.Value;
+       currentHealth.OnValueChanged += (int oldValue, int newValue) => OnHealthChange?.Invoke(oldValue,newValue);
+    }
+
     public void TakeDamage(int damage, Vector2 knockback, CharacterStats damager)
     {
         if (IsDead)
@@ -35,26 +47,27 @@ public class CharacterStats : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void TakeDamageServerRPC(int damage, Vector2 knockback,ulong damagerID)
     {
+        currentHealth.Value -= (int)(damage * (1 - (stats.damageReduction.Value / 100f)));
+        OnServerTakeDamage?.Invoke(damagerID, damage);
         TakeDamageClientRPC(damage, knockback, damagerID);
+        if (currentHealth.Value <= 0)
+            Die(damagerID);
     }
 
     [ClientRpc]
     protected virtual void TakeDamageClientRPC(int damage, Vector2 knockback,ulong damagerID)
     {
-        currentHealth -= (int)(damage * (1 - (stats.damageReduction.Value / 100f)));
-        if (IsLocalPlayer)
+        if (IsOwner)
         {
-            rb.velocity = Vector2.zero;
-            rb.AddForce(knockback, ForceMode2D.Impulse);
+            if (rb != null)
+            {
+                rb.velocity = Vector2.zero;
+                rb.AddForce(knockback, ForceMode2D.Impulse);
+            }
         }
-        OnTakeDamage?.Invoke(damagerID,damage);
         if (hitCoroutine != null)
             StopCoroutine(hitCoroutine);
         hitCoroutine = StartCoroutine(hitColorChange());
-        if (currentHealth <= 0)
-        {
-            Die(damagerID);
-        }
     }
 
     private IEnumerator hitColorChange()
@@ -66,29 +79,24 @@ public class CharacterStats : NetworkBehaviour
 
     protected virtual void Die(ulong damagerID)
     {
-        if (IsLocalPlayer)
-            OnDeathServerRPC(damagerID);
-        OnDeath?.Invoke(damagerID);
-        IsDead = true;
-        timer = respawnTime;
+        DieClientRPC(damagerID);
+        OnServerDeath?.Invoke(damagerID);
+        dead.Value = true;
+        respawnTimer.Value = respawnTime;
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void OnDeathServerRPC(ulong damagerID)
+    [ClientRpc]
+    protected virtual void DieClientRPC(ulong damagerID)
     {
-        if (damagerID == ulong.MaxValue)
-            return;
-        NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerID].GetComponent<Inventory>()?.AddCash(GameManager.instance.GOLD_FOR_KILL);
     }
 
-    private float timer = 0f;
-
-    private void Update()
+    protected virtual void Update()
     {
+        if (!IsServer) return;
         if (IsDead && CanRevive)
         {
-            timer -= Time.deltaTime;
-            if(timer <= 0)
+            respawnTimer.Value -= Time.deltaTime;
+            if(respawnTimer.Value <= 0)
             {
                 Respawn();
             }
@@ -97,9 +105,15 @@ public class CharacterStats : NetworkBehaviour
 
     protected virtual void Respawn()
     {
-        OnRespawn?.Invoke();
-        IsDead = false;
-        currentHealth = stats.health.Value;
+        OnServerRespawn?.Invoke();
+        currentHealth.Value = stats.health.Value;
+        dead.Value = false;
+        RespawnClientRPC();
+    }
+
+    [ClientRpc]
+    protected virtual void RespawnClientRPC()
+    {
     }
 
     public void Heal(int health)
@@ -110,16 +124,16 @@ public class CharacterStats : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void HealServerRPC(int health)
     {
+        if (IsDead)
+            return;
+        currentHealth.Value += health;
+        currentHealth.Value = Mathf.Clamp(currentHealth.Value, 0, stats.health.Value);
         HealClientRPC(health);
     }
 
     [ClientRpc]
     protected virtual void HealClientRPC(int health)
     {
-        if (IsDead)
-            return;
-        currentHealth += health;
-        currentHealth = Mathf.Clamp(currentHealth, 0, stats.health.Value);
     }
 
     public Vector2 GenerateKnockBack(Transform hit, Transform damager, float force)

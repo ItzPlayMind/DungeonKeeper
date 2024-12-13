@@ -3,24 +3,35 @@ using System.Collections.Generic;
 using System.Threading;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PlayerStats : CharacterStats
 {
     [SerializeField] private Canvas playerUI;
+    [SerializeField] private Volume deathScreenEffect;
+    [SerializeField] private GameObject deathScreen;
+    [SerializeField] private TMPro.TextMeshProUGUI deathTimer;
     //[SerializeField] private GameObject hitPrefab;
     private UIBar healthBar;
     private Animator animator;
-    private AnimationEventSender animatorEvent;
     private TMPro.TextMeshProUGUI healthText;
 
-    [ClientRpc]
-    protected override void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID)
+    public override void OnNetworkSpawn()
     {
-        base.TakeDamageClientRPC(damage, knockback, damagerID);
-        //Destroy(Instantiate(hitPrefab,transform.position,Quaternion.identity),1f);
-        healthBar?.UpdateBar(Health / (float)stats.health.Value);
-        if(healthText != null )
-            healthText.text = Health + "/" + stats.health.Value;
+        base.OnNetworkSpawn();
+        if (IsLocalPlayer)
+        {
+            respawnTimer.OnValueChanged += (float old, float value) =>
+            {
+                deathTimer.text = (Mathf.CeilToInt(value)).ToString();
+            };
+            currentHealth.OnValueChanged += (int old, int value) =>
+            {
+                healthBar?.UpdateBar(value / (float)stats.health.Value);
+                if (healthText != null)
+                    healthText.text = value + "/" + stats.health.Value;
+            };
+        }
     }
 
 
@@ -48,18 +59,30 @@ public class PlayerStats : CharacterStats
 
     protected override void Die(ulong damagerID)
     {
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerID].GetComponent<Inventory>()?.AddCash(GameManager.instance.GOLD_FOR_KILL);
         respawnTime = GameManager.instance.RESPAWN_TIME.Value;
         base.Die(damagerID);
-        animator.SetBool("death", true);
         GameManager.instance.Chat.AddMessage($"{damagerID} <color=red>killed</color> {NetworkObjectId}");
     }
 
-    protected override void Respawn()
+    [ClientRpc]
+    protected override void DieClientRPC(ulong damagerID)
     {
-        base.Respawn();
-        animator.SetBool("death", false);
         if (IsLocalPlayer)
         {
+            deathScreen.SetActive(true);
+            animator.SetBool("death", true);
+        }
+    }
+
+    [ClientRpc]
+    protected override void RespawnClientRPC()
+    {
+        if (IsLocalPlayer)
+        {
+            deathScreen.SetActive(false);
+            transform.position = GameManager.instance.GetSpawnPoint(gameObject.layer).position;
+            animator.SetBool("death", false);
             healthBar.UpdateBar(1);
             healthText.text = Health + "/" + stats.health.Value;
         }
@@ -74,5 +97,17 @@ public class PlayerStats : CharacterStats
             healthBar.UpdateBar(Health / (float)stats.health.Value);
             healthText.text = Health + "/" + stats.health.Value;
         }
+    }
+
+    protected override void Update()
+    {
+        if (IsLocalPlayer)
+        {
+            if (IsDead && deathScreenEffect.weight < 1)
+                deathScreenEffect.weight += Time.deltaTime;
+            if (!IsDead && deathScreenEffect.weight > 0)
+                deathScreenEffect.weight -= Time.deltaTime;
+        }
+        base.Update();
     }
 }

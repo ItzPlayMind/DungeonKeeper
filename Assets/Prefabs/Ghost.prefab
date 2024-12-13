@@ -141,7 +141,7 @@ MonoBehaviour:
     speed:
       baseValue: 70
     health:
-      baseValue: 2500
+      baseValue: 3500
     damageReduction:
       baseValue: 0
   showDeathInChat: 1
@@ -224,14 +224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e61a103cda2b104981eb9e9c701f5cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TransitionStateInfoList:
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -608240312
-    DestinationState: -1793907547
-    TransitionDuration: 0
-    TriggerNameHash: 1523721793
-    TransitionIndex: 0
+  TransitionStateInfoList: []
   m_Animator: {fileID: 2458655257947473586}
 --- !u!114 &7279530120181344131
 MonoBehaviour:
@@ -245,7 +238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c747d49254b654f40a8e65e73ed71001, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followRange: 5
+  followRange: 4
   attackRange: 1
   gold: 500
 --- !u!50 &5198513790235787882

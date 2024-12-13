@@ -225,14 +225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e61a103cda2b104981eb9e9c701f5cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TransitionStateInfoList:
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -1463950317
-    DestinationState: 1917958850
-    TransitionDuration: 0
-    TriggerNameHash: 1523721793
-    TransitionIndex: 0
+  TransitionStateInfoList: []
   m_Animator: {fileID: 168325906408407496}
 --- !u!50 &1900378921132000983
 Rigidbody2D:
@@ -247,8 +240,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 2
-  m_LinearDrag: 1
-  m_AngularDrag: 1
+  m_LinearDrag: 10
+  m_AngularDrag: 10
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:

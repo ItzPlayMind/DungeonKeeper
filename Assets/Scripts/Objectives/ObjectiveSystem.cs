@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ObjectiveSystem : NetworkBehaviour
@@ -42,21 +43,25 @@ public class ObjectiveSystem : NetworkBehaviour
     {
         if (!IsServer) return;
         var redNexus = Instantiate(nexusPrefab, redTeamNexusSpawn.position, Quaternion.identity);
+        var redNexusScript = redNexus.GetComponent<Nexus>();
         redNexus.Spawn();
         var blueNexus = Instantiate(nexusPrefab, blueTeamNexusSpawn.position, Quaternion.identity);
+        var blueNexusScript = blueNexus.GetComponent<Nexus>();
         blueNexus.Spawn();
         var redTurrets = new ulong[redTeamTurretSpawns.Length];
         for (int i = 0; i < redTeamTurretSpawns.Length; i++)
         {
             var turret = Instantiate(turretPrefab, redTeamTurretSpawns[i].position, Quaternion.identity);
             turret.Spawn();
+            redNexusScript.AddPreviousObjective(turret.GetComponent<ObjectiveAI>());
             redTurrets[i] = turret.NetworkObjectId;
         }
         var blueTurrets = new ulong[blueTeamTurretSpawns.Length];
         for (int i = 0; i < blueTeamTurretSpawns.Length; i++)
         {
             var turret = Instantiate(turretPrefab, blueTeamTurretSpawns[i].position, Quaternion.identity);
-            turret.Spawn();
+            turret.Spawn(); 
+            blueNexusScript.AddPreviousObjective(turret.GetComponent<ObjectiveAI>());
             blueTurrets[i] = turret.NetworkObjectId;
         }
         for (int i = 0; i < objectivesPrefabs.Length; i++)
@@ -85,9 +90,9 @@ public class ObjectiveSystem : NetworkBehaviour
     {
         var objective = NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].GetComponent<CharacterStats>();
         objective.gameObject.layer = LayerMask.NameToLayer(layer);
-        objective.OnTakeDamage += (ulong damager, int damage) =>
+        objective.OnHealthChange += (int _, int newValue) =>
         {
-            healthBar.UpdateBar((float)objective.Health / objective.stats.health.Value);
+            healthBar.UpdateBar((float)newValue / objective.stats.health.Value);
         };
     }
 

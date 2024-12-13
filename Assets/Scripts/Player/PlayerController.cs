@@ -56,14 +56,10 @@ public class PlayerController : NetworkBehaviour
         inputManager = InputManager.Instance;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
-        stats = GetComponent<CharacterStats>();
         animatorEvent = animator.GetComponent<AnimationEventSender>();
-        stats.OnRespawn += () =>
-        {
-            transform.position = GameManager.instance.GetSpawnPoint(gameObject.layer).position;
-        };
+        stats = GetComponent<CharacterStats>();
         if (animatorEvent != null)
-            animatorEvent.OnAnimationEvent += AnimationEventCallaback;
+            animatorEvent.OnAnimationEvent += AnimationEventCallaback; 
         foreach (var item in hitboxes.GetComponentsInChildren<CollisionSender>())
         {
             item.onCollisionEnter += (collider) =>

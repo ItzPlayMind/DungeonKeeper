@@ -57,18 +57,18 @@ public class ArrowSpecial : AbstractSpecial
     private void SpawnArrowServerRPC(ulong owner, int layer)
     {
         var networkObject = Instantiate(arrowPrefab, transform.position, Quaternion.identity);
-        networkObject.gameObject.layer = layer;
         networkObject.SpawnWithOwnership(owner);
-        SpawnArrowClientRPC(networkObject.NetworkObjectId);
+        SpawnArrowClientRPC(networkObject.NetworkObjectId, layer);
     }
 
     [ClientRpc]
-    private void SpawnArrowClientRPC(ulong networkObjectId)
+    private void SpawnArrowClientRPC(ulong networkObjectId, int layer)
     {
         if (!IsLocalPlayer)
             return;
         Vector2 dir = (mouseWorldPos - (Vector2)transform.position).normalized;
         var arrow = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId].GetComponent<Rigidbody2D>();
+        arrow.gameObject.layer = layer;
         arrow.GetComponent<SpriteRenderer>().material = GameManager.instance.UNLIT_MATERIAL;
         arrow.transform.rotation = Quaternion.FromToRotation(arrow.transform.right,dir);
         arrow.AddForce(arrow.transform.right * arrowSpeed, ForceMode2D.Impulse);

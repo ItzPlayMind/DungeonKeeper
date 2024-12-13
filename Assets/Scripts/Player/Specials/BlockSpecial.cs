@@ -11,7 +11,7 @@ public class BlockSpecial : AbstractSpecial
     {
         if (!IsLocalPlayer) return;
         characterStats = GetComponent<CharacterStats>();
-        GetComponent<CharacterStats>().OnTakeDamage += (ulong damager, int damage) =>
+        GetComponent<CharacterStats>().OnServerTakeDamage += (ulong damager, int damage) =>
         {
             if (isBlocking)
             {

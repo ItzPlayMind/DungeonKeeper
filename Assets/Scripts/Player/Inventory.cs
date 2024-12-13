@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class Inventory : NetworkBehaviour
 {
     public static int INVENTORY_SIZE = 6;
-    [SerializeField] private NetworkVariable<int> cash = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    [SerializeField] private NetworkVariable<int> cash = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] private UIIconBar[] inventorySlots = new UIIconBar[INVENTORY_SIZE];
     [SerializeField] private GameObject inventoryPanel;
     [SerializeField] private Sprite emptySlot;
@@ -23,12 +23,12 @@ public class Inventory : NetworkBehaviour
     }
 
     public void AddCash(int cash) {
-        if (IsOwner)
+        if (IsServer)
         {
             this.cash.Value += cash;
         }
     }
-    public void RemoveCash(int cash) { if (IsOwner) this.cash.Value -= cash; }
+    public void RemoveCash(int cash) { if (IsServer) this.cash.Value -= cash; }
 
     private CharacterStats stats;
 
@@ -79,7 +79,7 @@ public class Inventory : NetworkBehaviour
     private float goldTimer = 1f;
     private void Update()
     {
-        if (!IsLocalPlayer) return;
+        if (!IsServer) return;
         goldTimer -= Time.deltaTime;
         if (goldTimer < 0f)
         {

@@ -96,6 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7466498d4913cca468a2a1a76d769b2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanHitMultiple: 0
 --- !u!1 &3327952758845957524
 GameObject:
   m_ObjectHideFlags: 0
@@ -195,6 +196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7466498d4913cca468a2a1a76d769b2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanHitMultiple: 0
 --- !u!1001 &6114066266905127969
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -210,6 +212,10 @@ PrefabInstance:
     - target: {fileID: 72607127917136858, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: attackSettings.Array.data[1].knockBack
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 72607127917136858, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: attackSettings.Array.data[0].selfKnockBack
+      value: -6
       objectReference: {fileID: 0}
     - target: {fileID: 72607127917136858, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: attackSettings.Array.data[0].damageMultiplier
@@ -266,6 +272,10 @@ PrefabInstance:
     - target: {fileID: 826661276144605644, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[8].y
       value: -0.009925984
+      objectReference: {fileID: 0}
+    - target: {fileID: 826793323368665940, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: TransitionStateInfoList.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2490300795773199028, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Name
@@ -483,6 +493,7 @@ MonoBehaviour:
   damage: 35
   damageMultiplier: 1
   MaxCooldown: 15
+  activeTime: 0
   specialIcon: {fileID: 4105998394654681512}
   specialInUseIcon: {fileID: 6202898795264407986}
   knockBackForce: 55

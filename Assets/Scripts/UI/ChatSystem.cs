@@ -29,6 +29,6 @@ public class ChatSystem : NetworkBehaviour
     public void Clear()
     {
         for (int i = 0; i < chatTransform.childCount; i++)
-            Destroy(chatTransform.GetChild(0).gameObject);
+            Destroy(chatTransform.GetChild(i).gameObject);
     }
 }

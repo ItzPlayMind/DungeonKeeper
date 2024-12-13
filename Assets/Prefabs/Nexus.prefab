@@ -372,3 +372,4 @@ MonoBehaviour:
   attackTime: 2
   detectionRange: 2
   attackRange: 3
+  otherObjectives: []

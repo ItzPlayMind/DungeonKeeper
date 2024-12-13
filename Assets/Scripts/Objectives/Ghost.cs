@@ -1,3 +1,4 @@
+using Cinemachine.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -26,44 +27,48 @@ public class Ghost : NetworkBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         ownLight = GetComponentInChildren<Light2D>();
         coll = GetComponent<Collider2D>();
-
-        stats.OnTakeDamage += (ulong damager, int damage) =>
+        healthbar.UpdateBar(1f);
+        stats.OnHealthChange += (int _, int newValue) =>
         {
             healthbar.UpdateBar(stats.Health / (float)stats.stats.health.Value);
         };
-        stats.OnDeath += (ulong damager) =>
-        {
-            spriteRenderer.enabled = false;
-            ownLight.enabled = false;
-            coll.enabled = false;
-        }; 
-        stats.OnRespawn += () =>
-        {
-            GameManager.instance.Chat.AddMessage($"<color=green>{gameObject.name}</color> has spawned!");
-            spriteRenderer.enabled = true;
-            ownLight.enabled = true;
-            coll.enabled = true;
-        };
-        healthbar.UpdateBar(1f);
         if (!IsServer) return;
         originalPos = transform.position;
         rb = GetComponent<Rigidbody2D>();
-        stats.OnDeath += (ulong damager) =>
+        stats.OnServerDeath += (ulong damager) =>
         {
+            OnDeathClientRPC(damager);
             NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<Inventory>().AddCash(gold);
-            healthbar.gameObject.SetActive(false);
             isReturning = true;
         };
-        stats.OnTakeDamage += (ulong damager, int damage) =>
+        stats.OnServerTakeDamage += (ulong damager, int damage) =>
         {
             target = NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<CharacterStats>();
         };
-
-        stats.OnRespawn += () =>
+        stats.OnServerRespawn += () =>
         {
-            healthbar.gameObject.SetActive(true);
-            healthbar.UpdateBar(1f);
+            GameManager.instance.Chat.AddMessage($"<color=green>{gameObject.name}</color> has spawned!");
+            OnRespawnClientRPC();
         };
+    }
+
+    [ClientRpc]
+    private void OnDeathClientRPC(ulong damager)
+    {
+        healthbar.gameObject.SetActive(false);
+        spriteRenderer.enabled = false;
+        ownLight.enabled = false;
+        coll.enabled = false;
+    }
+
+    [ClientRpc]
+    private void OnRespawnClientRPC()
+    {
+        spriteRenderer.enabled = true;
+        ownLight.enabled = true;
+        coll.enabled = true;
+        healthbar.gameObject.SetActive(true);
+        healthbar.UpdateBar(1f);
     }
 
 

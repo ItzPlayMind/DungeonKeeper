@@ -30,7 +30,7 @@ public abstract class ObjectiveAI : NetworkBehaviour
             if (target == null) value = 90;
             else value = 0;
         };
-        stats.OnDeath += OnDeath;
+        stats.OnServerDeath += OnDeath;
     }
 
     protected abstract void OnDeath(ulong id);
@@ -42,7 +42,7 @@ public abstract class ObjectiveAI : NetworkBehaviour
         {
             if (item.gameObject.layer == gameObject.layer) continue;
             var stats = item.GetComponent<CharacterStats>();
-            if(stats != null)
+            if(stats != null && !stats.IsDead)
                 result.Add(stats);
         }
         if(result.Count <= 0) return null;
@@ -74,7 +74,7 @@ public abstract class ObjectiveAI : NetworkBehaviour
             }
             else
             {
-                if (Vector2.Distance(target.transform.position, transform.position) > attackRange)
+                if (Vector2.Distance(target.transform.position, transform.position) > attackRange || target.IsDead)
                 {
                     target = baseTarget;
                 }

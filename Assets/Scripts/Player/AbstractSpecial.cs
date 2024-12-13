@@ -30,7 +30,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
         characterStats = GetComponent<CharacterStats>();
         if (IsLocalPlayer)
         {
-            characterStats.OnRespawn += () =>
+            characterStats.OnServerRespawn += () =>
             {
                 used = false;
                 isUsing = false;
