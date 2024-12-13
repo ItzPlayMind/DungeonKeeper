@@ -36,8 +36,16 @@ public class MinionAI : ObjectiveAI
     protected override void Update()
     {
         base.Update();
-        if(target != null)
+        if (!IsServer) return;
+        if (attackTimer <= 0)
+            if (Vector2.Distance(baseTarget.transform.position, transform.position) <= attackRange)
+            {
+                target.TakeDamage(stats.stats.damage.Value, Vector2.zero, stats);
+                attackTimer = attackTime;
+            }
+        if (target != null)
             agent.SetDestination(target.transform.position);
-        transform.localScale = new Vector2(Mathf.Sign(agent.velocity.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y);
+        if (agent.velocity != Vector3.zero)
+            transform.localScale = new Vector2(Mathf.Sign(agent.velocity.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y);
     }
 }

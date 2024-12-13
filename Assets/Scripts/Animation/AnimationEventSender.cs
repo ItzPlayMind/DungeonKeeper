@@ -6,7 +6,7 @@ public class AnimationEventSender : MonoBehaviour
 {
     public enum AnimationEvent
     {
-        EndAttack, Special, Hit, SelfKnockBack
+        EndAttack, Special, SelfKnockBack
     }
 
     public System.Action<AnimationEvent> OnAnimationEvent;

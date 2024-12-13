@@ -7,13 +7,15 @@ public class CharacterStats : NetworkBehaviour
 {
     [SerializeField] protected float respawnTime = 0;
     [SerializeField] private bool CanRevive = true;
+    [SerializeField] private SpriteRenderer gfx;
+    [SerializeField] private Color hitColor = new Color(248/255f, 156/255f, 156/255f,1f);
+    private Coroutine hitCoroutine;
     public StatBlock stats;
     private int currentHealth;
     public int Health { get => currentHealth; }
     public System.Action<ulong,int> OnTakeDamage;
     public System.Action<ulong> OnDeath;
     public System.Action OnRespawn;
-    public bool CanBeHit { get; protected set; } = true;
     Rigidbody2D rb;
     public bool IsDead { get; protected set; }
 
@@ -23,17 +25,9 @@ public class CharacterStats : NetworkBehaviour
         currentHealth = stats.health.Value;
         rb = GetComponent<Rigidbody2D>();
     }
-
-    public void ResetCanBeHit()
-    {
-        CanBeHit = true;
-    }
-
-    protected virtual bool CanBeHitConstantly() { return true; }
-
     public void TakeDamage(int damage, Vector2 knockback, CharacterStats damager)
     {
-        if ((!CanBeHit && !CanBeHitConstantly()) || IsDead)
+        if (IsDead)
             return;
         TakeDamageServerRPC(damage,knockback,damager == null ? ulong.MaxValue : damager.NetworkObjectId);
     }
@@ -47,18 +41,27 @@ public class CharacterStats : NetworkBehaviour
     [ClientRpc]
     protected virtual void TakeDamageClientRPC(int damage, Vector2 knockback,ulong damagerID)
     {
-        CanBeHit = false;
-        currentHealth -= (int)(damage * (1-(stats.damageReduction.Value/100f)));
+        currentHealth -= (int)(damage * (1 - (stats.damageReduction.Value / 100f)));
         if (IsLocalPlayer)
         {
             rb.velocity = Vector2.zero;
             rb.AddForce(knockback, ForceMode2D.Impulse);
         }
         OnTakeDamage?.Invoke(damagerID,damage);
+        if (hitCoroutine != null)
+            StopCoroutine(hitCoroutine);
+        hitCoroutine = StartCoroutine(hitColorChange());
         if (currentHealth <= 0)
         {
             Die(damagerID);
         }
+    }
+
+    private IEnumerator hitColorChange()
+    {
+        gfx.color = hitColor;
+        yield return new WaitForSeconds(0.1f);
+        gfx.color = Color.white;
     }
 
     protected virtual void Die(ulong damagerID)
@@ -75,7 +78,7 @@ public class CharacterStats : NetworkBehaviour
     {
         if (damagerID == ulong.MaxValue)
             return;
-        NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerID].GetComponent<Inventory>().AddCash(GameManager.instance.GOLD_FOR_KILL);
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerID].GetComponent<Inventory>()?.AddCash(GameManager.instance.GOLD_FOR_KILL);
     }
 
     private float timer = 0f;
@@ -95,7 +98,6 @@ public class CharacterStats : NetworkBehaviour
     protected virtual void Respawn()
     {
         OnRespawn?.Invoke();
-        CanBeHit = true;
         IsDead = false;
         currentHealth = stats.health.Value;
     }

@@ -6,6 +6,7 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.InputSystem;
 using UnityEngine.Playables;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
@@ -57,11 +58,12 @@ public class GameManager : NetworkBehaviour
     private void Start()
     {
         Objectives.Setup(redTeamlayer,blueTeamlayer);
-        InputManager.Instance.PlayerControls.UI.Close.performed += (_) =>
-        {
-            if (!isStarted)
-                Shutdown();
-        };
+        InputManager.Instance.PlayerControls.UI.Close.performed += ShutdownOnEscape;
+    }
+
+    private void ShutdownOnEscape(InputAction.CallbackContext _)
+    {
+        Shutdown();
     }
 
     public void SetGlobalLight(bool value)
@@ -94,6 +96,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void SwitchToCharacterSelectionClientRpc()
     {
+        InputManager.Instance.PlayerControls.UI.Close.performed -= ShutdownOnEscape;
         lobbyPanel.SwitchToCharacterSelection();
     }
 

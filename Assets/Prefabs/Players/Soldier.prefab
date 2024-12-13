@@ -1819,6 +1819,9 @@ MonoBehaviour:
     damageReduction:
       baseValue: 0
   playerUI: {fileID: 2361307619152776698}
+  hitPrefab: {fileID: 3348676033741014179, guid: aa8c3eb26ca5113448b254cdd652bb5f, type: 3}
+  gfx: {fileID: 3619899937381543572}
+  hitColor: {r: 0.972549, g: 0.6117647, b: 0.6117647, a: 1}
 --- !u!114 &8370343492658521668
 MonoBehaviour:
   m_ObjectHideFlags: 0

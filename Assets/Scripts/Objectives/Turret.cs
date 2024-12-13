@@ -10,6 +10,13 @@ public class Turret : ObjectiveAI
         OnDeathServerRPC(id);
     }
 
+    protected override int SortTargets(CharacterStats stat1, CharacterStats stat2)
+    {
+        if(stat1 is ObjectiveStats)
+            return -1;
+        return 0;
+    }
+
     [ServerRpc(RequireOwnership = false)]
     private void OnDeathServerRPC(ulong killer)
     {

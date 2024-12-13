@@ -7,25 +7,23 @@ using UnityEngine;
 public class PlayerStats : CharacterStats
 {
     [SerializeField] private Canvas playerUI;
+    //[SerializeField] private GameObject hitPrefab;
     private UIBar healthBar;
     private Animator animator;
     private AnimationEventSender animatorEvent;
     private TMPro.TextMeshProUGUI healthText;
 
-    protected override bool CanBeHitConstantly()
-    {
-        return false;
-    }
-
     [ClientRpc]
     protected override void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID)
     {
         base.TakeDamageClientRPC(damage, knockback, damagerID);
+        //Destroy(Instantiate(hitPrefab,transform.position,Quaternion.identity),1f);
         healthBar?.UpdateBar(Health / (float)stats.health.Value);
         if(healthText != null )
             healthText.text = Health + "/" + stats.health.Value;
-        animator.SetTrigger("hit");
     }
+
+
     protected override void Start()
     {
         base.Start();
@@ -46,14 +44,6 @@ public class PlayerStats : CharacterStats
             playerUI.gameObject.SetActive(false);
         }
         animator = GetComponentInChildren<Animator>();
-        animatorEvent = animator.GetComponent<AnimationEventSender>();
-        animatorEvent.OnAnimationEvent += (AnimationEventSender.AnimationEvent e) =>
-        {
-            if (e == AnimationEventSender.AnimationEvent.Hit)
-            {
-                CanBeHit = true;
-            }
-        };
     }
 
     protected override void Die(ulong damagerID)

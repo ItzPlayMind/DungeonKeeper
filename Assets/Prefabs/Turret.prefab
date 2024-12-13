@@ -128,6 +128,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   respawnTime: 0
   CanRevive: 0
+  gfx: {fileID: 8395094940286880489}
+  hitColor: {r: 0.36320752, g: 1, b: 0.9871307, a: 1}
   stats:
     damage:
       baseValue: 100

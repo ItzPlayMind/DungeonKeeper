@@ -2,17 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using System.Linq;
 
 public abstract class ObjectiveAI : NetworkBehaviour
 {
-    [SerializeField] private float attackTime = 2f;
-    [SerializeField] private float detectionRange = 2f;
+    [SerializeField] protected float attackTime = 2f;
+    [SerializeField] protected float detectionRange = 2f;
     [SerializeField] protected float attackRange = 3f;
     protected CharacterStats baseTarget = null;
     protected CharacterStats stats;
     protected CharacterStats target;
 
-    private float attackTimer = 0f;
+    protected float attackTimer = 0f;
 
     public void SetBaseTarget(CharacterStats target)
     {
@@ -34,9 +35,30 @@ public abstract class ObjectiveAI : NetworkBehaviour
 
     protected abstract void OnDeath(ulong id);
 
+    private CharacterStats GetTargetFromCollisions(Collider2D[] collider)
+    {
+        List<CharacterStats > result = new List<CharacterStats>();
+        foreach (var item in collider)
+        {
+            if (item.gameObject.layer == gameObject.layer) continue;
+            var stats = item.GetComponent<CharacterStats>();
+            if(stats != null)
+                result.Add(stats);
+        }
+        if(result.Count <= 0) return null;
+        result.Sort(SortTargets);
+        return result[0];
+    }
+
+    protected virtual int SortTargets(CharacterStats stat1, CharacterStats stat2)
+    {
+        return 0;
+    }
+
     protected virtual void Update()
     {
         if (!IsServer) return;
+        if (stats.IsDead) return;
         if(target == null && baseTarget != null) target = baseTarget;
         attackTimer -= Time.deltaTime;
         if (attackTimer < 0f)
@@ -44,17 +66,10 @@ public abstract class ObjectiveAI : NetworkBehaviour
             if (target == baseTarget)
             {
                 var collisions = Physics2D.OverlapCircleAll(transform.position, detectionRange);
-                foreach (var item in collisions)
-                {
-                    if (gameObject.layer == item.gameObject.layer) continue;
-                    var playerController = item.GetComponent<CharacterStats>();
-                    if (playerController != null)
-                    {
-                        target = playerController;
-                        attackTimer = attackTime;
-                    }
-                }
-                if (target == baseTarget)
+                target = GetTargetFromCollisions(collisions);
+                if(target != null)
+                    attackTimer = attackTime;
+                if (target == null)
                     attackTimer = 0.1f;
             }
             else

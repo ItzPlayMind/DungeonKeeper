@@ -208,6 +208,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 058fe25c3549b89468b922f2e36fac1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  respawnTime: 0
+  CanRevive: 0
+  gfx: {fileID: 8064653769014884085}
+  hitColor: {r: 1, g: 0.742527, b: 0.48584908, a: 1}
   stats:
     damage:
       baseValue: 0

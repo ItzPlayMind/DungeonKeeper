@@ -38,7 +38,7 @@ Transform:
   m_GameObject: {fileID: 7015750805471653503}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 100, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -132,6 +132,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   respawnTime: 30
   CanRevive: 0
+  gfx: {fileID: 832795417800513437}
+  hitColor: {r: 0.972549, g: 0.6117647, b: 0.6117647, a: 1}
   stats:
     damage:
       baseValue: 15
@@ -140,7 +142,7 @@ MonoBehaviour:
     speed:
       baseValue: 10
     health:
-      baseValue: 100
+      baseValue: 300
     damageReduction:
       baseValue: 0
   showDeathInChat: 0
@@ -244,9 +246,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0
+  m_Mass: 2
+  m_LinearDrag: 1
+  m_AngularDrag: 1
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -257,7 +259,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &6999281995549172516
 MonoBehaviour:

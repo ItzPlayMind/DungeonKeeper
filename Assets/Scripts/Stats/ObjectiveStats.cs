@@ -7,23 +7,11 @@ public class ObjectiveStats : CharacterStats
 {
     [SerializeField] private bool showDeathInChat = true;
     private Animator animator;
-    private AnimationEventSender animationEventSender;
-
-    protected override bool CanBeHitConstantly()
-    {
-        return false;
-    }
 
     protected override void Start()
     {
         base.Start();
         animator = GetComponentInChildren<Animator>();
-        animationEventSender = GetComponentInChildren<AnimationEventSender>();
-        animationEventSender.OnAnimationEvent += (e) =>
-        {
-            if (e == AnimationEventSender.AnimationEvent.Hit)
-                CanBeHit = true;
-        };
     }
 
     protected override void Die(ulong damagerID)
@@ -37,6 +25,5 @@ public class ObjectiveStats : CharacterStats
     protected override void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID)
     {
         base.TakeDamageClientRPC(damage, knockback, damagerID);
-        animator.SetTrigger("hit");
     }
 }
