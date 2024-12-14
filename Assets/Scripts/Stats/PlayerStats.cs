@@ -11,6 +11,9 @@ public class PlayerStats : CharacterStats
     [SerializeField] private Volume deathScreenEffect;
     [SerializeField] private GameObject deathScreen;
     [SerializeField] private TMPro.TextMeshProUGUI deathTimer;
+
+    public System.Action OnClientRespawn;
+
     //[SerializeField] private GameObject hitPrefab;
     private UIBar healthBar;
     private Animator animator;
@@ -80,6 +83,7 @@ public class PlayerStats : CharacterStats
     {
         if (IsLocalPlayer)
         {
+            OnClientRespawn?.Invoke();
             deathScreen.SetActive(false);
             transform.position = GameManager.instance.GetSpawnPoint(gameObject.layer).position;
             animator.SetBool("death", false);

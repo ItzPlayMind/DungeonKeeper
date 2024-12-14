@@ -57,4 +57,14 @@ public class StatBlock
         OnValuesChange?.Invoke();
     }
 
+    public void Remove(StatBlock stats)
+    {
+        damage.ChangeValue += (ref int value, int _) => value -= stats.damage.Value;
+        specialDamage.ChangeValue += (ref int value, int _) => value -= stats.specialDamage.Value;
+        speed.ChangeValue += (ref int value, int _) => value -= stats.speed.Value;
+        health.ChangeValue += (ref int value, int _) => value -= stats.health.Value;
+        damageReduction.ChangeValue += (ref float value, float _) => value -= stats.damageReduction.Value;
+        OnValuesChange?.Invoke();
+    }
+
 }

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -13,12 +14,14 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     [SerializeField] private TMPro.TextMeshProUGUI cashText;
     [SerializeField] private GameObject panel;
 
+    private Inventory inventory;
+
     public bool IsActive { get => panel.activeSelf; }
 
     private void Start()
     {
         panel = transform.GetChild(0).gameObject;
-        var inventory = GetComponentInParent<Inventory>();
+        inventory = GetComponentInParent<Inventory>();
         inventory.OnCashChange((value) =>
         {
             cashText.text = "Cash: " + value;
@@ -43,6 +46,14 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             });
             iconButton.onClick = buttonListener;
         }
+    }
+
+    public void SellItem(int slot)
+    {
+        var item = inventory.GetItem(slot);
+        if (item == null) return;
+        inventory.AddCash((int)(item.cost * 0.8f));
+        inventory.RemoveItem(slot);
     }
 
     public void Toggle()

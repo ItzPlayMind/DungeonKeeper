@@ -25,17 +25,17 @@ public class AxeSpecial : AbstractSpecial
     {
         var networkObject = Instantiate(axePrefab, transform.position, Quaternion.identity);
         networkObject.SpawnWithOwnership(owner);
-        networkObject.gameObject.layer = layer;
-        SpawnAxeClientRPC(networkObject.NetworkObjectId);
+        SpawnAxeClientRPC(networkObject.NetworkObjectId, layer);
     }
 
     [ClientRpc]
-    private void SpawnAxeClientRPC(ulong id)
+    private void SpawnAxeClientRPC(ulong id, int layer)
     {
         if (!IsLocalPlayer)
             return;
         var axeNetwork = NetworkManager.Singleton.SpawnManager.SpawnedObjects[id];
         axeNetwork.GetComponentInChildren<SpriteRenderer>().material = GameManager.instance.UNLIT_MATERIAL;
+        axeNetwork.gameObject.layer = layer;
         axe = axeNetwork.GetComponent<Rigidbody2D>();
         Vector2 dir = (mouseWorldPos - (Vector2)transform.position).normalized;
         axe.GetComponent<Projectile>().onCollisionEnter += (GameObject collider) =>

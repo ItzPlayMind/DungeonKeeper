@@ -35,7 +35,7 @@ public class PlayerController : NetworkBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private bool isAttacking;
-    private CharacterStats stats;
+    private PlayerStats stats;
     private int currentAttack = 0;
     private float attackComboTimer = 0;
     public Action<ulong, ulong, int> OnAttack;
@@ -57,7 +57,12 @@ public class PlayerController : NetworkBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
         animatorEvent = animator.GetComponent<AnimationEventSender>();
-        stats = GetComponent<CharacterStats>();
+        stats = GetComponent<PlayerStats>();
+        stats.OnClientRespawn += () =>
+        {
+            isAttacking = false;
+            currentAttack = 0;
+        };
         if (animatorEvent != null)
             animatorEvent.OnAnimationEvent += AnimationEventCallaback; 
         foreach (var item in hitboxes.GetComponentsInChildren<CollisionSender>())
