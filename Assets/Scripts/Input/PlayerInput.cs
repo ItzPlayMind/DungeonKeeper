@@ -321,7 +321,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""925ad089-367a-4deb-939f-3837aa567e44"",
-                    ""path"": ""<Keyboard>/p"",
+                    ""path"": ""<Keyboard>/tab"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -339,6 +339,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""name"": ""Close"",
                     ""type"": ""Button"",
                     ""id"": ""9ff0960d-06ef-42e7-a76f-b61cd0d965aa"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Fullscreen"",
+                    ""type"": ""Button"",
+                    ""id"": ""384753db-1c57-4838-bf5e-3daa697bafa8"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -476,6 +485,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Active Item 6"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dca3f039-966d-4630-a0bd-a64a9808cb9c"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fullscreen"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -503,6 +523,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Close = m_UI.FindAction("Close", throwIfNotFound: true);
+        m_UI_Fullscreen = m_UI.FindAction("Fullscreen", throwIfNotFound: true);
         m_UI_ActiveItem1 = m_UI.FindAction("Active Item 1", throwIfNotFound: true);
         m_UI_ActiveItem2 = m_UI.FindAction("Active Item 2", throwIfNotFound: true);
         m_UI_ActiveItem3 = m_UI.FindAction("Active Item 3", throwIfNotFound: true);
@@ -781,6 +802,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
     private readonly InputAction m_UI_Close;
+    private readonly InputAction m_UI_Fullscreen;
     private readonly InputAction m_UI_ActiveItem1;
     private readonly InputAction m_UI_ActiveItem2;
     private readonly InputAction m_UI_ActiveItem3;
@@ -792,6 +814,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         private @PlayerInput m_Wrapper;
         public UIActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Close => m_Wrapper.m_UI_Close;
+        public InputAction @Fullscreen => m_Wrapper.m_UI_Fullscreen;
         public InputAction @ActiveItem1 => m_Wrapper.m_UI_ActiveItem1;
         public InputAction @ActiveItem2 => m_Wrapper.m_UI_ActiveItem2;
         public InputAction @ActiveItem3 => m_Wrapper.m_UI_ActiveItem3;
@@ -810,6 +833,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Close.started += instance.OnClose;
             @Close.performed += instance.OnClose;
             @Close.canceled += instance.OnClose;
+            @Fullscreen.started += instance.OnFullscreen;
+            @Fullscreen.performed += instance.OnFullscreen;
+            @Fullscreen.canceled += instance.OnFullscreen;
             @ActiveItem1.started += instance.OnActiveItem1;
             @ActiveItem1.performed += instance.OnActiveItem1;
             @ActiveItem1.canceled += instance.OnActiveItem1;
@@ -835,6 +861,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Close.started -= instance.OnClose;
             @Close.performed -= instance.OnClose;
             @Close.canceled -= instance.OnClose;
+            @Fullscreen.started -= instance.OnFullscreen;
+            @Fullscreen.performed -= instance.OnFullscreen;
+            @Fullscreen.canceled -= instance.OnFullscreen;
             @ActiveItem1.started -= instance.OnActiveItem1;
             @ActiveItem1.performed -= instance.OnActiveItem1;
             @ActiveItem1.canceled -= instance.OnActiveItem1;
@@ -894,6 +923,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     public interface IUIActions
     {
         void OnClose(InputAction.CallbackContext context);
+        void OnFullscreen(InputAction.CallbackContext context);
         void OnActiveItem1(InputAction.CallbackContext context);
         void OnActiveItem2(InputAction.CallbackContext context);
         void OnActiveItem3(InputAction.CallbackContext context);

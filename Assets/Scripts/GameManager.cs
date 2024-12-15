@@ -33,7 +33,11 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private string redTeamlayer;
     [SerializeField] private string blueTeamlayer;
     [SerializeField] private GameObject nexusUI;
-    [SerializeField] private Light2D globalLight;
+    [SerializeField] private Light2D globalLight; 
+    [SerializeField] private GameObject redTeamWinUI;
+    [SerializeField] private GameObject blueTeamWinUI;
+    [SerializeField] private LayerMask redCameraLayer;
+    [SerializeField] private LayerMask blueCameraLayer;
     public NetworkObject TORCH_PREFAB;
     public Material UNLIT_MATERIAL;
     public Material LIT_MATERIAL;
@@ -42,6 +46,7 @@ public class GameManager : NetworkBehaviour
     public int GOLD_PER_TURRET;
     public NetworkVariable<int> RESPAWN_TIME = new NetworkVariable<int>(5);
 
+    public bool GameOver { get; private set; }
     public ChatSystem Chat { get; private set; }
     public ObjectiveSystem Objectives { get; private set; }
     public PlayerStatisticsSystem PlayerStatistics { get; private set; }
@@ -114,6 +119,9 @@ public class GameManager : NetworkBehaviour
         virtualCamera.Follow = null;
         virtualCamera.transform.position = new Vector3(0, 0,virtualCamera.transform.position.z);
         SetGlobalLight(true);
+        blueTeamWinUI.SetActive(false);
+        redTeamWinUI.SetActive(false);
+        GameOver = false;
         PlayerStatistics.Clear();
         Chat.Clear();
         nexusUI.SetActive(false);
@@ -329,6 +337,10 @@ public class GameManager : NetworkBehaviour
     {
         var player = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectID];
         player.gameObject.layer = id;
+        if(id == LayerMask.NameToLayer(redTeamlayer))
+            Camera.main.cullingMask = redCameraLayer;
+        else
+            Camera.main.cullingMask = blueCameraLayer;
     }
 
     [ClientRpc]
@@ -342,8 +354,18 @@ public class GameManager : NetworkBehaviour
 
     public void Win(int team)
     {
-        Debug.Log(LayerMask.LayerToName(team) + " win");
-        Shutdown();
+        GameOver = true;
+        var virtualCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
+        if(team == LayerMask.NameToLayer(redTeamlayer))
+        {
+            redTeamWinUI.SetActive(true);
+            virtualCamera.Follow = Objectives.blueTeamNexusSpawn;
+        }
+        else
+        {
+            blueTeamWinUI.SetActive(true);
+            virtualCamera.Follow = Objectives.redTeamNexusSpawn;
+        }
     }
 
     public Transform GetSpawnPoint(int layer)

@@ -18,6 +18,8 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public bool IsActive { get => panel.activeSelf; }
 
+    private Dictionary<string, Button> itemButtons = new Dictionary<string, Button>();
+
     private void Start()
     {
         panel = transform.GetChild(0).gameObject;
@@ -42,8 +44,13 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                 {
                     inventory.RemoveCash(item.cost);
                     inventory.AddItem(item);
+                    if(!item.multiple)
+                        iconButton.interactable = false;
+                    foreach (var item1 in item.sameItems)
+                        itemButtons[item1].interactable = false;
                 }
             });
+            itemButtons.Add(item.ID, iconButton);
             iconButton.onClick = buttonListener;
         }
     }
@@ -54,6 +61,9 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         if (item == null) return;
         inventory.AddCash((int)(item.cost * 0.8f));
         inventory.RemoveItem(slot);
+        itemButtons[item.ID].interactable = true;
+        foreach (var item1 in item.sameItems)
+            itemButtons[item1].interactable = true;
     }
 
     public void Toggle()

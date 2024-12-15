@@ -212,6 +212,7 @@ MonoBehaviour:
   CanRevive: 0
   gfx: {fileID: 8064653769014884085}
   hitColor: {r: 1, g: 0.742527, b: 0.48584908, a: 1}
+  healColor: {r: 1, g: 1, b: 1, a: 1}
   stats:
     damage:
       baseValue: 0

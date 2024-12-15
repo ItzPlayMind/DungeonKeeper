@@ -9,13 +9,20 @@ public class CharacterStats : NetworkBehaviour
     [SerializeField] private bool CanRevive = true;
     [SerializeField] private SpriteRenderer gfx;
     [SerializeField] private Color hitColor = new Color(248/255f, 156/255f, 156/255f,1f);
+    [SerializeField] private Color healColor = new Color(134/255f, 255/255f, 119/255f,1f);
     private Coroutine hitCoroutine;
+    private Coroutine healCoroutine;
     public StatBlock stats;
     protected NetworkVariable<int> currentHealth = new NetworkVariable<int>(0);
+
+    public delegate void DamageDelegate(ulong damager, int damage);
+    public delegate void DeathDelegate(ulong killer);
+
     public int Health { get => currentHealth.Value; }
     public System.Action<int, int> OnHealthChange;
-    public System.Action<ulong,int> OnServerTakeDamage;
-    public System.Action<ulong> OnServerDeath;
+    public DamageDelegate OnServerTakeDamage;
+    public DamageDelegate OnClientTakeDamage;
+    public DeathDelegate OnServerDeath;
     public System.Action OnServerRespawn;
     Rigidbody2D rb;
     public bool IsDead { get => dead.Value; }
@@ -47,7 +54,7 @@ public class CharacterStats : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void TakeDamageServerRPC(int damage, Vector2 knockback,ulong damagerID)
     {
-        currentHealth.Value -= (int)(damage * (1 - (stats.damageReduction.Value / 100f)));
+        currentHealth.Value -= Mathf.Max((int)(damage * (1 - (stats.damageReduction.Value / 100f))),0);
         OnServerTakeDamage?.Invoke(damagerID, damage);
         TakeDamageClientRPC(damage, knockback, damagerID);
         if (currentHealth.Value <= 0)
@@ -64,6 +71,7 @@ public class CharacterStats : NetworkBehaviour
                 rb.velocity = Vector2.zero;
                 rb.AddForce(knockback, ForceMode2D.Impulse);
             }
+            OnClientTakeDamage?.Invoke(damagerID, damage);
         }
         if (hitCoroutine != null)
             StopCoroutine(hitCoroutine);
@@ -134,11 +142,21 @@ public class CharacterStats : NetworkBehaviour
     [ClientRpc]
     protected virtual void HealClientRPC(int health)
     {
+        if (healCoroutine != null)
+            StopCoroutine(healCoroutine);
+        healCoroutine = StartCoroutine(healColorChange());
     }
 
     public Vector2 GenerateKnockBack(Transform hit, Transform damager, float force)
     {
         var dir = (hit.position - damager.position).normalized;
         return dir * force;
+    }
+
+    private IEnumerator healColorChange()
+    {
+        gfx.color = healColor;
+        yield return new WaitForSeconds(0.1f);
+        gfx.color = Color.white;
     }
 }

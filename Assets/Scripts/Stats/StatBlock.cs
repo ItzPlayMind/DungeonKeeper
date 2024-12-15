@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class StatBlock
         [SerializeField] private T baseValue;
         public delegate void OnStatChange(ref T value, T originalValue);
         public OnStatChange ChangeValue;
+        internal OnStatChange ConstraintValue;
 
         public Stat(T baseValue)
         {
@@ -25,6 +27,7 @@ public class StatBlock
             {
                 T newValue = baseValue;
                 ChangeValue?.Invoke(ref newValue, baseValue);
+                ConstraintValue?.Invoke(ref newValue, baseValue);
                 return newValue;
             }
             set => this.baseValue = value;
@@ -45,6 +48,12 @@ public class StatBlock
         this.speed = new Stat<int>(speed);
         this.health = new Stat<int>(health);
         this.damageReduction = new Stat<float>(damageReduction);
+
+        this.damageReduction.ConstraintValue += (ref float value, float old) => { value = Mathf.Clamp(value, 0, 100); };
+        this.damage.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
+        this.specialDamage.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
+        this.health.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
+        this.speed.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
     }
 
     public void Add(StatBlock stats)
@@ -57,6 +66,7 @@ public class StatBlock
         OnValuesChange?.Invoke();
     }
 
+
     public void Remove(StatBlock stats)
     {
         damage.ChangeValue += (ref int value, int _) => value -= stats.damage.Value;
@@ -66,5 +76,4 @@ public class StatBlock
         damageReduction.ChangeValue += (ref float value, float _) => value -= stats.damageReduction.Value;
         OnValuesChange?.Invoke();
     }
-
 }

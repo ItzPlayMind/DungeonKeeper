@@ -15,7 +15,12 @@ public class HealHitSpecial : AbstractSpecial
         hitbox.gameObject.layer = gameObject.layer;
         hitbox.onCollisionEnter += (GameObject collider) =>
         {
-            controller.HitTarget(collider.GetComponent<CharacterStats>(), Damage, 0);
+            var target = collider.GetComponent<CharacterStats>(); 
+            if (target == null) return;
+            if (target.gameObject == gameObject) return;
+            if (target.gameObject.layer == gameObject.layer)
+                return;
+            target.TakeDamage(Damage, Vector2.zero, characterStats);
             var colliders = Physics2D.OverlapCircleAll(transform.position, healRadius);
             foreach (var item in colliders)
             {
@@ -25,7 +30,7 @@ public class HealHitSpecial : AbstractSpecial
                 var itemStats = item.GetComponent<CharacterStats>();
                 if(itemStats != null)
                 {
-                    itemStats.Heal(Damage);
+                    controller.Heal(itemStats, Damage);
                 }
             }
         };

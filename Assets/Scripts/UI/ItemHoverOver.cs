@@ -86,6 +86,10 @@ public class ItemHoverOver : MonoBehaviour
         if(gameObject.activeSelf)
         {
             transform.position = InputManager.Instance.MousePosition;
+            if(transform.position.y > Screen.height / 2)
+                (transform as RectTransform).pivot = new Vector2(-0.02f, 1.03f);
+            else
+                (transform as RectTransform).pivot = new Vector2(-0.02f, 0.03f);
         }
     }
 }

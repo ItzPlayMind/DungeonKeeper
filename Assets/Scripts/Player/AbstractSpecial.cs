@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.UI;
 
 public abstract class AbstractSpecial : NetworkBehaviour
 {
 
     [SerializeField] private Sprite icon;
+    [Multiline] [SerializeField] private string description;
     [SerializeField] private int damage = 5;
     [SerializeField] private float damageMultiplier = 1;
     [SerializeField] private float MaxCooldown;
@@ -17,11 +19,16 @@ public abstract class AbstractSpecial : NetworkBehaviour
     [SerializeField] private UIBar specialInUseIcon;
     private TMPro.TextMeshProUGUI amountText;
 
+    public delegate void SpecialDelegate();
+    public SpecialDelegate onSpecial;
+
     protected CharacterStats characterStats;
     public int Damage { get => (int)(damage + characterStats.stats.specialDamage.Value * damageMultiplier); }
 
     private bool used = false;
     private float cooldown;
+
+    public virtual bool CanMoveWhileUsing() => false;
 
     public bool isUsing { get; private set; }
 
@@ -44,6 +51,12 @@ public abstract class AbstractSpecial : NetworkBehaviour
         _Start();
     }
 
+    public string Description { get => DescriptionCreator.Generate(description, GetVariablesForDescription()); }
+
+    protected virtual Dictionary<string, object> GetVariablesForDescription() { 
+        return new Dictionary<string, object>() { { "Damage", Damage }, { "DamageMultiplier", damageMultiplier }, { "Cooldown", MaxCooldown }, { "ActiveTime", activeTime } };
+    }
+
     protected void UpdateAmountText(string value)
     {
         if (IsLocalPlayer)
@@ -62,6 +75,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
     public void Use()
     {
         used = true;
+        onSpecial?.Invoke();
     }
 
     protected void Finish()

@@ -9,11 +9,17 @@ public class HealSpecial : AbstractSpecial
     [SerializeField] private float healRange;
     [SerializeField] private float healDuration;
     Vector2 mouseWorldPos;
-    List<GameObject> alreadyHealed = new List<GameObject>();
     protected override void _OnSpecialFinish(PlayerController controller)
     {
         SpawnHealFieldServerRPC(OwnerClientId);
         StartCooldown();
+    }
+
+    protected override Dictionary<string, object> GetVariablesForDescription()
+    {
+        var variables = base.GetVariablesForDescription();
+        variables.Add("HealDuration", healDuration);
+        return variables;
     }
 
     [ServerRpc]
@@ -22,35 +28,24 @@ public class HealSpecial : AbstractSpecial
         var networkObject = Instantiate(healFieldPrefab, transform.position, Quaternion.identity);
         networkObject.SpawnWithOwnership(owner);
         SpawnHealFieldClientRPC(networkObject.NetworkObjectId);
+        var heal = networkObject.GetComponent<HealField>();
+        heal.SetHealAmount(Damage);
+        heal.SetController(GetComponent<PlayerController>());
     }
 
     [ClientRpc]
     private void SpawnHealFieldClientRPC(ulong id)
     {
+        var healFieldNetwork = NetworkManager.Singleton.SpawnManager.SpawnedObjects[id];
+        healFieldNetwork.gameObject.layer = gameObject.layer;
         if (!IsLocalPlayer)
             return;
-        var healFieldNetwork = NetworkManager.Singleton.SpawnManager.SpawnedObjects[id];
         healFieldNetwork.GetComponentInChildren<SpriteRenderer>().material = GameManager.instance.UNLIT_MATERIAL;
         Vector2 dir = (mouseWorldPos - (Vector2)transform.position).normalized;
         if (Vector2.Distance(transform.position,mouseWorldPos) > healRange)
             healFieldNetwork.transform.position = (Vector2)transform.position + dir * healRange;
         else
             healFieldNetwork.transform.position = mouseWorldPos;
-        healFieldNetwork.GetComponent<CollisionSender>().onCollisionEnter += (GameObject collider) =>
-        {
-            if (collider == gameObject)
-                return;
-            if (collider.layer != gameObject.layer)
-                return;
-            if (alreadyHealed.Contains(collider))
-                return;
-            alreadyHealed.Add(collider);
-            var stats = collider.GetComponent<CharacterStats>();
-            if (stats != null)
-            {
-                stats.Heal(Damage);
-            }
-        };
         DespawnHealFieldServerRPC(id);
     }
 
@@ -64,7 +59,6 @@ public class HealSpecial : AbstractSpecial
     protected override void _OnSpecialPress(PlayerController controller)
     {
         Use();
-        alreadyHealed.Clear();
         this.mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
     }
 }

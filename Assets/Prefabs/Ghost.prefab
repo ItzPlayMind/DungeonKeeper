@@ -133,6 +133,7 @@ MonoBehaviour:
   CanRevive: 1
   gfx: {fileID: 4484214027159204247}
   hitColor: {r: 0.972549, g: 0.6117647, b: 0.6117647, a: 1}
+  healColor: {r: 1, g: 1, b: 1, a: 1}
   stats:
     damage:
       baseValue: 100
@@ -238,7 +239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c747d49254b654f40a8e65e73ed71001, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followRange: 4
+  followRange: 3.5
   attackRange: 1
   gold: 500
 --- !u!50 &5198513790235787882

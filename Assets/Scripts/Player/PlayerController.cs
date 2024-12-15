@@ -38,9 +38,11 @@ public class PlayerController : NetworkBehaviour
     private PlayerStats stats;
     private int currentAttack = 0;
     private float attackComboTimer = 0;
-    public Action<ulong, ulong, int> OnAttack;
+    public delegate void ActionDelegate(ulong target, ulong user, ref int amount);
+    public ActionDelegate OnAttack;
+    public ActionDelegate OnHeal;
 
-    public bool canMove { get => !isAttacking; }
+    public bool canMove { get => !isAttacking || (special != null && special.isUsing && special.CanMoveWhileUsing()); }
 
     public override void OnNetworkSpawn()
     {
@@ -75,11 +77,19 @@ public class PlayerController : NetworkBehaviour
                 if (stats != null)
                 {
                     var damage = (int)(this.stats.stats.damage.Value * attackSettings[currentAttack].damageMultiplier);
-                    OnAttack?.Invoke(stats.NetworkObjectId, this.stats.NetworkObjectId, damage);
+                    OnAttack?.Invoke(stats.NetworkObjectId, this.stats.NetworkObjectId, ref damage);
                     stats.TakeDamage(damage, stats.GenerateKnockBack(stats.transform, transform, attackSettings[currentAttack].knockBack), this.stats);
                 }
             };
         }
+    }
+
+    public void Heal(CharacterStats stats, int amount)
+    {
+        if (stats == null) return;
+        var currentAmount = amount;
+        OnHeal?.Invoke(stats.NetworkObjectId, NetworkObjectId, ref currentAmount);
+        stats.Heal(currentAmount);
     }
 
     private void CloseShopOrExit(UnityEngine.InputSystem.InputAction.CallbackContext context)
@@ -98,15 +108,6 @@ public class PlayerController : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         InputManager.Instance.PlayerControls.UI.Close.performed -= CloseShopOrExit;
-    }
-
-    public void HitTarget(CharacterStats target, int damage, float knockBackForce)
-    {
-        if (target == null) return;
-        if (target.gameObject == gameObject) return;
-        if (target.gameObject.layer == gameObject.layer)
-            return;
-        target.TakeDamage(damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), this.stats);
     }
 
     public void OnTeamAssigned()
@@ -150,6 +151,9 @@ public class PlayerController : NetworkBehaviour
         gfx.transform.localScale = new Vector3(Math.Abs(gfx.transform.localScale.x) * (isFlipped.Value ? -1 : 1), gfx.transform.localScale.y, gfx.transform.localScale.z);
         if (!IsLocalPlayer)
             return;
+        if (GameManager.instance.GameOver) return;
+        if (inputManager.PlayerShopTrigger)
+            shopPanel.Toggle();
         if (stats.IsDead) return;
         inventory.UpdateItems();
         if (!isAttacking || (special != null && special.UseRotation && special.isUsing))
@@ -180,10 +184,6 @@ public class PlayerController : NetworkBehaviour
                     isAttacking = true;
                 }
             }
-        }
-        if (inputManager.PlayerShopTrigger)
-        {
-            shopPanel.Toggle();
         }
         for (int i = 0; i < 6; i++)
             if(InputManager.Instance.PlayerInventoryActiveItemTriggered(i+1))

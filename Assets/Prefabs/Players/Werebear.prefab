@@ -490,6 +490,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: 842f9ace83132384585bbb8bb558fe9b, type: 3}
+  description: Slam the ground, deal {Damage} damage to all enemies hit and push
+    them back.
   damage: 35
   damageMultiplier: 1
   MaxCooldown: 15

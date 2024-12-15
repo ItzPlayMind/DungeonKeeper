@@ -100,6 +100,10 @@ PrefabInstance:
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[4].y
       value: 0.2838366
       objectReference: {fileID: 0}
+    - target: {fileID: 826793323368665940, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: TransitionStateInfoList.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2490300795773199028, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Name
       value: Lancer
@@ -441,6 +445,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: e0c5409178fda7c4b912a6b43614dae8, type: 3}
+  description: Charge forward for 1.1 seconds, deal {Damage} to all enemies and push
+    them back.
   damage: 10
   damageMultiplier: 1
   MaxCooldown: 35

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -12,8 +13,8 @@ public class ObjectiveSystem : NetworkBehaviour
     [SerializeField] private NetworkObject blueMinionPrefab;
     [SerializeField] private Transform redMinionSpawn;
     [SerializeField] private Transform blueMinionSpawn;
-    [SerializeField] private Transform redTeamNexusSpawn;
-    [SerializeField] private Transform blueTeamNexusSpawn;
+    public Transform redTeamNexusSpawn;
+    public Transform blueTeamNexusSpawn;
     [SerializeField] private Transform[] redTeamTurretSpawns;
     [SerializeField] private Transform[] blueTeamTurretSpawns;
     [SerializeField] private Transform[] objectivesSpawns;
@@ -42,10 +43,10 @@ public class ObjectiveSystem : NetworkBehaviour
     public void SpawnObjectives()
     {
         if (!IsServer) return;
-        var redNexus = Instantiate(nexusPrefab, redTeamNexusSpawn.position, Quaternion.identity);
+        var redNexus = Instantiate(nexusPrefab, redTeamNexusSpawn.position, redTeamNexusSpawn.rotation);
         var redNexusScript = redNexus.GetComponent<Nexus>();
         redNexus.Spawn();
-        var blueNexus = Instantiate(nexusPrefab, blueTeamNexusSpawn.position, Quaternion.identity);
+        var blueNexus = Instantiate(nexusPrefab, blueTeamNexusSpawn.position, blueTeamNexusSpawn.rotation);
         var blueNexusScript = blueNexus.GetComponent<Nexus>();
         blueNexus.Spawn();
         var redTurrets = new ulong[redTeamTurretSpawns.Length];
@@ -67,22 +68,31 @@ public class ObjectiveSystem : NetworkBehaviour
         for (int i = 0; i < objectivesPrefabs.Length; i++)
             Instantiate(objectivesPrefabs[i], objectivesSpawns[i].position, Quaternion.identity).Spawn();
         SpawnNexusClientRPC(redNexus.NetworkObjectId, blueNexus.NetworkObjectId, redTurrets, blueTurrets);
-        StartCoroutine(SpawnMinionWave(redMinionPrefab, redMinionSpawn, blueNexus.GetComponent<CharacterStats>()));
-        StartCoroutine(SpawnMinionWave(blueMinionPrefab, blueMinionSpawn, redNexus.GetComponent<CharacterStats>()));
+        redNexusScript.OnMinionSpawnEvent += () => StartCoroutine(SpawnMinions(redMinionPrefab, redMinionSpawn, blueNexus.GetComponent<CharacterStats>()));
+        blueNexusScript.OnMinionSpawnEvent += () => StartCoroutine(SpawnMinions(blueMinionPrefab, blueMinionSpawn, redNexus.GetComponent<CharacterStats>()));
+        StartCoroutine(StartSpawnMinionWave(redNexusScript));
+        StartCoroutine(StartSpawnMinionWave(blueNexusScript));
     }
 
-    private IEnumerator SpawnMinionWave(NetworkObject minionPrefab, Transform spawn, CharacterStats target)
+    private IEnumerator SpawnMinions(NetworkObject minionPrefab, Transform spawn, CharacterStats target)
+    {
+        for (int i = 0; i < minionsPerWave; i++)
+        {
+            var minion = Instantiate(minionPrefab, spawn.transform.position, Quaternion.identity);
+            minion.GetComponent<MinionAI>().SetBaseTarget(target);
+            minion.Spawn();
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+    private IEnumerator StartSpawnMinionWave(Nexus nexus)
     {
         while (true)
         {
-            for (int i = 0; i < minionsPerWave; i++)
-            {
-                var minion = Instantiate(minionPrefab, spawn.transform.position, Quaternion.identity);
-                minion.GetComponent<MinionAI>().SetBaseTarget(target);
-                minion.Spawn();
-                yield return new WaitForSeconds(1f);
-            }
-            yield return new WaitForSeconds(waveSpawnTimer);
+            yield return new WaitForSeconds(waveSpawnTimer - 1.3f);
+            nexus.SpawnMinions();
+            yield return new WaitForSeconds(1.3f);
+
         }
     }
 

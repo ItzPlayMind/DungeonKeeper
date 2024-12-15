@@ -35,7 +35,7 @@ public abstract class ObjectiveAI : NetworkBehaviour
 
     protected abstract void OnDeath(ulong id);
 
-    private CharacterStats GetTargetFromCollisions(Collider2D[] collider)
+    protected CharacterStats GetTargetFromCollisions(Collider2D[] collider)
     {
         List<CharacterStats > result = new List<CharacterStats>();
         foreach (var item in collider)
@@ -59,6 +59,7 @@ public abstract class ObjectiveAI : NetworkBehaviour
     {
         if (!IsServer) return;
         if (stats.IsDead) return;
+        if(GameManager.instance.GameOver) return;
         if(target == null && baseTarget != null) target = baseTarget;
         attackTimer -= Time.deltaTime;
         if (attackTimer < 0f)
@@ -67,7 +68,7 @@ public abstract class ObjectiveAI : NetworkBehaviour
             {
                 var collisions = Physics2D.OverlapCircleAll(transform.position, detectionRange);
                 target = GetTargetFromCollisions(collisions);
-                if(target != null)
+                if(target != null && !target.IsDead)
                     attackTimer = attackTime;
                 if (target == null)
                     attackTimer = 0.1f;

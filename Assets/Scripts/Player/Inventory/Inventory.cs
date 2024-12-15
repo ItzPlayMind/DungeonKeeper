@@ -6,7 +6,6 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-
 public class Inventory : NetworkBehaviour
 {
     public static int INVENTORY_SIZE = 6;
@@ -62,8 +61,6 @@ public class Inventory : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         items = new Item[INVENTORY_SIZE];
-        if (!IsLocalPlayer)
-            return;
         stats = GetComponent<CharacterStats>();
     }
 
@@ -97,8 +94,9 @@ public class Inventory : NetworkBehaviour
         if (IsLocalPlayer)
         {
             inventorySlots[slot].Icon = emptySlot;
-            item?.OnUnequip(stats, slot);
+            inventorySlots[slot].UpdateBar(0f);
         }
+        item?.OnUnequip(stats, slot);
     }
 
     public void AddItem(Item item)
@@ -124,10 +122,8 @@ public class Inventory : NetworkBehaviour
         var item = ItemRegistry.Instance.GetItemById(itemID);
         items[slot] = item;
         if (IsLocalPlayer)
-        {
             inventorySlots[slot].Icon = item.icon;
-            item?.OnEquip(stats, slot);
-        }
+        item?.OnEquip(stats, slot);
     }
 
     private float goldTimer = 1f;

@@ -76,6 +76,7 @@ public class InputManager : MonoBehaviour
     }
 
     private bool isOverUI = false;
+    private bool fullscreen = false;
 
     public void SetIsOverUI(bool value)
     {
@@ -113,6 +114,7 @@ public class InputManager : MonoBehaviour
 
     private void Awake()
     {
+        fullscreen = Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen;
         if (instance != null && instance != this)
             Destroy(gameObject);
         else
@@ -163,6 +165,12 @@ public class InputManager : MonoBehaviour
 
         foreach (var item in removeActions)
             buffer.Remove(item);
+
+        if (playerControls.UI.Fullscreen.triggered)
+        {
+            fullscreen = !fullscreen;
+            Screen.fullScreenMode = fullscreen ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed;
+        }
     }
 
     private void OnEnable()

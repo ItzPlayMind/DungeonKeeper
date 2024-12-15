@@ -94,7 +94,10 @@ GameObject:
   - component: {fileID: 551455586680752632}
   - component: {fileID: 7080877991864629938}
   - component: {fileID: 74208209431592863}
-  m_Layer: 8
+  - component: {fileID: 6224414892752943044}
+  - component: {fileID: 4450550313211614372}
+  - component: {fileID: 1749162515330502629}
+  m_Layer: 0
   m_Name: GFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111,7 +114,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2587341273748227723}
@@ -158,17 +161,17 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -935773879, guid: 4becd466519c6de4eb0beae29bb10c11, type: 3}
+  m_Sprite: {fileID: 1803104178, guid: 3fe9a9a2312cb4744b8db94d322f1538, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.0666667, y: 0.85333335}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!95 &7080877991864629938
 Animator:
   serializedVersion: 5
@@ -202,6 +205,81 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bddfd5c76c4a9d64a9d2f0854f5aa44b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6224414892752943044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7828860403413115776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 274832895
+    DestinationState: 1475992840
+    TransitionDuration: 0
+    TriggerNameHash: 1372578019
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 274832895
+    DestinationState: -633184882
+    TransitionDuration: 0
+    TriggerNameHash: 1080829965
+    TransitionIndex: 1
+  m_Animator: {fileID: 7080877991864629938}
+--- !u!114 &4450550313211614372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7828860403413115776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bddfd5c76c4a9d64a9d2f0854f5aa44b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!58 &1749162515330502629
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7828860403413115776}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.025484443, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.23680401
 --- !u!1 &7917338219625416889
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,7 +290,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8094719933506347834}
   - component: {fileID: 4408884739248809491}
-  - component: {fileID: 7187881058710926924}
   - component: {fileID: 2980793602417376443}
   - component: {fileID: -7715521181772311657}
   - component: {fileID: 3184473404791605448}
@@ -271,44 +348,9 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0044412613, y: 0.008882552}
-  m_Size: {x: 0.24240494, y: 0.60916704}
+  m_Offset: {x: 0.011970282, y: 0.8906278}
+  m_Size: {x: 0.5466857, y: 1.686919}
   m_Direction: 0
---- !u!58 &7187881058710926924
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7917338219625416889}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.27417105}
-  serializedVersion: 2
-  m_Radius: 0.09940075
 --- !u!114 &2980793602417376443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -324,10 +366,11 @@ MonoBehaviour:
   respawnTime: 0
   CanRevive: 0
   gfx: {fileID: 551455586680752632}
-  hitColor: {r: 0.4719206, g: 0.95198894, b: 0.990566, a: 1}
+  hitColor: {r: 0.99215686, g: 0.47843137, b: 0.47058824, a: 1}
+  healColor: {r: 1, g: 1, b: 1, a: 1}
   stats:
     damage:
-      baseValue: 30
+      baseValue: 150
     specialDamage:
       baseValue: 0
     speed:
@@ -369,7 +412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f57f3dea56547f4e88cfc7211b48b85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackTime: 2
+  attackTime: 1.2
   detectionRange: 2
   attackRange: 3
   otherObjectives: []

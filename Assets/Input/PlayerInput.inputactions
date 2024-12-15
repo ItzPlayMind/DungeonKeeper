@@ -299,7 +299,7 @@
                 {
                     "name": "",
                     "id": "925ad089-367a-4deb-939f-3837aa567e44",
-                    "path": "<Keyboard>/p",
+                    "path": "<Keyboard>/tab",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -317,6 +317,15 @@
                     "name": "Close",
                     "type": "Button",
                     "id": "9ff0960d-06ef-42e7-a76f-b61cd0d965aa",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Fullscreen",
+                    "type": "Button",
+                    "id": "384753db-1c57-4838-bf5e-3daa697bafa8",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -452,6 +461,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Active Item 6",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dca3f039-966d-4630-a0bd-a64a9808cb9c",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fullscreen",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -6,6 +6,11 @@ using UnityEngine;
 [System.Serializable]
 public class Item
 {
+    public class ItemFunctionConnection
+    {
+        public object FuncTo;
+        public object FuncAdder;
+    }
     public static int currentIndex = 0;
     [SerializeField] private string name;
     [SerializeField] private string id;
@@ -17,11 +22,14 @@ public class Item
     public ItemFunction onUse;
     public ItemFunction onUpdate;
     public ItemFunction onEquip;
+    public ItemFunction onUnequip;
     public StatBlock stats;
     public Sprite icon;
     public string description;
     public int cost;
     public float cooldown;
+    public bool multiple;
+    public List<string> sameItems = new List<string>();
     [HideInInspector] public Dictionary<string, object> variables = new Dictionary<string, object>();
 
     private float timer;
@@ -42,22 +50,7 @@ public class Item
     {
         get
         {
-            var words = description.Split(" ");
-            string text = "";
-            foreach (var word in words)
-            {
-                if (word.IndexOf("{") < word.IndexOf("}"))
-                {
-                    int indexOfBegin = word.IndexOf("{");
-                    int indexOfEnd = word.IndexOf("}");
-                    var variableName = word.Substring(indexOfBegin + 1, indexOfEnd - indexOfBegin - 1);
-                    text += "<color=red>" + variables[variableName] + word.Substring(indexOfEnd + 1) + "</color>";
-                }
-                else
-                    text += word;
-                text += " ";
-            }
-            return text.Trim();
+            return DescriptionCreator.Generate(description, variables);
         }
     }
 
@@ -75,6 +68,9 @@ public class Item
         this.cooldown = item.cooldown;
         this.variables = item.variables;
         this.timer = item.timer;
+        this.multiple = item.multiple;
+        this.sameItems = item.sameItems;
+        variables["Cooldown"] = cooldown;
     }
 
     public Item(string name)
@@ -90,8 +86,8 @@ public class Item
         {
             if (this.stats != null)
                 stats.stats.Add(this.stats);
-            onEquip?.Invoke(this, stats, slot);
         }
+        onEquip?.Invoke(this, stats, slot);
     }
 
     public void OnUnequip(CharacterStats stats, int slot)
@@ -101,6 +97,7 @@ public class Item
             if (this.stats != null)
                 stats.stats.Remove(this.stats);
         }
+        onUnequip?.Invoke(this, stats, slot);
     }
 
     public void Use(CharacterStats stats, int slot)

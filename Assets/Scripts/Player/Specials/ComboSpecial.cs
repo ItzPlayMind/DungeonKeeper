@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
 public class ComboSpecial : AbstractSpecial
@@ -13,27 +14,38 @@ public class ComboSpecial : AbstractSpecial
         public float dashForce = 55;
         public CollisionSender hitbox;
         public AnimationClip clip;
+        public bool canMoveWhileUsing;
+        public bool needHit;
     }
 
     [SerializeField] private ComboHitbox[] hitboxes;
     [SerializeField] private AnimatorOverrideController originalAnimator;
-    private PlayerController controller;
     Rigidbody2D rb;
     Vector2 mouseWorldPos;
     private int currentComboIndex = 0;
     private Animator animator;
+
+    public override bool CanMoveWhileUsing() => hitboxes[currentComboIndex].canMoveWhileUsing;
+
+    private bool hit;
+
     protected override void _Start()
     {
         animator = GetComponentInChildren<Animator>();
         if (!IsLocalPlayer) return;
         rb = GetComponent<Rigidbody2D>();
-        controller = GetComponent<PlayerController>();
         foreach (var hitbox in hitboxes)
         {
             hitbox.hitbox.gameObject.layer = gameObject.layer;
             hitbox.hitbox.onCollisionEnter += (GameObject collider) =>
             {
-                controller.HitTarget(collider.GetComponent<CharacterStats>(), (int)(Damage * hitbox.damageMultiplier), hitbox.knockBackForce);
+                var target = collider.GetComponent<CharacterStats>();
+                if (target == null) return;
+                if (target.gameObject == gameObject) return;
+                if (target.gameObject.layer == gameObject.layer)
+                    return;
+                hit = true;
+                target.TakeDamage((int)(Damage * hitbox.damageMultiplier), target.GenerateKnockBack(target.transform.transform, transform, hitbox.knockBackForce), characterStats);
             };
         }
     }
@@ -47,7 +59,14 @@ public class ComboSpecial : AbstractSpecial
             dir.y = 0;
             rb.AddForce(dir * hitboxes[currentComboIndex].dashForce, ForceMode2D.Impulse);
             currentComboIndex = (currentComboIndex + 1) % hitboxes.Length;
-            StartActive();
+            if ((hitboxes[currentComboIndex].needHit && hit) || !hitboxes[currentComboIndex].needHit)
+                StartActive();
+            else
+            {
+                ResetComboIndex();
+                StartCooldown();
+            }
+            hit = false;
         }
         if (currentComboIndex == 0)
             StartCooldown();

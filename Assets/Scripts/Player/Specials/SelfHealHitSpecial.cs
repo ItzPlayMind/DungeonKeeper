@@ -9,11 +9,13 @@ public class SelfHealHitSpecial : AbstractSpecial
     [SerializeField] private int onHitSecondsReduction = 5;
 
     private List<ulong> hits = new List<ulong>();
+    private PlayerController controller;
 
     protected override void _Start()
     {
         if (!IsLocalPlayer) return;
         hitbox.gameObject.layer = gameObject.layer;
+        controller = GetComponent<PlayerController>();
         hitbox.onCollisionEnter += (GameObject collider) =>
         {
             if (collider.gameObject.layer == gameObject.layer) return;
@@ -23,7 +25,7 @@ public class SelfHealHitSpecial : AbstractSpecial
             if(hits.Contains(stats.NetworkObjectId)) return;
             hits.Add(stats.NetworkObjectId);
             stats.TakeDamage(Damage, Vector2.zero, characterStats);
-            characterStats.Heal((int)(characterStats.stats.health.Value * maxHealthPerc));
+            controller.Heal(characterStats, (int)(characterStats.stats.health.Value * maxHealthPerc));
             ReduceCooldown(onHitSecondsReduction);
         };
     }

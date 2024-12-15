@@ -134,6 +134,7 @@ MonoBehaviour:
   CanRevive: 0
   gfx: {fileID: 832795417800513437}
   hitColor: {r: 0.972549, g: 0.6117647, b: 0.6117647, a: 1}
+  healColor: {r: 0.5254902, g: 1, b: 0.46666667, a: 1}
   stats:
     damage:
       baseValue: 15
@@ -387,7 +388,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2689897124737077079, guid: fa45c17caa362c647b7932364e763aad, type: 3}
       propertyPath: m_Layer
-      value: 9
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 5259513793087750994, guid: fa45c17caa362c647b7932364e763aad, type: 3}
       propertyPath: m_PointLightInnerRadius

@@ -95,6 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7466498d4913cca468a2a1a76d769b2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanHitMultiple: 0
 --- !u!1 &7024080004375427326
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,6 +191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7466498d4913cca468a2a1a76d769b2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanHitMultiple: 0
 --- !u!1 &8444242052369629353
 GameObject:
   m_ObjectHideFlags: 0
@@ -285,6 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7466498d4913cca468a2a1a76d769b2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanHitMultiple: 0
 --- !u!1001 &4106332420501793346
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -364,6 +367,10 @@ PrefabInstance:
     - target: {fileID: 826661276144605644, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[8].y
       value: -0.0651218
+      objectReference: {fileID: 0}
+    - target: {fileID: 826793323368665940, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: TransitionStateInfoList.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2490300795773199028, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Name
@@ -522,6 +529,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: 46d2c4babed95834880a4c501bf72d2f, type: 3}
+  description: 'First:
+
+    Deal {Damage} damage and dash forward.
+
+    Change to
+    Second for {ActiveTime} seconds.
+
+
+    Second:
+
+    Deal {Damage} damage and
+    dash forward.
+
+    Change to Second for {ActiveTime} seconds.
+
+
+    Third:
+
+    Deal
+    {Damage} damage and dash forward further.'
   damage: 50
   damageMultiplier: 1
   MaxCooldown: 10
@@ -534,16 +561,22 @@ MonoBehaviour:
     dashForce: 20
     hitbox: {fileID: 6248944469416874631}
     clip: {fileID: 7400000, guid: e957efd4cd462f841baaf90b6c7b796f, type: 2}
+    canMoveWhileUsing: 0
+    needHit: 0
   - knockBackForce: 15
     damageMultiplier: 1.5
     dashForce: 20
     hitbox: {fileID: 2308244259437245122}
     clip: {fileID: 7400000, guid: 47626e9f3d6de494a91f1df060b05066, type: 2}
+    canMoveWhileUsing: 0
+    needHit: 0
   - knockBackForce: 25
     damageMultiplier: 2
     dashForce: 45
     hitbox: {fileID: 3572432952164073544}
     clip: {fileID: 7400000, guid: b6c99f00d05872240847e6f90b8fa409, type: 2}
+    canMoveWhileUsing: 0
+    needHit: 0
   originalAnimator: {fileID: 22100000, guid: c8d27d47b08063244b2cc8bf70bcd1ea, type: 2}
 --- !u!114 &4192858828411715537 stripped
 MonoBehaviour:
