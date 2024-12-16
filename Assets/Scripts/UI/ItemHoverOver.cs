@@ -1,15 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class ItemHoverOver : MonoBehaviour
+public class ItemHoverOver : NetworkBehaviour
 {
     private static ItemHoverOver Instance;
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        Instance = this;
-        Hide();
+        if (IsLocalPlayer)
+        {
+            Instance = this;
+            Hide();
+        }
     }
 
     [SerializeField] private TMPro.TextMeshProUGUI nameText;

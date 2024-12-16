@@ -22,7 +22,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
     public delegate void SpecialDelegate();
     public SpecialDelegate onSpecial;
 
-    protected CharacterStats characterStats;
+    protected PlayerStats characterStats;
     public int Damage { get => (int)(damage + characterStats.stats.specialDamage.Value * damageMultiplier); }
 
     private bool used = false;
@@ -34,15 +34,16 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     private void Start()
     {
-        characterStats = GetComponent<CharacterStats>();
+        characterStats = GetComponent<PlayerStats>();
         if (IsLocalPlayer)
         {
-            characterStats.OnServerRespawn += () =>
+            characterStats.OnClientRespawn += () =>
             {
                 used = false;
                 isUsing = false;
                 cooldown = 0;
                 specialIcon.UpdateBar(0);
+                ResetActive();
             };
             specialIcon.GetComponent<Image>().sprite = icon;
             amountText = specialIcon.GetComponentInChildren<TMPro.TextMeshProUGUI>();

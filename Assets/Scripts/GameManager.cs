@@ -142,7 +142,7 @@ public class GameManager : NetworkBehaviour
         NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
     }
 
-    private float respawnTimeTimer = 10f;
+    private float respawnTimeTimer = 30f;
 
     private void Update()
     {
@@ -151,7 +151,7 @@ public class GameManager : NetworkBehaviour
         if(respawnTimeTimer <= 0)
         {
             RESPAWN_TIME.Value++;
-            respawnTimeTimer = 10f;
+            respawnTimeTimer = 30f;
         }
         respawnTimeTimer -= Time.deltaTime;
     }
@@ -183,7 +183,7 @@ public class GameManager : NetworkBehaviour
 
     public void StartGame()
     {
-        if (!IsServer) respawnTimeTimer = 10f;
+        if (IsServer) respawnTimeTimer = 30f;
         StartGameServerRPC();
     }
 

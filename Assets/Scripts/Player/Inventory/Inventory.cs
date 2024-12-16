@@ -31,7 +31,7 @@ public class Inventory : NetworkBehaviour
         AddCashServerRPC(cash);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void AddCashServerRPC(int cash)
     {
         this.cash.Value += cash;
@@ -42,7 +42,7 @@ public class Inventory : NetworkBehaviour
         RemoveCashServerRPC(cash);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void RemoveCashServerRPC(int cash)
     {
         this.cash.Value -= cash;
@@ -79,7 +79,7 @@ public class Inventory : NetworkBehaviour
         RemoveItemServerRPC(slot);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void RemoveItemServerRPC(int slot)
     {
         RemoveItemClientRPC(slot);
@@ -110,7 +110,7 @@ public class Inventory : NetworkBehaviour
         AddItemServerRPC(item.ID, index);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void AddItemServerRPC(string itemID, int slot)
     {
         AddItemClientRPC(itemID,slot);
@@ -154,7 +154,7 @@ public class Inventory : NetworkBehaviour
         SwapItemsServerRPC(src, dest);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SwapItemsServerRPC(int src, int dest)
     {
         SwapItemsClientRPC(src, dest);

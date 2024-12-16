@@ -65,12 +65,16 @@ public class ItemRegistry : MonoBehaviour
             item.sameItems.AddRange(boots.FindAll(x => x.ID != item.ID).Select(x => x.ID));
         }
 
-        AddItemWithVariables("Knights Chestplate", "iron_armor", CharacterType.Tank, "On beeing hit the damager takes {BaseDamage} + {MaxHealthPerc}% Max HP damage.", new StatBlock(0, 0, 0, 150, 10), 1500, 0,
+        AddItemWithVariables("Knights Chestplate", "iron_armor", CharacterType.Tank, "On beeing hit the damager takes {BaseDamage} + {MaxHealthPerc}% Max HP damage. Can only accure once every {Cooldown} seconds", new StatBlock(0, 0, 0, 150, 10), 1500, 1,
             new Dictionary<string, object>() { { "BaseDamage", 10 }, { "MaxHealthPerc", 2 } }, (Item item, CharacterStats stats, int slot) =>
         {
             AddToAction(item, () => stats.OnClientTakeDamage, (value) => stats.OnClientTakeDamage = value, (ulong damager, int damage) =>
             {
-                NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<CharacterStats>().TakeDamage((int)item.variables["BaseDamage"] + (int)(stats.stats.health.Value * ((int)item.variables["BaseDamage"] / 100f)), Vector2.zero, stats);
+                if (item.CanUse)
+                {
+                    NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<CharacterStats>().TakeDamage((int)item.variables["BaseDamage"] + (int)(stats.stats.health.Value * ((int)item.variables["BaseDamage"] / 100f)), Vector2.zero, stats);
+                    item.StartCooldown();
+                }
             });
         });
 

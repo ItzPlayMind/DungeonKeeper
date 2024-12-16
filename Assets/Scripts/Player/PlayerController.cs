@@ -74,7 +74,7 @@ public class PlayerController : NetworkBehaviour
                 if (collider == gameObject)
                     return;
                 var stats = collider.GetComponent<CharacterStats>();
-                if (stats != null)
+                if (stats != null && !stats.IsDead)
                 {
                     var damage = (int)(this.stats.stats.damage.Value * attackSettings[currentAttack].damageMultiplier);
                     OnAttack?.Invoke(stats.NetworkObjectId, this.stats.NetworkObjectId, ref damage);

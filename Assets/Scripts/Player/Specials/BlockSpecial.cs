@@ -10,8 +10,7 @@ public class BlockSpecial : AbstractSpecial
     protected override void _Start()
     {
         if (!IsLocalPlayer) return;
-        characterStats = GetComponent<CharacterStats>();
-        GetComponent<CharacterStats>().OnServerTakeDamage += (ulong damager, int damage) =>
+        characterStats.OnServerTakeDamage += (ulong damager, int damage) =>
         {
             if (isBlocking)
             {
