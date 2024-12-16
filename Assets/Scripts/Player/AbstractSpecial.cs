@@ -11,12 +11,14 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     [SerializeField] private Sprite icon;
     [Multiline] [SerializeField] private string description;
+    [SerializeField] protected int resourceAmount;
     [SerializeField] private int damage = 5;
     [SerializeField] private float damageMultiplier = 1;
     [SerializeField] private float MaxCooldown;
     [SerializeField] private float activeTime;
     [SerializeField] private UIBar specialIcon;
     [SerializeField] private UIBar specialInUseIcon;
+    [SerializeField] private TextUIBar resourceBar;
     private TMPro.TextMeshProUGUI amountText;
 
     public delegate void SpecialDelegate();
@@ -27,6 +29,16 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     private bool used = false;
     private float cooldown;
+    protected int resource;
+
+    public int Resource { get => resource; }
+
+    protected void UpdateResourceBar()
+    {
+        resourceBar.UpdateBar(resource / (float)resourceAmount);
+        if (resource == 0 && resourceAmount == 0) return;
+        resourceBar.Text = resource + "/" + resourceAmount;
+    }
 
     public virtual bool CanMoveWhileUsing() => false;
 
@@ -37,6 +49,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
         characterStats = GetComponent<PlayerStats>();
         if (IsLocalPlayer)
         {
+            resource = resourceAmount;
             characterStats.OnClientRespawn += () =>
             {
                 used = false;
@@ -69,9 +82,12 @@ public abstract class AbstractSpecial : NetworkBehaviour
     protected virtual void _Start() { }
 
     public bool OnCooldown { get => cooldown > 0; }
-    public virtual bool canUse() { return !OnCooldown && !used; }
+    public virtual bool canUse() { return !OnCooldown && !used && HasResource(); }
 
     public bool UseRotation { get; protected set; }
+
+    protected virtual bool HasResource() { return true; }
+    protected virtual void RemoveResource() { }
 
     public void Use()
     {
@@ -151,6 +167,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
             }
         }
         _Update();
+        UpdateResourceBar();
     }
 
     protected virtual void OnActiveOver()
@@ -170,6 +187,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
     public void OnSpecialPress(PlayerController controller)
     {
         isUsing = true;
+        RemoveResource();
         _OnSpecialPress(controller);
     }
 

@@ -359,6 +359,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c56032a774e5474b89364bbb0c6abb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2750564191645990078 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4976039802904779606, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 7144264100949780456}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ee50788519ad864882ca23d4a9c42b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4731828795626014044 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2490300795773199028, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
@@ -379,12 +390,14 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: d6c972728cb5510479e6a2deb591266f, type: 3}
   description: Place down a heal field that heals {Damage} HP every 0.1 seconds for
     {HealDuration} seconds.
+  resourceAmount: 100
   damage: 2
   damageMultiplier: 0.1
   MaxCooldown: 15
   activeTime: 0
   specialIcon: {fileID: 1082956763760468577}
   specialInUseIcon: {fileID: 7055204575020921467}
+  resourceBar: {fileID: 2750564191645990078}
   healFieldPrefab: {fileID: 7306826740333165070, guid: 9d4197140f9821f42b82f6d654e5e581, type: 3}
   healRange: 3
   healDuration: 5

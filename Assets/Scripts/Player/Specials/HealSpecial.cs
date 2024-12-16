@@ -15,6 +15,16 @@ public class HealSpecial : AbstractSpecial
         StartCooldown();
     }
 
+    protected override bool HasResource()
+    {
+        return resource >= 50;
+    }
+
+    protected override void RemoveResource()
+    {
+        resource -= 50;
+    }
+
     protected override Dictionary<string, object> GetVariablesForDescription()
     {
         var variables = base.GetVariablesForDescription();
@@ -60,5 +70,24 @@ public class HealSpecial : AbstractSpecial
     {
         Use();
         this.mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
+    }
+
+    private float timer = 0f;
+
+    protected override void _Update()
+    {
+        if (IsLocalPlayer)
+        {
+            if (timer <= 0f)
+            {
+                if (resource < resourceAmount)
+                {
+                    resource += 2;
+                }
+                timer = 1f;
+            }
+            else
+                timer -= Time.deltaTime;
+        }
     }
 }

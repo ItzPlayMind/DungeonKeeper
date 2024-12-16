@@ -38,7 +38,8 @@ public class AxeSpecial : AbstractSpecial
         axeNetwork.gameObject.layer = layer;
         axe = axeNetwork.GetComponent<Rigidbody2D>();
         Vector2 dir = (mouseWorldPos - (Vector2)transform.position).normalized;
-        axe.GetComponent<Projectile>().onCollisionEnter += (GameObject collider) =>
+        var projectile = axe.GetComponent<Projectile>();
+        projectile.onCollisionEnter += (GameObject collider) =>
         {
             if (collider == gameObject)
                 return;
@@ -50,9 +51,14 @@ public class AxeSpecial : AbstractSpecial
                 else
                     stats.TakeDamage(returnDamage + (int)(characterStats.stats.specialDamage.Value * returnDamageMultiplier), axe.velocity.normalized * 3, characterStats);
             }
-            if (!returning)
-                axe.velocity = Vector2.zero;
-            returning = true;
+            else
+            {
+                if (!returning)
+                {
+                    axe.velocity = Vector2.zero;
+                }
+                returning = true;
+            }
         };
         axe.AddForce(dir * axeSpeed, ForceMode2D.Impulse);
     }

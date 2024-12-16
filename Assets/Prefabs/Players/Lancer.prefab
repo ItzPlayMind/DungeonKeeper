@@ -447,12 +447,14 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: e0c5409178fda7c4b912a6b43614dae8, type: 3}
   description: Charge forward for 1.1 seconds, deal {Damage} to all enemies and push
     them back.
+  resourceAmount: 0
   damage: 10
   damageMultiplier: 1
   MaxCooldown: 35
   activeTime: 0
   specialIcon: {fileID: 8779248641101101650}
   specialInUseIcon: {fileID: 1673184301848521288}
+  resourceBar: {fileID: 5835170745920136333}
   movementSpeedMultiplier: {x: 0.01, y: 0.01}
   chargeSpeed: 15
   knockBackForce: 15
@@ -504,6 +506,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CanHitMultiple: 1
+--- !u!114 &5835170745920136333 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4976039802904779606, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 1582101809773297627}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ee50788519ad864882ca23d4a9c42b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8779248641101101650 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7792046669044073865, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}

@@ -12,6 +12,11 @@ public class HealHitSpecial : AbstractSpecial
     {
         if (!IsLocalPlayer) return;
         controller = GetComponent<PlayerController>();
+        controller.OnAttack += (ulong target, ulong user, ref int amount) =>
+        {
+            if(resource < resourceAmount)
+                resource++;
+        };
         hitbox.gameObject.layer = gameObject.layer;
         hitbox.onCollisionEnter += (GameObject collider) =>
         {
@@ -34,6 +39,17 @@ public class HealHitSpecial : AbstractSpecial
                 }
             }
         };
+    }
+
+
+    protected override bool HasResource()
+    {
+        return resource >= 1;
+    }
+
+    protected override void RemoveResource()
+    {
+        resource -= 1;
     }
 
     protected override void _OnSpecialFinish(PlayerController controller)

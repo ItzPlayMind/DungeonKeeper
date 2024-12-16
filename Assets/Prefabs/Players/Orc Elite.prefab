@@ -534,6 +534,17 @@ PrefabInstance:
       insertIndex: 4
       addedObject: {fileID: 2704902774952303122}
   m_SourcePrefab: {fileID: 100100000, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+--- !u!114 &1910522483206626825 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4976039802904779606, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 6885436230234113375}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ee50788519ad864882ca23d4a9c42b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3724216221799203030 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7792046669044073865, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
@@ -587,12 +598,14 @@ MonoBehaviour:
 
     Leap into the air and
     strike down, deal {Damage} damage to all enemies and push them back further.'
+  resourceAmount: 0
   damage: 45
   damageMultiplier: 1
   MaxCooldown: 15
   activeTime: 5
   specialIcon: {fileID: 3724216221799203030}
   specialInUseIcon: {fileID: 6719760635989545164}
+  resourceBar: {fileID: 1910522483206626825}
   hitboxes:
   - knockBackForce: 15
     damageMultiplier: 1

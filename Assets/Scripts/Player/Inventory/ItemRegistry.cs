@@ -271,6 +271,33 @@ public class ItemRegistry : MonoBehaviour
                    }
                });
            });
+        AddItemWithVariables("Undying Helmet", "headgear_01", CharacterType.Tank, "When falling below {Threshold}% HP regenerate {HP}% HP every {Time} seconds until at full health",
+           new StatBlock(0, 0, 0, 150, 10), 2000, 90,
+           new Dictionary<string, object>() { { "Timer", 0f }, { "Time", 0.2f }, { "Triggered", false }, { "Threshold", 10f }, { "HP", 10f } }, null, null, (item, stats, _) =>
+           {
+               if ((bool)item.variables["Triggered"])
+               {
+                   if ((float)item.variables["Timer"] > 0)
+                   {
+                       item.variables["Timer"] = (float)item.variables["Timer"] - Time.deltaTime;
+                       if ((float)item.variables["Timer"] <= 0)
+                       {
+                           stats.Heal((int)(stats.stats.health.Value * (float)item.variables["HP"] / 100f));
+                           if (stats.Health < stats.stats.health.Value)
+                               item.variables["Timer"] = (float)item.variables["Time"];
+                           else
+                               item.variables["Triggered"] = false;
+                       }
+                   }
+               }
+               if (!item.CanUse) return;
+               if (stats.Health < stats.stats.health.Value * ((float)item.variables["Threshold"] / 100f))
+               {
+                   item.variables["Timer"] = (float)item.variables["Time"];
+                   item.variables["Triggered"] = true;
+                   item.StartCooldown();
+               }
+           });
     }
 
     public Item GetItemById(string id)

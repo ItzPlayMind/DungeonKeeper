@@ -17,7 +17,6 @@ public class PlayerStats : CharacterStats
     //[SerializeField] private GameObject hitPrefab;
     private UIBar healthBar;
     private Animator animator;
-    private TMPro.TextMeshProUGUI healthText;
 
     public override void OnNetworkSpawn()
     {
@@ -31,8 +30,7 @@ public class PlayerStats : CharacterStats
             currentHealth.OnValueChanged += (int old, int value) =>
             {
                 healthBar?.UpdateBar(value / (float)stats.health.Value);
-                if (healthText != null)
-                    healthText.text = value + "/" + stats.health.Value;
+                (healthBar as TextUIBar).Text = value + "/" + stats.health.Value;
             };
         }
     }
@@ -44,13 +42,12 @@ public class PlayerStats : CharacterStats
         if (IsLocalPlayer)
         {
             healthBar = playerUI.transform.Find("Healthbar").GetComponent<UIBar>();
-            healthText = healthBar.GetComponentInChildren<TMPro.TextMeshProUGUI>();
             healthBar.UpdateBar(1f);
-            healthText.text = Health + "/" + stats.health.Value;
+            (healthBar as TextUIBar).Text = Health + "/" + stats.health.Value;
             stats.OnValuesChange += () =>
             {
                 healthBar.UpdateBar(Health / (float)stats.health.Value);
-                healthText.text = Health + "/" + stats.health.Value;
+                (healthBar as TextUIBar).Text = Health + "/" + stats.health.Value;
             };
         }
         else
@@ -88,7 +85,7 @@ public class PlayerStats : CharacterStats
             transform.position = GameManager.instance.GetSpawnPoint(gameObject.layer).position;
             animator.SetBool("death", false);
             healthBar.UpdateBar(1);
-            healthText.text = Health + "/" + stats.health.Value;
+            (healthBar as TextUIBar).Text = Health + "/" + stats.health.Value;
         }
     }
 
@@ -99,7 +96,7 @@ public class PlayerStats : CharacterStats
         if (IsLocalPlayer)
         {
             healthBar.UpdateBar(Health / (float)stats.health.Value);
-            healthText.text = Health + "/" + stats.health.Value;
+            (healthBar as TextUIBar).Text = Health + "/" + stats.health.Value;
         }
     }
 

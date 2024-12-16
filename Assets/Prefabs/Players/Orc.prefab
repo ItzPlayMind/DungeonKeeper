@@ -364,6 +364,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c56032a774e5474b89364bbb0c6abb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3290639171310304011 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4976039802904779606, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 7540366297280258141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ee50788519ad864882ca23d4a9c42b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5344524070209225449 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2490300795773199028, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
@@ -387,12 +398,14 @@ MonoBehaviour:
 
     On return deal {Damage} damage to all
     enemies in the way.'
+  resourceAmount: 0
   damage: 50
   damageMultiplier: 1
   MaxCooldown: 20
   activeTime: 0
   specialIcon: {fileID: 325994319357208020}
   specialInUseIcon: {fileID: 7667477618547848654}
+  resourceBar: {fileID: 3290639171310304011}
   returnDamage: 5
   returnDamageMultiplier: 0.5
   axePrefab: {fileID: 7681882757018740699, guid: 94fe09e140d0c4246b26e026a567c81d, type: 3}

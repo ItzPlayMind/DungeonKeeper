@@ -168,6 +168,7 @@ public class Inventory : NetworkBehaviour
         items[dest] = oldItem;
         if (IsLocalPlayer)
         {
+            inventorySlots[src].UpdateBar(0f);
             inventorySlots[src].Icon = items[src] != null ? items[src].icon : emptySlot;
             inventorySlots[dest].Icon = items[dest] != null ? items[dest].icon : emptySlot;
         }

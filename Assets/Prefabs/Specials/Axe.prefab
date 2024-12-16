@@ -78,6 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 091389c6c4209454f98c9b7bcf4cfaf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanHitMultiple: 1
 --- !u!111 &568295066177303335
 Animation:
   m_ObjectHideFlags: 0
