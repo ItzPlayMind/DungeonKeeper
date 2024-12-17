@@ -7,6 +7,7 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.Rendering.Universal;
 using static Item;
 
@@ -297,6 +298,28 @@ public class ItemRegistry : MonoBehaviour
                    item.variables["Triggered"] = true;
                    item.StartCooldown();
                }
+           });
+        AddItemWithVariables("First Strike Dagger", "stone_sword", CharacterType.Damage, "When not taking damage for {Cooldown} seconds, the next attack deals an additional {MaxHP}% Max HP damage",
+           new StatBlock(30, 0, 0, 0, 0), 1600, 10,
+           new Dictionary<string, object>() { { "MaxHP", 5f } }, (item, stats, _) =>
+           {
+               PlayerController controller = stats.GetComponent<PlayerController>();
+               AddToAction(item, () => stats.OnClientTakeDamage, (value) => stats.OnClientTakeDamage = value, (_, _) =>
+               {
+                   item.StartCooldown();
+               });
+               AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong _, ref int damage) =>
+               {
+                   if (item.CanUse)
+                   {
+                       var targetStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target].GetComponent<CharacterStats>();
+                       if (targetStats != null && !targetStats.IsDead)
+                       {
+                           targetStats.TakeDamage((int)(targetStats.stats.health.Value * ((float)item.variables["MaxHP"] / 100f)), Vector2.zero, stats);
+                           item.StartCooldown();
+                       }
+                   }
+               });
            });
     }
 

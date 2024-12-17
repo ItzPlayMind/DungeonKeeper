@@ -40,9 +40,12 @@ public class PlayerController : NetworkBehaviour
     private float attackComboTimer = 0;
     public delegate void ActionDelegate(ulong target, ulong user, ref int amount);
     public ActionDelegate OnAttack;
+    public System.Action OnAttackPress;
     public ActionDelegate OnHeal;
 
     public bool canMove { get => !isAttacking || (special != null && special.isUsing && special.CanMoveWhileUsing()); }
+
+    private bool currentAttackFixed = false;
 
     public override void OnNetworkSpawn()
     {
@@ -82,6 +85,12 @@ public class PlayerController : NetworkBehaviour
                 }
             };
         }
+    }
+
+    public void SetCurrentAttackIndex(int index)
+    {
+        currentAttack = index;
+        currentAttackFixed = true;
     }
 
     public void Heal(CharacterStats stats, int amount)
@@ -171,7 +180,9 @@ public class PlayerController : NetworkBehaviour
             animator.SetInteger("attack", currentAttack);
             animator.SetTrigger("attacking");
             rb.velocity = Vector2.zero;
+            OnAttackPress?.Invoke();
             isAttacking = true;
+            currentAttackFixed = false;
         }
         if (inputManager.PlayerSpecialTrigger)
         {
@@ -188,10 +199,13 @@ public class PlayerController : NetworkBehaviour
         for (int i = 0; i < 6; i++)
             if(InputManager.Instance.PlayerInventoryActiveItemTriggered(i+1))
                 inventory.UseItem(i);
-        if (attackComboTimer > 0)
-            attackComboTimer -= Time.deltaTime;
-        else if (currentAttack != 0)
-            currentAttack = 0;
+        if (!currentAttackFixed)
+        {
+            if (attackComboTimer > 0)
+                attackComboTimer -= Time.deltaTime;
+            else if (currentAttack != 0)
+                currentAttack = 0;
+        }
     }
 
     private void Special()

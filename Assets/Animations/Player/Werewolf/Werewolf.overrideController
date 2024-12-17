@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Werewolf
+  m_Controller: {fileID: 9100000, guid: f0d4d41c349c96d48b8a384e0b8c40a0, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 351056548a3b9824a8f585425041fdc8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 9ba039128861c024ab2b684d41d418f4, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: ce31d2a1711220d45917723c22a2342d, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 054d38ab2da6d7b468035ae5a7c8fc58, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 46cc94e053f5383408026133d79d6fcd, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 97c7f279660246d46a913e1d1c096e31, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: b6582bb084ac7f343a6d0b7386962f91, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: c14ff55bccf1761478985881d02e2337, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: fb7401d66f5194a45ac8399355f4f9d2, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 8db2d9e01de777d429260d6d5b06207c, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 9ceb0cb4e3fa42e4f90a06e1d6c57260, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 76b95fc2f7a43874d981bafeaa7ec915, type: 2}

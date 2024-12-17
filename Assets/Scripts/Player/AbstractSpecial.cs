@@ -31,6 +31,8 @@ public abstract class AbstractSpecial : NetworkBehaviour
     private float cooldown;
     protected int resource;
 
+    public bool IsActive { get => activeTimer > 0 && !OnCooldown; }
+
     public int Resource { get => resource; }
 
     protected void UpdateResourceBar()
@@ -144,6 +146,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     private void Update()
     {
+        _UpdateAll();
         if (!IsLocalPlayer) return;
 
         if (cooldown > 0)
@@ -178,6 +181,9 @@ public abstract class AbstractSpecial : NetworkBehaviour
     protected void StartActive()
     {
         activeTimer = activeTime;
+    }
+    protected virtual void _UpdateAll()
+    {
     }
 
     protected virtual void _Update()
