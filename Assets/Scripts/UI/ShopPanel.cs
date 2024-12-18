@@ -28,7 +28,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         {
             cashText.text = "Cash: " + value;
         });
-        var allItems = ItemRegistry.Instance.GetItems();
+        var allItems = ItemRegistry.Instance.GetAll();
         foreach (var item in allItems)
         {
             var iconButton = Instantiate(iconButtonPrefab, shopTransforms[(int)item.type]);

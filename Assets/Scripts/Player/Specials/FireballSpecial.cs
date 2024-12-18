@@ -17,18 +17,18 @@ public class FireballSpecial : AbstractSpecial
         if (!IsLocalPlayer) return;
         GetComponent<PlayerController>().OnAttack += (ulong _, ulong _, ref int damage) =>
         {
-            resource += 20;
+            Resource += 20;
         };
     }
 
     protected override void RemoveResource()
     {
-        resource -= 20;
+        Resource -= 20;
     }
 
     protected override bool HasResource()
     {
-        return resource > 20;
+        return Resource > 20;
     }
 
     protected override void _OnSpecialPress(PlayerController controller)
@@ -70,7 +70,7 @@ public class FireballSpecial : AbstractSpecial
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
-                stats.TakeDamage(Damage*2, Vector2.zero, characterStats);
+                stats.TakeDamage(Damage, Vector2.zero, characterStats);
             }
         };
         fireball.GetComponent<Fireball>().onDirectHit += (collider) =>
@@ -103,9 +103,9 @@ public class FireballSpecial : AbstractSpecial
         {
             if (timer <= 0f)
             {
-                if (resource < resourceAmount)
+                if (Resource < resourceAmount)
                 {
-                    resource += 2;
+                    Resource += 2;
                 }
                 timer = 1f;
             }

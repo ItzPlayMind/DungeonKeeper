@@ -10,7 +10,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
 {
 
     [SerializeField] private Sprite icon;
-    [Multiline] [SerializeField] private string description;
+    [Multiline][SerializeField] private string description;
     [SerializeField] protected int resourceAmount;
     [SerializeField] private int damage = 5;
     [SerializeField] private float damageMultiplier = 1;
@@ -29,11 +29,14 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     private bool used = false;
     private float cooldown;
-    protected int resource;
+    private int resource;
 
     public bool IsActive { get => activeTimer > 0 && !OnCooldown; }
 
-    public int Resource { get => resource; }
+    public int Resource
+    {
+        get => resource; set => Mathf.Clamp(resource, 0, resourceAmount);
+    }
 
     protected void UpdateResourceBar()
     {
@@ -69,7 +72,8 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     public string Description { get => DescriptionCreator.Generate(description, GetVariablesForDescription()); }
 
-    protected virtual Dictionary<string, object> GetVariablesForDescription() { 
+    protected virtual Dictionary<string, object> GetVariablesForDescription()
+    {
         return new Dictionary<string, object>() { { "Damage", Damage }, { "DamageMultiplier", damageMultiplier }, { "Cooldown", MaxCooldown }, { "ActiveTime", activeTime } };
     }
 
@@ -124,7 +128,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     public void ReduceCooldown(int seconds)
     {
-        cooldown -= seconds; 
+        cooldown -= seconds;
         if (cooldown <= 0)
         {
             FinishedCooldown();
@@ -134,7 +138,8 @@ public abstract class AbstractSpecial : NetworkBehaviour
     }
 
     protected void UpdateActive(float value) => specialInUseIcon.UpdateBar(value);
-    protected void ResetActive() {
+    protected void ResetActive()
+    {
         specialInUseIcon.SetBar(0);
         activeTimer = 0;
     }

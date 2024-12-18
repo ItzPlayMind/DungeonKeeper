@@ -11,24 +11,12 @@ using UnityEngine.InputSystem.XR;
 using UnityEngine.Rendering.Universal;
 using static Item;
 
-public class ItemRegistry : MonoBehaviour
+public class ItemRegistry : Registry<Item>
 {
-
-    public static ItemRegistry Instance;
-
-    private void Awake()
-    {
-        if (Instance == null)
-            Instance = this;
-    }
-
-    //[SerializeField] private List<ItemSetting> itemSettings = new List<ItemSetting>();
-
     private Dictionary<string, Item> items = new Dictionary<string, Item>();
 
     private void Start()
     {
-
         var potion = AddItemWithVariables("HP Potion", "hp_potion", CharacterType.None, "On use gain {HP} Health", null, 100, 0, new Dictionary<string, object>() { { "HP", 100 } }, null, (Item item, CharacterStats stats, int slot) =>
         {
             stats.Heal((int)item.variables["HP"]);
@@ -54,7 +42,7 @@ public class ItemRegistry : MonoBehaviour
         List<Item> boots = new List<Item>();
         var boot = AddItem("Knights Sandles", "boots_01", CharacterType.Damage, "", new StatBlock(10, 0, 10, 0, 0), 500);
         boots.Add(boot);
-        boot = AddItem("Magical Sandles", "boots_02", CharacterType.Support, "", new StatBlock(0, 10, 10, 0, 0), 500);
+        boot = AddItem("Magical Sandles", "boots_02", CharacterType.Damage, "", new StatBlock(0, 10, 10, 0, 0), 500);
         boots.Add(boot);
         boot = AddItem("Giant Boots", "leather_boots_01", CharacterType.Tank, "", new StatBlock(0, 0, 10, 50, 0), 500);
         boots.Add(boot);
@@ -97,17 +85,6 @@ public class ItemRegistry : MonoBehaviour
                     item.variables["Timer"] = item.variables["Time"];
                 }
             }
-        });
-
-        AddItemWithVariables("Miners Ring", "ring_02", CharacterType.Support, "Increase own light range by {LightMult}x", new StatBlock(0, 15, 5, 50, 0), 1200, 0,
-            new Dictionary<string, object>() { { "LightMult", 2f } }, (item, stats, _) =>
-        {
-            var light = stats.GetComponentInChildren<Light2D>();
-            light.pointLightOuterRadius *= (float)item.variables["LightMult"];
-            item.onUnequip += (_, _, _) =>
-            {
-                light.pointLightOuterRadius /= (float)item.variables["LightMult"];
-            };
         });
 
         AddItemWithVariables("Bloodlords Blade", "sword_02", CharacterType.Damage, "Gain {LifeSteal}% Lifesteal", new StatBlock(20, 0, 10, 50, 0), 1700, 0,
@@ -322,19 +299,62 @@ public class ItemRegistry : MonoBehaviour
                });
            });
 
-        AddItemWithVariables("Magic-Infused Glove", "glove_02", CharacterType.Support, "Converts {Ratio}% of damage to special damage.",
+        AddItemWithVariables("Magic-Infused Glove", "glove_02", CharacterType.Damage, "Converts {Ratio}% of damage to special damage.",
            new StatBlock(0, 30, 0, 0, 0), 1600, 0,
            new Dictionary<string, object>() { { "Ratio", 50f } }, (item, stats, _) =>
            {
-               PlayerController controller = stats.GetComponent<PlayerController>(); 
+               PlayerController controller = stats.GetComponent<PlayerController>();
                AddToAction(item, () => stats.stats.specialDamage.ChangeValue, (value) => stats.stats.specialDamage.ChangeValue = value, (ref int damage, int old) =>
                {
                    damage += (int)(stats.stats.damage.Value * ((float)item.variables["Ratio"] / 100f));
                });
            });
+
+        var box = AddItem("Magical Box", "wooden_box", CharacterType.Support, "On use place a torch",
+           new StatBlock(0, 15, 5, 0, 0), 1400, 10, null, (item, stats, _) =>
+           {
+               var mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
+               var dir = (mouseWorldPos - stats.transform.position);
+               dir.z = 0;
+               Vector2 pos = Vector2.zero;
+               if (dir.magnitude >= 1.5f)
+                   pos = stats.transform.position + dir.normalized * 1.5f;
+               else
+                   pos = mouseWorldPos;
+               GameManager.instance.SetTorch(pos);
+               item.StartCooldown();
+           });
+
+        var ring = AddItemWithVariables("Miners Ring", "ring_02", CharacterType.Support, "Increase own light range by {LightMult}x", new StatBlock(0, 15, 5, 50, 0), 1200, 0,
+            new Dictionary<string, object>() { { "LightMult", 2f } }, (item, stats, _) =>
+            {
+                var light = stats.GetComponentInChildren<Light2D>();
+                light.pointLightOuterRadius *= (float)item.variables["LightMult"];
+                item.onUnequip += (_, _, _) =>
+                {
+                    light.pointLightOuterRadius /= (float)item.variables["LightMult"];
+                };
+            });
+        ring.sameItems.Add(box.ID);
+        box.sameItems.Add(ring.ID);
+
+        AddItemWithVariables("Bleeding Scythe", "hi_quality_scethe", CharacterType.Damage, "Applies Bleeding for {BleedTime} seconds on attack. The Bleed deals {Damage} every 1 second. Can only happen every {Cooldown} seconds.", new StatBlock(15, 0, 5, 25, 0), 1400, 2,
+            new Dictionary<string, object>() { { "BleedTime", 5 }, { "Damage", 5 } }, (item, stats, _) =>
+            {
+                PlayerController controller = stats.GetComponent<PlayerController>();
+                AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong _, ref int damage) =>
+                {
+                    if (item.CanUse)
+                    {
+                        var targetObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target];
+                        targetObject.GetComponent<EffectManager>().AddEffect("bleed", (int)item.variables["BleedTime"], (int)item.variables["Damage"], stats);
+                        item.StartCooldown();
+                    }
+                });
+            });
     }
 
-    public Item GetItemById(string id)
+    public override Item GetByID(string id)
     {
         return new Item(items[id]);
     }
@@ -364,54 +384,10 @@ public class ItemRegistry : MonoBehaviour
         return item;
     }
 
-    public Item[] GetItems()
+    public override Item[] GetAll()
     {
         var items = this.items.Values.ToList();
         items.Sort((x, y) => x.cost.CompareTo(y.cost));
         return items.Select(x => new Item(x)).ToArray();
-    }
-
-    public void AddToAction(Item item, Func<PlayerController.ActionDelegate> getAction, Action<PlayerController.ActionDelegate> setAction, PlayerController.ActionDelegate a)
-    {
-        setAction(getAction() + a);
-        item.onUnequip += (Item item, CharacterStats stats, int slot) =>
-        {
-            setAction(getAction() - a);
-        };
-    }
-    public void AddToAction(Item item, Func<AbstractSpecial.SpecialDelegate> getAction, Action<AbstractSpecial.SpecialDelegate> setAction, AbstractSpecial.SpecialDelegate a)
-    {
-        setAction(getAction() + a);
-        item.onUnequip += (Item item, CharacterStats stats, int slot) =>
-        {
-            setAction(getAction() - a);
-        };
-    }
-
-    public void AddToAction(Item item, Func<CharacterStats.DamageDelegate> getAction, Action<CharacterStats.DamageDelegate> setAction, CharacterStats.DamageDelegate a)
-    {
-        setAction(getAction() + a);
-        item.onUnequip += (Item item, CharacterStats stats, int slot) =>
-        {
-            setAction(getAction() - a);
-        };
-    }
-
-    public void AddToAction(Item item, Func<CharacterStats.DeathDelegate> getAction, Action<CharacterStats.DeathDelegate> setAction, CharacterStats.DeathDelegate a)
-    {
-        setAction(getAction() + a);
-        item.onUnequip += (Item item, CharacterStats stats, int slot) =>
-        {
-            setAction(getAction() - a);
-        };
-    }
-
-    public void AddToAction<T>(Item item, Func<StatBlock.Stat<T>.OnStatChange> getAction, Action<StatBlock.Stat<T>.OnStatChange> setAction, StatBlock.Stat<T>.OnStatChange a)
-    {
-        setAction(getAction() + a);
-        item.onUnequip += (Item item, CharacterStats stats, int slot) =>
-        {
-            setAction(getAction() - a);
-        };
     }
 }

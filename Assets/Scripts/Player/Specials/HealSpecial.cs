@@ -17,12 +17,12 @@ public class HealSpecial : AbstractSpecial
 
     protected override bool HasResource()
     {
-        return resource >= 50;
+        return Resource >= 50;
     }
 
     protected override void RemoveResource()
     {
-        resource -= 50;
+        Resource -= 50;
     }
 
     protected override Dictionary<string, object> GetVariablesForDescription()
@@ -80,9 +80,9 @@ public class HealSpecial : AbstractSpecial
         {
             if (timer <= 0f)
             {
-                if (resource < resourceAmount)
+                if (Resource < resourceAmount)
                 {
-                    resource += 2;
+                    Resource += 2;
                 }
                 timer = 1f;
             }

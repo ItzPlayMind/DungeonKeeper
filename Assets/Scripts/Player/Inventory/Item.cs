@@ -6,11 +6,6 @@ using UnityEngine;
 [System.Serializable]
 public class Item
 {
-    public class ItemFunctionConnection
-    {
-        public object FuncTo;
-        public object FuncAdder;
-    }
     public static int currentIndex = 0;
     [SerializeField] private string name;
     [SerializeField] private string id;

@@ -60,6 +60,10 @@ public class Inventory : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+#if UNITY_EDITOR
+        if(IsServer)
+            cash.Value += 2000;
+#endif
         items = new Item[INVENTORY_SIZE];
         stats = GetComponent<CharacterStats>();
     }
@@ -119,7 +123,7 @@ public class Inventory : NetworkBehaviour
     [ClientRpc]
     private void AddItemClientRPC(string itemID, int slot)
     {
-        var item = ItemRegistry.Instance.GetItemById(itemID);
+        var item = (ItemRegistry.Instance as ItemRegistry).GetByID(itemID);
         items[slot] = item;
         if (IsLocalPlayer)
             inventorySlots[slot].Icon = item.icon;

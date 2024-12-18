@@ -229,6 +229,6 @@ public class PlayerController : NetworkBehaviour
     void Move(Vector2 input)
     {
         if (canMove)
-            rb.AddForce(input*new Vector2(stats.stats.speed.Value, stats.stats.speed.Value-10), ForceMode2D.Force);
+            rb.AddForce(input*new Vector2(stats.stats.speed.Value, Mathf.Max(stats.stats.speed.Value - 10,0)), ForceMode2D.Force);
     }
 }
