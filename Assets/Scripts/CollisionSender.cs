@@ -13,7 +13,7 @@ public class CollisionSender : MonoBehaviour
     private List<int> hits = new List<int>();
     private Collider2D coll;
     private bool isEnabled = false;
-    private void Start()
+    protected virtual void Start()
     {
         coll = GetComponent<Collider2D>();
         isEnabled = coll.enabled;

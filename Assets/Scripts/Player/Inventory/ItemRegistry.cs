@@ -321,6 +321,17 @@ public class ItemRegistry : MonoBehaviour
                    }
                });
            });
+
+        AddItemWithVariables("Magic-Infused Glove", "glove_02", CharacterType.Support, "Converts {Ratio}% of damage to special damage.",
+           new StatBlock(0, 30, 0, 0, 0), 1600, 0,
+           new Dictionary<string, object>() { { "Ratio", 50f } }, (item, stats, _) =>
+           {
+               PlayerController controller = stats.GetComponent<PlayerController>(); 
+               AddToAction(item, () => stats.stats.specialDamage.ChangeValue, (value) => stats.stats.specialDamage.ChangeValue = value, (ref int damage, int old) =>
+               {
+                   damage += (int)(stats.stats.damage.Value * ((float)item.variables["Ratio"] / 100f));
+               });
+           });
     }
 
     public Item GetItemById(string id)

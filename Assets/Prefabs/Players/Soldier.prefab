@@ -1971,7 +1971,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cash:
-    m_InternalValue: 2000
+    m_InternalValue: 200
   inventorySlots:
   - {fileID: 3710029075593022428}
   - {fileID: 8248210814570732754}
