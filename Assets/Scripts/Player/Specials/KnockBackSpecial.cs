@@ -19,7 +19,7 @@ public class KnockBackSpecial : AbstractSpecial
             if (stats != null)
             {
                 stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), characterStats);
-                stats.GetComponent<EffectManager>().AddEffect("slow", 5, 70,characterStats);
+                stats.GetComponent<EffectManager>().AddEffect("slow", 3, 50,characterStats);
             }
         };
     }

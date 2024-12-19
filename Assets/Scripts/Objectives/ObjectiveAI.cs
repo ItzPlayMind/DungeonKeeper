@@ -21,6 +21,15 @@ public abstract class ObjectiveAI : NetworkBehaviour
         this.target = baseTarget;
     }
 
+    public void SetTarget(CharacterStats target)
+    {
+        if (Vector2.Distance(target.transform.position, transform.position) <= attackRange)
+        {
+            Debug.Log("SET TARGET TO " + target.name);
+            this.target = target;
+        }
+    }
+
     public override void OnNetworkSpawn()
     {
         if (!IsServer) return;

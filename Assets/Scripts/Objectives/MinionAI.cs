@@ -24,7 +24,7 @@ public class MinionAI : ObjectiveAI
 
     protected override void OnDeath(ulong id)
     {
-        NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].GetComponent<Inventory>()?.AddCash(cash);
+        GameManager.instance.AddCashToTeamFromPlayer(id,cash);
         Destroy(gameObject);
     }
 

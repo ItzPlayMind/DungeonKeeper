@@ -45,12 +45,15 @@ public class GameManager : NetworkBehaviour
     public int GOLD_FOR_KILL;
     public int GOLD_PER_SECOND;
     public int GOLD_PER_TURRET;
+    public float OUT_OF_COMBAT_TIME = 10f;
     public NetworkVariable<int> RESPAWN_TIME = new NetworkVariable<int>(5);
 
     public bool GameOver { get; private set; }
     public ChatSystem Chat { get; private set; }
     public ObjectiveSystem Objectives { get; private set; }
     public PlayerStatisticsSystem PlayerStatistics { get; private set; }
+
+    private Dictionary<ulong, ulong> playerIDNetworkID = new Dictionary<ulong, ulong>();
 
     List<ulong> redTeam = new List<ulong>();
     List<ulong> blueTeam = new List<ulong>();
@@ -119,6 +122,7 @@ public class GameManager : NetworkBehaviour
         var virtualCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
         virtualCamera.Follow = null;
         virtualCamera.transform.position = new Vector3(0, 0,virtualCamera.transform.position.z);
+        playerIDNetworkID.Clear();
         SetGlobalLight(true);
         blueTeamWinUI.SetActive(false);
         redTeamWinUI.SetActive(false);
@@ -184,7 +188,11 @@ public class GameManager : NetworkBehaviour
 
     public void StartGame()
     {
-        if (IsServer) respawnTimeTimer = 30f;
+        if (IsServer)
+        {
+            RESPAWN_TIME.Value = 5;
+            respawnTimeTimer = 30f;
+        }
         StartGameServerRPC();
     }
 
@@ -287,7 +295,6 @@ public class GameManager : NetworkBehaviour
     [ServerRpc]
     private void StartGameServerRPC()
     {
-        Objectives.SpawnObjectives();
         SpawnCharacterClientRPC();
     }
 
@@ -319,6 +326,7 @@ public class GameManager : NetworkBehaviour
         character.layer = teamLayer;
         var network = character.GetComponent<NetworkObject>();
         network.SpawnAsPlayerObject(id);
+        playerIDNetworkID.Add(id,NetworkObjectId);
         SetTeamLayerClientRPC(teamLayer, network.NetworkObjectId);
         SetTeamLightLayerClientRPC(teamLayer, new ClientRpcParams() { Send = new ClientRpcSendParams() { TargetClientIds = new List<ulong>() { id } } });
         clientSetupCount++;
@@ -331,8 +339,11 @@ public class GameManager : NetworkBehaviour
                 ids.Add(clients[item].PlayerObject.NetworkObjectId);
             }
             AllClientsSetupClientRPC(ids.ToArray());
+            Objectives.SpawnObjectives(redTeam.ToArray(), blueTeam.ToArray());
         }
     }
+
+    public ulong GetNetworkIDFromPlayerID(ulong id) => playerIDNetworkID[id];
 
     [ClientRpc]
     private void SetTeamLayerClientRPC(int id, ulong networkObjectID)
@@ -385,6 +396,25 @@ public class GameManager : NetworkBehaviour
             blueTeamWinUI.SetActive(true);
             virtualCamera.Follow = Objectives.redTeamNexusSpawn;
         }
+    }
+
+    public void AddCashToTeamFromPlayer(ulong id, int cash)
+    {
+        List<ulong> team = null;
+        if (checkIfIsInTeam(id,redTeam))
+            team = redTeam;
+        if (checkIfIsInTeam(id,blueTeam))
+            team = blueTeam;
+        if (team == null) return;
+        foreach (var player in team)
+            NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.AddCash(cash);
+    }
+
+    private bool checkIfIsInTeam(ulong id, List<ulong> team)
+    {
+        foreach (var item in team)
+            if (NetworkManager.Singleton.ConnectedClients[item].PlayerObject.NetworkObjectId == id) return true;
+        return false;
     }
 
     public Transform GetSpawnPoint(int layer)

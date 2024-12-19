@@ -52,7 +52,7 @@ public class CharacterStats : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void TakeDamageServerRPC(int damage, Vector2 knockback,ulong damagerID)
+    protected virtual void TakeDamageServerRPC(int damage, Vector2 knockback,ulong damagerID)
     {
         currentHealth.Value -= Mathf.Max((int)(damage * (1 - (stats.damageReduction.Value / 100f))),0);
         OnServerTakeDamage?.Invoke(damagerID, damage);

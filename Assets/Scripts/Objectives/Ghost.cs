@@ -38,7 +38,7 @@ public class Ghost : NetworkBehaviour
         stats.OnServerDeath += (ulong damager) =>
         {
             OnDeathClientRPC(damager);
-            NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<Inventory>().AddCash(gold);
+            GameManager.instance.AddCashToTeamFromPlayer(damager, gold);
             isReturning = true;
         };
         stats.OnServerTakeDamage += (ulong damager, int damage) =>

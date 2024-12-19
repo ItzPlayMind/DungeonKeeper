@@ -62,10 +62,15 @@ public class Nexus : ObjectiveAI
         if (target == null && baseTarget != null) target = baseTarget;
         if(attackTimer > 0)
             attackTimer -= Time.deltaTime;
+        if (target != null && Vector2.Distance(target.transform.position, transform.position) > attackRange)
+            target = null;
         if (canAttack && attackTimer <= 0)
         {
-            var collisions = Physics2D.OverlapCircleAll(transform.position, detectionRange);
-            target = GetTargetFromCollisions(collisions);
+            if (target == null)
+            {
+                var collisions = Physics2D.OverlapCircleAll(transform.position, detectionRange);
+                target = GetTargetFromCollisions(collisions);
+            }
             if (target != null && !target.IsDead)
                 Attack();
             else

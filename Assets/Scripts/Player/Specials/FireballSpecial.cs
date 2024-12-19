@@ -82,9 +82,10 @@ public class FireballSpecial : AbstractSpecial
             if (stats != null)
             {
                 stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform,fireball.transform, fireballKnockback), characterStats);
+                DespawnArrowServerRPC(fireball.GetComponent<NetworkBehaviour>().NetworkObjectId);
+                return true;
             }
-            DespawnArrowServerRPC(fireball.GetComponent<NetworkBehaviour>().NetworkObjectId);
-            return true;
+            return false;
         };
         mouseWorldPos = transform.position;
     }

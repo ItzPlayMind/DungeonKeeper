@@ -67,7 +67,7 @@ public class ItemRegistry : Registry<Item>
             });
         });
 
-        AddItemWithVariables("Lifeline", "leather_armor", CharacterType.Tank, "After not beeing in combat for 10 seconds, start regenerating 5% Max HP every {Time} seconds.", new StatBlock(0, 0, 0, 200, 0), 1500, 10f,
+        AddItemWithVariables("Lifeline", "leather_armor", CharacterType.Tank, "After not beeing in combat for 10 seconds, start regenerating 5% Max HP every {Time} seconds.", new StatBlock(0, 0, 0, 200, 0), 1500, GameManager.instance.OUT_OF_COMBAT_TIME,
             new Dictionary<string, object>() { { "Timer", 1f }, { "Time", 2f } }, (item, stats, _) =>
         {
             AddToAction(item, () => stats.OnClientTakeDamage, (value) => stats.OnClientTakeDamage = value, (_, _) =>

@@ -40,30 +40,36 @@ public class ObjectiveSystem : NetworkBehaviour
         StopAllCoroutines();
     }
 
-    public void SpawnObjectives()
+    public void SpawnObjectives(ulong[] redTeam, ulong[] blueTeam)
     {
         if (!IsServer) return;
         var redNexus = Instantiate(nexusPrefab, redTeamNexusSpawn.position, redTeamNexusSpawn.rotation);
         var redNexusScript = redNexus.GetComponent<Nexus>();
         redNexus.Spawn();
+        SetAggroSwap(redTeam, redNexusScript);
         var blueNexus = Instantiate(nexusPrefab, blueTeamNexusSpawn.position, blueTeamNexusSpawn.rotation);
         var blueNexusScript = blueNexus.GetComponent<Nexus>();
         blueNexus.Spawn();
+        SetAggroSwap(redTeam, blueNexusScript);
         var redTurrets = new ulong[redTeamTurretSpawns.Length];
         for (int i = 0; i < redTeamTurretSpawns.Length; i++)
         {
             var turret = Instantiate(turretPrefab, redTeamTurretSpawns[i].position, Quaternion.identity);
             turret.Spawn();
-            redNexusScript.AddPreviousObjective(turret.GetComponent<ObjectiveAI>());
+            var ai = turret.GetComponent<ObjectiveAI>();
+            redNexusScript.AddPreviousObjective(ai);
             redTurrets[i] = turret.NetworkObjectId;
+            SetAggroSwap(redTeam, ai);
         }
         var blueTurrets = new ulong[blueTeamTurretSpawns.Length];
         for (int i = 0; i < blueTeamTurretSpawns.Length; i++)
         {
             var turret = Instantiate(turretPrefab, blueTeamTurretSpawns[i].position, Quaternion.identity);
-            turret.Spawn(); 
-            blueNexusScript.AddPreviousObjective(turret.GetComponent<ObjectiveAI>());
+            turret.Spawn();
+            var ai = turret.GetComponent<ObjectiveAI>();
+            blueNexusScript.AddPreviousObjective(ai);
             blueTurrets[i] = turret.NetworkObjectId;
+            SetAggroSwap(blueTeam, ai);
         }
         for (int i = 0; i < objectivesPrefabs.Length; i++)
             Instantiate(objectivesPrefabs[i], objectivesSpawns[i].position, Quaternion.identity).Spawn();
@@ -72,6 +78,23 @@ public class ObjectiveSystem : NetworkBehaviour
         blueNexusScript.OnMinionSpawnEvent += () => StartCoroutine(SpawnMinions(blueMinionPrefab, blueMinionSpawn, redNexus.GetComponent<CharacterStats>()));
         StartCoroutine(StartSpawnMinionWave(redNexusScript));
         StartCoroutine(StartSpawnMinionWave(blueNexusScript));
+    }
+
+    private void SetAggroSwap(ulong[] team, ObjectiveAI ai)
+    {
+        foreach (var playerID in team)
+        {
+            var playerStats = NetworkManager.Singleton.ConnectedClients[playerID].PlayerObject.GetComponent<PlayerStats>();
+            if (playerStats == null)
+            {
+                return;
+            }
+            playerStats.OnServerTakeDamage += (ulong damager, int damage) => {
+                var targetStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<PlayerStats>();
+                if (targetStats != null)
+                    ai.SetTarget(targetStats);
+            };
+        }
     }
 
     private IEnumerator SpawnMinions(NetworkObject minionPrefab, Transform spawn, CharacterStats target)

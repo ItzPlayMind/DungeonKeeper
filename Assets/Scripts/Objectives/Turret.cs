@@ -1,3 +1,4 @@
+using Cinemachine.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -26,7 +27,7 @@ public class Turret : ObjectiveAI
 
     protected override void OnDeath(ulong id)
     {
-        NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].GetComponent<Inventory>()?.AddCash(GameManager.instance.GOLD_PER_TURRET);
+        GameManager.instance.AddCashToTeamFromPlayer(id, GameManager.instance.GOLD_PER_TURRET);
         Destroy(gameObject);
     }
 
@@ -44,10 +45,16 @@ public class Turret : ObjectiveAI
         if (target == null && baseTarget != null) target = baseTarget;
         if (attackTimer > 0)
             attackTimer -= Time.deltaTime;
+
+        if (target != null && Vector2.Distance(target.transform.position, transform.position) > attackRange)
+            target = null;
         if (canAttack && attackTimer <= 0)
         {
-            var collisions = Physics2D.OverlapCircleAll(transform.position, detectionRange);
-            target = GetTargetFromCollisions(collisions);
+            if (target == null)
+            {
+                var collisions = Physics2D.OverlapCircleAll(transform.position, detectionRange);
+                target = GetTargetFromCollisions(collisions);
+            }
             if (target != null && !target.IsDead)
                 Attack();
             else
@@ -59,4 +66,5 @@ public class Turret : ObjectiveAI
         canAttack = false;
         animator.SetTrigger("Attack");
     }
+
 }
