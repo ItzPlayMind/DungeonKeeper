@@ -40,9 +40,9 @@ public class ItemRegistry : Registry<Item>
         torch.multiple = true;
 
         List<Item> boots = new List<Item>();
-        var boot = AddItem("Knights Sandles", "boots_01", CharacterType.Damage, "", new StatBlock(10, 0, 10, 0, 0), 500);
+        var boot = AddItem("Knights Sandles", "boots_01", CharacterType.Damage, "", new StatBlock(20, 0, 10, 0, 0), 500);
         boots.Add(boot);
-        boot = AddItem("Magical Sandles", "boots_02", CharacterType.Damage, "", new StatBlock(0, 10, 10, 0, 0), 500);
+        boot = AddItem("Magical Sandles", "boots_02", CharacterType.Damage, "", new StatBlock(0, 20, 10, 0, 0), 500);
         boots.Add(boot);
         boot = AddItem("Giant Boots", "leather_boots_01", CharacterType.Tank, "", new StatBlock(0, 0, 10, 50, 0), 500);
         boots.Add(boot);
@@ -87,7 +87,7 @@ public class ItemRegistry : Registry<Item>
             }
         });
 
-        AddItemWithVariables("Bloodlords Blade", "sword_02", CharacterType.Damage, "Gain {LifeSteal}% Lifesteal", new StatBlock(20, 0, 10, 50, 0), 1700, 0,
+        AddItemWithVariables("Bloodlords Blade", "sword_02", CharacterType.Damage, "Gain {LifeSteal}% Lifesteal", new StatBlock(40, 0, 10, 50, 0), 1700, 0,
             new Dictionary<string, object>() { { "LifeSteal", 15f } }, (item, stats, _) =>
         {
             var controller = stats.GetComponent<PlayerController>();
@@ -124,7 +124,7 @@ public class ItemRegistry : Registry<Item>
             }
         });
 
-        AddItem("Wind Sigil", "circlet", CharacterType.Damage, "On use dash towards the targeted position", new StatBlock(5, 5, 5, 50, 0), 1200, 20,
+        AddItem("Wind Sigil", "circlet", CharacterType.Damage, "On use dash towards the targeted position", new StatBlock(10, 10, 5, 50, 0), 1200, 20,
             null, (item, stats, _) =>
             {
                 var mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
@@ -136,7 +136,7 @@ public class ItemRegistry : Registry<Item>
             });
 
         AddItemWithVariables("Guillotine", "hoe", CharacterType.Damage, "Executes players below {ExecutePerc}% of their Maximum Health. Can only accure once every {Cooldown} seconds",
-            new StatBlock(25, 0, 5, 50, 0), 2000, 10,
+            new StatBlock(50, 0, 5, 50, 0), 2000, 10,
             new Dictionary<string, object>() { { "ExecutePerc", 5f } }, (item, stats, _) =>
             {
                 var controller = stats.GetComponent<PlayerController>();
@@ -154,7 +154,7 @@ public class ItemRegistry : Registry<Item>
             });
 
         AddItemWithVariables("Bolstering Gloves", "glove_01", CharacterType.Damage, "Gain {DamageReductionPerc}% Damage Reduction on the first hit. Can only accure once every {Cooldown} seconds",
-            new StatBlock(25, 0, 5, 0, 0), 1600, 20,
+            new StatBlock(40, 0, 5, 0, 0), 1600, 20,
             new Dictionary<string, object>() { { "DamageReductionPerc", 30f } }, (item, stats, _) =>
             {
                 AddToAction(item, () => stats.stats.damageReduction.ChangeValue, (value) => stats.stats.damageReduction.ChangeValue = value, (ref float value, float _) =>
@@ -227,7 +227,7 @@ public class ItemRegistry : Registry<Item>
            });
 
         AddItemWithVariables("Magic Blade", "sword_01", CharacterType.Damage, "The next attack after a special deals extra {Damage} damage. Can only accure once every {Cooldown} seconds",
-           new StatBlock(15, 0, 0, 0, 0), 1200, 2,
+           new StatBlock(30, 20, 0, 0, 0), 1200, 2,
            new Dictionary<string, object>() { { "Damage", 50 }, { "Triggered", false } }, (item, stats, _) =>
            {
                AbstractSpecial special = stats.GetComponent<AbstractSpecial>();
@@ -338,7 +338,7 @@ public class ItemRegistry : Registry<Item>
         ring.sameItems.Add(box.ID);
         box.sameItems.Add(ring.ID);
 
-        AddItemWithVariables("Bleeding Scythe", "hi_quality_scethe", CharacterType.Damage, "Applies Bleeding for {BleedTime} seconds on attack. The Bleed deals {Damage} every 1 second. Can only happen every {Cooldown} seconds.", new StatBlock(15, 0, 5, 25, 0), 1400, 2,
+        AddItemWithVariables("Bleeding Scythe", "hi_quality_scethe", CharacterType.Damage, "Applies Bleeding for {BleedTime} seconds on attack. The Bleed deals {Damage} every 1 second. Can only happen every {Cooldown} seconds.", new StatBlock(30, 0, 5, 25, 0), 1400, 2,
             new Dictionary<string, object>() { { "BleedTime", 5 }, { "Damage", 5 } }, (item, stats, _) =>
             {
                 PlayerController controller = stats.GetComponent<PlayerController>();

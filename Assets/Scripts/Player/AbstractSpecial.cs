@@ -35,7 +35,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     public int Resource
     {
-        get => resource; set => Mathf.Clamp(resource, 0, resourceAmount);
+        get => resource; set => resource = Mathf.Clamp(value, 0, resourceAmount);
     }
 
     protected void UpdateResourceBar()

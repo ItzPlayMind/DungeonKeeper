@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.InputSystem;
@@ -319,6 +320,7 @@ public class GameManager : NetworkBehaviour
         var network = character.GetComponent<NetworkObject>();
         network.SpawnAsPlayerObject(id);
         SetTeamLayerClientRPC(teamLayer, network.NetworkObjectId);
+        SetTeamLightLayerClientRPC(teamLayer, new ClientRpcParams() { Send = new ClientRpcSendParams() { TargetClientIds = new List<ulong>() { id } } });
         clientSetupCount++;
         if (clientSetupCount == playerCount)
         {
@@ -337,7 +339,12 @@ public class GameManager : NetworkBehaviour
     {
         var player = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectID];
         player.gameObject.layer = id;
-        if(id == LayerMask.NameToLayer(redTeamlayer))
+    }
+
+    [ClientRpc]
+    private void SetTeamLightLayerClientRPC(int id, ClientRpcParams param)
+    {
+        if (id == LayerMask.NameToLayer(redTeamlayer))
             Camera.main.cullingMask = redCameraLayer;
         else
             Camera.main.cullingMask = blueCameraLayer;
@@ -354,9 +361,21 @@ public class GameManager : NetworkBehaviour
 
     public void Win(int team)
     {
+        WinServerRPC(team);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void WinServerRPC(int team)
+    {
+        WinClientRPC(team);
+    }
+
+    [ClientRpc]
+    private void WinClientRPC(int team)
+    {
         GameOver = true;
         var virtualCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
-        if(team == LayerMask.NameToLayer(redTeamlayer))
+        if (team == LayerMask.NameToLayer(redTeamlayer))
         {
             redTeamWinUI.SetActive(true);
             virtualCamera.Follow = Objectives.blueTeamNexusSpawn;
