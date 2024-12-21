@@ -32,7 +32,7 @@ public class Nexus : ObjectiveAI
             if (e == AnimationEventSender.AnimationEvent.SelfKnockBack)
                 OnMinionSpawnEvent?.Invoke();
         };
-        stats.stats.damageReduction.ChangeValue += (ref float value, float old) =>
+        stats.stats.damageReduction.ChangeValueAdd += (ref float value, float old) =>
         {
             if (otherObjectives.Any(x => x != null)) value = 100;
         };

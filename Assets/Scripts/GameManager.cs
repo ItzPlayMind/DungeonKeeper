@@ -64,6 +64,8 @@ public class GameManager : NetworkBehaviour
     private bool isShuttingDown;
     private int clientSetupCount = 0;
 
+    private List<Light2D> lights = new List<Light2D>();
+
     private void Start()
     {
         Objectives.Setup(redTeamlayer,blueTeamlayer);
@@ -119,6 +121,7 @@ public class GameManager : NetworkBehaviour
     {
         while (NetworkManager.Singleton.ShutdownInProgress)
             yield return new WaitForEndOfFrame();
+        lights.Clear();
         var virtualCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
         virtualCamera.Follow = null;
         virtualCamera.transform.position = new Vector3(0, 0,virtualCamera.transform.position.z);
@@ -340,8 +343,11 @@ public class GameManager : NetworkBehaviour
             }
             AllClientsSetupClientRPC(ids.ToArray());
             Objectives.SpawnObjectives(redTeam.ToArray(), blueTeam.ToArray());
+            lights.AddRange(FindObjectsOfType<Light2D>());
         }
     }
+
+    public Light2D[] GetLights() => lights.ToArray();
 
     public ulong GetNetworkIDFromPlayerID(ulong id) => playerIDNetworkID[id];
 

@@ -6,7 +6,7 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using static UnityEngine.Rendering.DebugUI;
+using UnityEngine.UIElements;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -42,6 +42,8 @@ public class PlayerController : NetworkBehaviour
     public ActionDelegate OnAttack;
     public System.Action OnAttackPress;
     public ActionDelegate OnHeal;
+
+    public CharacterStats HoveredStats { get; private set; }
 
     public bool canMove { get => !isAttacking || (special != null && special.isUsing && special.CanMoveWhileUsing()); }
 
@@ -154,6 +156,8 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    private float scanTimer = 0.05f;
+
     // Update is called once per frame
     void Update()
     {
@@ -161,9 +165,37 @@ public class PlayerController : NetworkBehaviour
         if (!IsLocalPlayer)
             return;
         if (GameManager.instance.GameOver) return;
+        if (scanTimer <= 0f)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition), Vector2.zero);
+            if (hit.transform != null)
+            {
+                if (hit.transform.gameObject == stats.gameObject) return;
+                var targetStats = hit.transform.GetComponent<CharacterStats>();
+                HoveredStats = targetStats;
+            }
+            scanTimer = 0.05f;
+        }
+        else
+            scanTimer -= Time.deltaTime;
         if (inputManager.PlayerShopTrigger)
             shopPanel.Toggle();
         if (stats.IsDead) return;
+        /*bool isInLight = false;
+        Debug.Log(GameManager.instance.GetLights().Length);
+        foreach (var light in GameManager.instance.GetLights())
+        {
+            var distance = (light.transform.position - transform.position).magnitude;
+            if (distance <= light.pointLightOuterRadius)
+            {
+                isInLight = true;
+                SetInLight(true);
+                break;
+            }
+        }
+        if (!isInLight && transform.tag == "InLight")
+            SetInLight(false);
+        */
         inventory.UpdateItems();
         if (!isAttacking || (special != null && special.UseRotation && special.isUsing))
         {
@@ -206,6 +238,22 @@ public class PlayerController : NetworkBehaviour
             else if (currentAttack != 0)
                 currentAttack = 0;
         }
+    }
+
+    private void SetInLight(bool value)
+    {
+        SetInLightServerRpc(value);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetInLightServerRpc(bool value) {
+        SetInLightClientRpc(value);
+    }
+
+    [ClientRpc]
+    private void SetInLightClientRpc(bool value)
+    {
+        transform.tag = value ? "InLight" : "Untagged";
     }
 
     private void Special()

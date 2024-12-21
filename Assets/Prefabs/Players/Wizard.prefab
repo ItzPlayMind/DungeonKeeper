@@ -559,8 +559,8 @@ MonoBehaviour:
   resourceAmount: 100
   damage: 30
   damageMultiplier: 1
-  MaxCooldown: 1
-  activeTime: 0
+  MaxCooldown: 10
+  activeTime: 5
   specialIcon: {fileID: 8346393580489717661}
   specialInUseIcon: {fileID: 2106040733795952519}
   resourceBar: {fileID: 6555200651453524290}

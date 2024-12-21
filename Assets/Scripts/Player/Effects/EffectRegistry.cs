@@ -11,9 +11,9 @@ public class EffectRegistry : Registry<Effect>
     {
         AddEffect("Slow", (Effect effect, CharacterStats stats) =>
         {
-            AddToAction(effect, () => stats.stats.speed.ChangeValue, (value) => stats.stats.speed.ChangeValue = value, (ref int speed, int oldSpeed) =>
+        AddToAction(effect, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
             {
-                speed -= (int)effect.amount;
+                speed *= (int)(effect.amount/100f);
             });
         });
         AddEffect("Bleed", new Dictionary<string, object>() { { "Timer", 1f} }, null, (Effect effect, CharacterStats stats) =>

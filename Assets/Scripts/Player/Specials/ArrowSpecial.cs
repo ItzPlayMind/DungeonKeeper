@@ -81,7 +81,8 @@ public class ArrowSpecial : AbstractSpecial
             {
                 stats.TakeDamage(Damage, Vector2.zero, characterStats);
             }
-            DespawnArrowServerRPC(arrow.GetComponent<NetworkBehaviour>().NetworkObjectId);
+            if (stats != null || collider.layer == LayerMask.NameToLayer("Default"))
+                DespawnArrowServerRPC(arrow.GetComponent<NetworkBehaviour>().NetworkObjectId);
         };
         mouseWorldPos = transform.position;
     }

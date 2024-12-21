@@ -23,7 +23,7 @@ public class BlockSpecial : AbstractSpecial
     {
         StartCooldown();
         if (IsLocalPlayer)
-            characterStats.stats.damageReduction.ChangeValue -= ChangeDamageReduction; 
+            characterStats.stats.damageReduction.ConstraintValue -= ChangeDamageReduction; 
         isBlocking = false;
     }
 
@@ -31,7 +31,7 @@ public class BlockSpecial : AbstractSpecial
     {
         Use();
         if(IsLocalPlayer)
-            characterStats.stats.damageReduction.ChangeValue += ChangeDamageReduction;
+            characterStats.stats.damageReduction.ConstraintValue += ChangeDamageReduction;
         isBlocking = true;
     }
 

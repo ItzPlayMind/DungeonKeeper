@@ -34,7 +34,7 @@ public class InvisibilitySpecial : AbstractSpecial
     {
         controller.SetCurrentAttackIndex(1);
         if (!IsLocalPlayer) return;
-        characterStats.stats.speed.ChangeValue += InvisSpeed;
+        characterStats.stats.speed.ChangeValueAdd += InvisSpeed;
         StartActive();
         InvisibleServerRPC(25, 0);
     }
@@ -51,7 +51,7 @@ public class InvisibilitySpecial : AbstractSpecial
     {
         StartCooldown();
         InvisibleServerRPC(255, 255);
-        characterStats.stats.speed.ChangeValue -= InvisSpeed;
+        characterStats.stats.speed.ChangeValueAdd -= InvisSpeed;
     }
 
     [ServerRpc]

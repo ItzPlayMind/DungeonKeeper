@@ -10,6 +10,7 @@ public class FireballSpecial : AbstractSpecial
     [SerializeField] private float fireballKnockback = 35f;
 
     Vector2 mouseWorldPos;
+    private int stacks = 0;
 
     protected override void _Start()
     {
@@ -23,12 +24,13 @@ public class FireballSpecial : AbstractSpecial
 
     protected override void RemoveResource()
     {
-        Resource -= 20;
+        Resource -= 20 + (4 * stacks);
+        stacks = Mathf.Min(stacks + 1, 5);
     }
 
     protected override bool HasResource()
     {
-        return Resource > 20;
+        return Resource > 20 + (4*stacks);
     }
 
     protected override void _OnSpecialPress(PlayerController controller)
@@ -40,6 +42,13 @@ public class FireballSpecial : AbstractSpecial
     protected override void _OnSpecialFinish(PlayerController controller)
     {
         SpawnFireballServerRPC(OwnerClientId, gameObject.layer);
+        StartActive();
+        Finish();
+    }
+
+    protected override void OnActiveOver()
+    {
+        stacks = 0;
         StartCooldown();
     }
 
@@ -70,7 +79,7 @@ public class FireballSpecial : AbstractSpecial
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
-                stats.TakeDamage(Damage, Vector2.zero, characterStats);
+                stats.TakeDamage(Damage+(int)(stacks*(Damage/5f)), Vector2.zero, characterStats);
             }
         };
         fireball.GetComponent<Fireball>().onDirectHit += (collider) =>
@@ -81,7 +90,10 @@ public class FireballSpecial : AbstractSpecial
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
-                stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform,fireball.transform, fireballKnockback), characterStats);
+                stats.TakeDamage(Damage + (int)(stacks * (Damage / 5f)), stats.GenerateKnockBack(stats.transform, fireball.transform, fireballKnockback), characterStats);
+            }
+            if((collider.transform.tag != "Special"))
+            {
                 DespawnArrowServerRPC(fireball.GetComponent<NetworkBehaviour>().NetworkObjectId);
                 return true;
             }

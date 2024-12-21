@@ -27,11 +27,6 @@ public class Ghost : NetworkBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         ownLight = GetComponentInChildren<Light2D>();
         coll = GetComponent<Collider2D>();
-        healthbar.UpdateBar(1f);
-        stats.OnHealthChange += (int _, int newValue) =>
-        {
-            healthbar.UpdateBar(stats.Health / (float)stats.stats.health.Value);
-        };
         if (!IsServer) return;
         originalPos = transform.position;
         rb = GetComponent<Rigidbody2D>();

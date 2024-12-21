@@ -87,7 +87,7 @@ public class ItemRegistry : Registry<Item>
             }
         });
 
-        AddItemWithVariables("Bloodlords Blade", "sword_02", CharacterType.Damage, "Gain {LifeSteal}% Lifesteal", new StatBlock(40, 0, 10, 50, 0), 1700, 0,
+        var blood_blade = AddItemWithVariables("Bloodlords Blade", "sword_02", CharacterType.Damage, "Gain {LifeSteal}% Lifesteal", new StatBlock(40, 0, 10, 50, 0), 1700, 0,
             new Dictionary<string, object>() { { "LifeSteal", 15f } }, (item, stats, _) =>
         {
             var controller = stats.GetComponent<PlayerController>();
@@ -96,6 +96,23 @@ public class ItemRegistry : Registry<Item>
                 stats.Heal((int)(damage * ((float)item.variables["LifeSteal"] / 100f)));
             });
         });
+
+        var blood_spear = AddItemWithVariables("Bloodlords Spear", "spear_02", CharacterType.Damage, "Attacks deal an additional {CurrentHealthPerc}% current health damage. Heal for that amount. Only works on players", new StatBlock(35, 0, 10, 50, 0), 1700, 0,
+            new Dictionary<string, object>() { { "CurrentHealthPerc", 5f } }, (item, stats, _) =>
+            {
+                var controller = stats.GetComponent<PlayerController>();
+                AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong _, ref int damage) =>
+                {
+                    var targetStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target].GetComponent<PlayerStats>();
+                    if (targetStats == null) return;
+                    var additionalDamage = (int)(targetStats.Health * ((float)item.variables["CurrentHealthPerc"] / 100f));
+                    damage += additionalDamage;
+                    stats.Heal(additionalDamage);
+                });
+            });
+
+        blood_blade.sameItems.Add(blood_spear.ID);
+        blood_spear.sameItems.Add(blood_blade.ID);
 
         AddItemWithVariables("Last Stand", "arm_guard", CharacterType.Tank, "Convert {HealthPerc}% of damage taken into a charge\r\nOn use heal for the amount of charge built up\r\nCharges fall of after {FallOfTimer} seconds",
             new StatBlock(5, 0, 0, 300, 5), 2000, 0,
@@ -157,7 +174,7 @@ public class ItemRegistry : Registry<Item>
             new StatBlock(40, 0, 5, 0, 0), 1600, 20,
             new Dictionary<string, object>() { { "DamageReductionPerc", 30f } }, (item, stats, _) =>
             {
-                AddToAction(item, () => stats.stats.damageReduction.ChangeValue, (value) => stats.stats.damageReduction.ChangeValue = value, (ref float value, float _) =>
+                AddToAction(item, () => stats.stats.damageReduction.ChangeValueAdd, (value) => stats.stats.damageReduction.ChangeValueAdd = value, (ref float value, float _) =>
                 {
                     if (item.CanUse) value += (float)item.variables["DamageReductionPerc"];
                 });
@@ -211,19 +228,14 @@ public class ItemRegistry : Registry<Item>
            new StatBlock(0, 15, 0, 100, 0), 1700, 60,
            new Dictionary<string, object>() { { "Sacrifice", 50f } }, null, (item, stats, _) =>
            {
-               RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition), Vector2.zero);
                var controller = stats.GetComponent<PlayerController>();
-               if (hit.transform != null)
-               {
-                   if (hit.transform.gameObject == stats.gameObject) return;
-                   var targetStats = hit.transform.GetComponent<PlayerStats>();
-                   if (targetStats == null) return;
-                   int amount = stats.Health / 2;
-                   if (stats.stats.health.Value - amount <= 0) return;
-                   stats.TakeDamage(amount, Vector2.zero, stats);
-                   controller.Heal(targetStats, amount);
-                   item.StartCooldown();
-               }
+               var targetStats = controller.HoveredStats;
+               if (targetStats == null) return;
+               int amount = stats.Health / 2;
+               if (stats.stats.health.Value - amount <= 0) return;
+               stats.TakeDamage(amount, Vector2.zero, stats);
+               controller.Heal(targetStats, amount);
+               item.StartCooldown();
            });
 
         AddItemWithVariables("Magic Blade", "sword_01", CharacterType.Damage, "The next attack after a special deals extra {Damage} damage. Can only accure once every {Cooldown} seconds",
@@ -304,7 +316,7 @@ public class ItemRegistry : Registry<Item>
            new Dictionary<string, object>() { { "Ratio", 50f } }, (item, stats, _) =>
            {
                PlayerController controller = stats.GetComponent<PlayerController>();
-               AddToAction(item, () => stats.stats.specialDamage.ChangeValue, (value) => stats.stats.specialDamage.ChangeValue = value, (ref int damage, int old) =>
+               AddToAction(item, () => stats.stats.specialDamage.ChangeValueAdd, (value) => stats.stats.specialDamage.ChangeValueAdd = value, (ref int damage, int old) =>
                {
                    damage += (int)(stats.stats.damage.Value * ((float)item.variables["Ratio"] / 100f));
                });

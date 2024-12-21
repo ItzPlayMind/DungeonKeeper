@@ -12,9 +12,30 @@ public class StatBlock
     public class Stat<T>
     {
         [SerializeField] private T baseValue;
+        public T BaseValue { get => baseValue; }
         public delegate void OnStatChange(ref T value, T originalValue);
-        public OnStatChange ChangeValue;
+
+        private OnStatChange _ChangeValueAdd;
+        private OnStatChange _ChangeValueMult;
+        public OnStatChange ChangeValueAdd
+        {
+            get => _ChangeValueAdd; set
+            {
+                _ChangeValueAdd = value;
+                OnChangeValue?.Invoke();
+            }
+        }
+        public OnStatChange ChangeValueMult
+        {
+            get => _ChangeValueMult; set
+            {
+                _ChangeValueMult = value;
+                OnChangeValue?.Invoke();
+            }
+        }
         internal OnStatChange ConstraintValue;
+
+        public System.Action OnChangeValue;
 
         public Stat(T baseValue)
         {
@@ -26,7 +47,8 @@ public class StatBlock
             get
             {
                 T newValue = baseValue;
-                ChangeValue?.Invoke(ref newValue, baseValue);
+                ChangeValueAdd?.Invoke(ref newValue, baseValue);
+                ChangeValueMult?.Invoke(ref newValue, baseValue);
                 ConstraintValue?.Invoke(ref newValue, baseValue);
                 return newValue;
             }
@@ -58,22 +80,22 @@ public class StatBlock
 
     public void Add(StatBlock stats)
     {
-        damage.ChangeValue += (ref int value, int _) => value += stats.damage.Value;
-        specialDamage.ChangeValue += (ref int value, int _) => value += stats.specialDamage.Value;
-        speed.ChangeValue += (ref int value, int _) => value += stats.speed.Value;
-        health.ChangeValue += (ref int value, int _) => value += stats.health.Value;
-        damageReduction.ChangeValue += (ref float value, float _) => value += stats.damageReduction.Value;
+        damage.ChangeValueAdd += (ref int value, int _) => value += stats.damage.Value;
+        specialDamage.ChangeValueAdd += (ref int value, int _) => value += stats.specialDamage.Value;
+        speed.ChangeValueAdd += (ref int value, int _) => value += stats.speed.Value;
+        health.ChangeValueAdd += (ref int value, int _) => value += stats.health.Value;
+        damageReduction.ChangeValueAdd += (ref float value, float _) => value += stats.damageReduction.Value;
         OnValuesChange?.Invoke();
     }
 
 
     public void Remove(StatBlock stats)
     {
-        damage.ChangeValue += (ref int value, int _) => value -= stats.damage.Value;
-        specialDamage.ChangeValue += (ref int value, int _) => value -= stats.specialDamage.Value;
-        speed.ChangeValue += (ref int value, int _) => value -= stats.speed.Value;
-        health.ChangeValue += (ref int value, int _) => value -= stats.health.Value;
-        damageReduction.ChangeValue += (ref float value, float _) => value -= stats.damageReduction.Value;
+        damage.ChangeValueAdd += (ref int value, int _) => value -= stats.damage.Value;
+        specialDamage.ChangeValueAdd += (ref int value, int _) => value -= stats.specialDamage.Value;
+        speed.ChangeValueAdd += (ref int value, int _) => value -= stats.speed.Value;
+        health.ChangeValueAdd += (ref int value, int _) => value -= stats.health.Value;
+        damageReduction.ChangeValueAdd += (ref float value, float _) => value -= stats.damageReduction.Value;
         OnValuesChange?.Invoke();
     }
 }
