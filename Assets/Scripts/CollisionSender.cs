@@ -30,6 +30,13 @@ public class CollisionSender : MonoBehaviour
         onCollisionEnter?.Invoke(collision.gameObject);
     }
 
+    protected bool ContainsHit(int id) => hits.Contains(id);
+
+    protected void AddToHit(int id)
+    {
+        hits.Add(id);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         var instanceID = collision.gameObject.GetInstanceID();

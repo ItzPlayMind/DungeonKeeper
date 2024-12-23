@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static DescriptionCreator;
 
 public class KnockBackSpecial : AbstractSpecial
 {
     [SerializeField] private float knockBackForce = 55;
     [SerializeField] CollisionSender hitbox;
+    [DescriptionVariable]
+    [SerializeField] private int slowAmount = 50;
+    [DescriptionVariable]
+    [SerializeField] private int slowDuration = 3;
     protected override void _Start()
     {
         if (!IsLocalPlayer) return;
@@ -19,7 +24,7 @@ public class KnockBackSpecial : AbstractSpecial
             if (stats != null)
             {
                 stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), characterStats);
-                stats.GetComponent<EffectManager>().AddEffect("slow", 3, 50,characterStats);
+                stats.GetComponent<EffectManager>()?.AddEffect("slow", slowDuration, slowAmount,characterStats);
             }
         };
     }

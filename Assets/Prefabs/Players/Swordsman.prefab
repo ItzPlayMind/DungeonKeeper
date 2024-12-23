@@ -792,10 +792,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16a18545acf113542992c45702ee3c1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Name: Swordsman Dance
   icon: {fileID: 21300000, guid: 46d2c4babed95834880a4c501bf72d2f, type: 3}
+  hoverEvent: {fileID: 7516753268836680103}
   description: 'First:
 
-    Deal {Damage} damage and dash forward.
+    Deal {Damage1} damage and dash forward.
 
     Change to
     Second for {ActiveTime} seconds.
@@ -803,7 +805,7 @@ MonoBehaviour:
 
     Second:
 
-    Deal {Damage} damage and
+    Deal {Damage2} damage and
     dash forward.
 
     Change to Second for {ActiveTime} seconds.
@@ -812,7 +814,7 @@ MonoBehaviour:
     Third:
 
     Deal
-    {Damage} damage and dash forward further.'
+    {Damage3} damage and dash forward further.'
   resourceAmount: 0
   damage: 50
   damageMultiplier: 1
@@ -864,6 +866,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3c56032a774e5474b89364bbb0c6abb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7516753268836680103 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5813092486509865957, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 4106332420501793346}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &9075578169258799380 stripped

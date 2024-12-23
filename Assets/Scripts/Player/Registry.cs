@@ -19,7 +19,7 @@ public abstract class Registry<T> : MonoBehaviour
 
     public abstract T GetByID(string id);
 
-    public void AddToAction(Item item, Func<PlayerController.ActionDelegate> getAction, Action<PlayerController.ActionDelegate> setAction, PlayerController.ActionDelegate a)
+    public void AddToAction(Item item, Func<PlayerAttack.ActionDelegate> getAction, Action<PlayerAttack.ActionDelegate> setAction, PlayerAttack.ActionDelegate a)
     {
         setAction(getAction() + a);
         item.onUnequip += (Item item, CharacterStats stats, int slot) =>
@@ -54,7 +54,7 @@ public abstract class Registry<T> : MonoBehaviour
         };
     }
 
-    public void AddToAction<T>(Item item, Func<StatBlock.Stat<T>.OnStatChange> getAction, Action<StatBlock.Stat<T>.OnStatChange> setAction, StatBlock.Stat<T>.OnStatChange a)
+    public void AddToAction<D>(Item item, Func<StatBlock.Stat<D>.OnStatChange> getAction, Action<StatBlock.Stat<D>.OnStatChange> setAction, StatBlock.Stat<D>.OnStatChange a)
     {
         setAction(getAction() + a);
         item.onUnequip += (Item item, CharacterStats stats, int slot) =>
@@ -63,7 +63,15 @@ public abstract class Registry<T> : MonoBehaviour
         };
     }
 
-    public void AddToAction<T>(Effect effect, Func<StatBlock.Stat<T>.OnStatChange> getAction, Action<StatBlock.Stat<T>.OnStatChange> setAction, StatBlock.Stat<T>.OnStatChange a)
+    public void AddToAction<D>(Effect effect, Func<StatBlock.Stat<D>.OnStatChange> getAction, Action<StatBlock.Stat<D>.OnStatChange> setAction, StatBlock.Stat<D>.OnStatChange a)
+    {
+        setAction(getAction() + a);
+        effect.onEnd += (Effect effect, CharacterStats stats) =>
+        {
+            setAction(getAction() - a);
+        };
+    }
+    public void AddToAction(Effect effect, Func<CharacterStats.HealDelegate> getAction, Action<CharacterStats.HealDelegate> setAction, CharacterStats.HealDelegate a)
     {
         setAction(getAction() + a);
         effect.onEnd += (Effect effect, CharacterStats stats) =>

@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
 public class EffectManager : NetworkBehaviour
 {
+    [SerializeField] private UIIconBar iconPrefab;
+    [SerializeField] private Transform effectBar;
     private Dictionary<string,Effect> activeEffects = new Dictionary<string,Effect>();
 
     private CharacterStats stats;
@@ -18,9 +21,10 @@ public class EffectManager : NetworkBehaviour
     private void Update()
     {
         if (!IsLocalPlayer) return;
-        foreach (var effect in activeEffects)
+        var keys = activeEffects.Keys.ToArray();
+        for (int i = 0; i < keys.Length; i++)
         {
-            effect.Value.Update(stats);
+            activeEffects[keys[i]].Update(stats);
         }
     }
 
@@ -33,6 +37,9 @@ public class EffectManager : NetworkBehaviour
         }
         activeEffects.Add(effect.ID, effect);
         effect.onEnd += (_, _) => activeEffects.Remove(effect.ID);
+        var icon = Instantiate(iconPrefab, effectBar);
+        icon.Icon = effect.icon;
+        effect.activeIcon = icon;
         effect.Start(stats);
     }
 

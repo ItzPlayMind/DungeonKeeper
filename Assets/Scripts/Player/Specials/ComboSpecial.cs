@@ -29,6 +29,14 @@ public class ComboSpecial : AbstractSpecial
 
     private bool hit;
 
+    protected override Dictionary<string, object> GetVariablesForDescription()
+    {
+        var variables = base.GetVariablesForDescription();
+        for (int i = 0; i < hitboxes.Length; i++)
+            variables.Add("Damage" + (i + 1), (int)(Damage * hitboxes[i].damageMultiplier));
+        return variables;
+    }
+
     protected override void _Start()
     {
         animator = GetComponentInChildren<Animator>();

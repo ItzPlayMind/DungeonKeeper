@@ -11,11 +11,11 @@ public class InvisibilitySpecial : AbstractSpecial
     public override bool CanMoveWhileUsing() => false;
 
     private SpriteRenderer gfx;
-    private PlayerController controller;
+    private PlayerMeeleAttack controller;
     protected override void _Start()
     {
         gfx = transform.Find("GFX").GetComponent<SpriteRenderer>();
-        controller = GetComponent<PlayerController>();
+        controller = GetComponent<PlayerMeeleAttack>();
         if (!IsLocalPlayer) return;
         controller.OnAttackPress += () =>
         {
@@ -32,7 +32,7 @@ public class InvisibilitySpecial : AbstractSpecial
 
     protected override void _OnSpecialFinish(PlayerController controller)
     {
-        controller.SetCurrentAttackIndex(1);
+        this.controller.SetCurrentAttackIndex(1);
         if (!IsLocalPlayer) return;
         characterStats.stats.speed.ChangeValueAdd += InvisSpeed;
         StartActive();

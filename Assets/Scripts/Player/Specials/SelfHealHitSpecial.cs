@@ -5,8 +5,10 @@ using UnityEngine;
 public class SelfHealHitSpecial : AbstractSpecial
 {
     [SerializeField] CollisionSender hitbox;
-    [SerializeField] private float maxHealthPerc = 0.02f;
-    [SerializeField] private int onHitSecondsReduction = 5;
+    [DescriptionCreator.DescriptionVariable]
+    [SerializeField] private float maxHealthPerc = 2f;
+    [DescriptionCreator.DescriptionVariable]
+    [SerializeField] private int onHitSecondsReduce = 5;
 
     private List<ulong> hits = new List<ulong>();
     private PlayerController controller;
@@ -25,8 +27,8 @@ public class SelfHealHitSpecial : AbstractSpecial
             if(hits.Contains(stats.NetworkObjectId)) return;
             hits.Add(stats.NetworkObjectId);
             stats.TakeDamage(Damage, Vector2.zero, characterStats);
-            controller.Heal(characterStats, (int)(characterStats.stats.health.Value * maxHealthPerc));
-            ReduceCooldown(onHitSecondsReduction);
+            controller.Heal(characterStats, (int)(characterStats.stats.health.Value * (maxHealthPerc/100f)));
+            ReduceCooldown(onHitSecondsReduce);
         };
     }
 

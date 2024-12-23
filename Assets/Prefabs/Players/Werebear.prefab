@@ -289,6 +289,18 @@ PrefabInstance:
       propertyPath: m_Offset.x
       value: 0.034392618
       objectReference: {fileID: 0}
+    - target: {fileID: 3107465351032906959, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: attackSettings.Array.data[1].knockBack
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3107465351032906959, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: attackSettings.Array.data[0].damageMultiplier
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3107465351032906959, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: attackSettings.Array.data[1].damageMultiplier
+      value: 1.4
+      objectReference: {fileID: 0}
     - target: {fileID: 3619899937381543572, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -444,6 +456,17 @@ PrefabInstance:
       insertIndex: 2
       addedObject: {fileID: 4913796760307529584}
   m_SourcePrefab: {fileID: 100100000, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+--- !u!114 &321380862266279876 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5813092486509865957, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 6114066266905127969}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1285768031754794871 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4976039802904779606, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
@@ -504,9 +527,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4274812cb0be8e47801907d1969841a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Name: Ground Smash
   icon: {fileID: 21300000, guid: 842f9ace83132384585bbb8bb558fe9b, type: 3}
+  hoverEvent: {fileID: 321380862266279876}
   description: Slam the ground, deal {Damage} damage to all enemies hit and push
-    them back.
+    them back. Hit players are slowed by {SlowAmount}% for {SlowDuration}.
   resourceAmount: 0
   damage: 35
   damageMultiplier: 1
@@ -517,3 +542,5 @@ MonoBehaviour:
   resourceBar: {fileID: 1285768031754794871}
   knockBackForce: 55
   hitbox: {fileID: 7405058435747487577}
+  slowAmount: 50
+  slowDuration: 3

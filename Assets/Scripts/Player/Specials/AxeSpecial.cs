@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using static DescriptionCreator;
 
 public class AxeSpecial : AbstractSpecial
 {
+    [DescriptionVariable]
     [SerializeField] private int returnDamage = 5;
     [SerializeField] private float returnDamageMultiplier = 0.5f;
     [SerializeField] private NetworkObject axePrefab;
@@ -15,6 +17,9 @@ public class AxeSpecial : AbstractSpecial
     Vector2 originalPos;
     [SerializeField] Rigidbody2D axe;
     bool returning = false;
+
+    private int ReturnDamage { get => returnDamage + (int)(characterStats.stats.specialDamage.Value * returnDamageMultiplier); }
+
     protected override void _OnSpecialFinish(PlayerController controller)
     {
         SpawnAxeServerRPC(OwnerClientId, gameObject.layer);
@@ -49,7 +54,7 @@ public class AxeSpecial : AbstractSpecial
                 if(!returning)
                     stats.TakeDamage(Damage, axe.velocity.normalized*10, characterStats);
                 else
-                    stats.TakeDamage(returnDamage + (int)(characterStats.stats.specialDamage.Value * returnDamageMultiplier), axe.velocity.normalized * 3, characterStats);
+                    stats.TakeDamage(ReturnDamage, axe.velocity.normalized * 3, characterStats);
             }
             else
             {

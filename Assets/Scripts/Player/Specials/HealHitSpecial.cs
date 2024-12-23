@@ -12,7 +12,7 @@ public class HealHitSpecial : AbstractSpecial
     {
         if (!IsLocalPlayer) return;
         controller = GetComponent<PlayerController>();
-        controller.OnAttack += (ulong target, ulong user, ref int amount) =>
+        GetComponent<PlayerAttack>().OnAttack += (ulong target, ulong user, ref int amount) =>
         {
             if(Resource < resourceAmount)
                 Resource++;

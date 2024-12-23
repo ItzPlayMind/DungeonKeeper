@@ -1,20 +1,27 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 using UnityEngine.UI;
+using static DescriptionCreator;
 
 public abstract class AbstractSpecial : NetworkBehaviour
 {
 
+    public string Name;
     [SerializeField] private Sprite icon;
+    [SerializeField] private HoverEvent hoverEvent;
     [Multiline][SerializeField] private string description;
     [SerializeField] protected int resourceAmount;
     [SerializeField] private int damage = 5;
+    [DescriptionVariable]
     [SerializeField] private float damageMultiplier = 1;
     [SerializeField] private float MaxCooldown;
+    [DescriptionVariable]
     [SerializeField] private float activeTime;
     [SerializeField] private UIBar specialIcon;
     [SerializeField] private UIBar specialInUseIcon;
@@ -25,6 +32,9 @@ public abstract class AbstractSpecial : NetworkBehaviour
     public SpecialDelegate onSpecial;
 
     protected PlayerStats characterStats;
+    [DescriptionVariable]
+    public float Cooldown { get => MaxCooldown; }
+    [DescriptionVariable]
     public int Damage { get => (int)(damage + characterStats.stats.specialDamage.Value * damageMultiplier); }
 
     private bool used = false;
@@ -51,6 +61,8 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     private void Start()
     {
+        hoverEvent.onPointerEnter += () => AbilityHoverOver.Show(this);
+        hoverEvent.onPointerExit += () => AbilityHoverOver.Hide();
         characterStats = GetComponent<PlayerStats>();
         if (IsLocalPlayer)
         {
@@ -71,10 +83,13 @@ public abstract class AbstractSpecial : NetworkBehaviour
     }
 
     public string Description { get => DescriptionCreator.Generate(description, GetVariablesForDescription()); }
-
     protected virtual Dictionary<string, object> GetVariablesForDescription()
     {
-        return new Dictionary<string, object>() { { "Damage", Damage }, { "DamageMultiplier", damageMultiplier }, { "Cooldown", MaxCooldown }, { "ActiveTime", activeTime } };
+        var dictionary = new Dictionary<string, object>();
+        AddVariablesToDictionary(this, GetType().BaseType, dictionary);
+        AddVariablesToDictionary(this, GetType(), dictionary);
+        AddPropertiesToDictionary(this, GetType(), dictionary);
+        return dictionary;
     }
 
     protected void UpdateAmountText(string value)

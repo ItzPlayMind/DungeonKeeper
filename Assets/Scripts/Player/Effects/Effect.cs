@@ -10,6 +10,8 @@ public class Effect
     public string ID { get; private set; }
 
     public delegate void EffectFunction(Effect effect, CharacterStats stats);
+    public Sprite icon;
+    public UIIconBar activeIcon;
     public EffectFunction onStart;
     public EffectFunction onEnd;
     public EffectFunction onUpdate;
@@ -32,6 +34,7 @@ public class Effect
         this.onUpdate = effect.onUpdate;
         this.variables = effect.variables;
         this.applier = effect.applier;
+        this.icon = effect.icon;
     }
 
     public void Start(CharacterStats stats)
@@ -42,6 +45,7 @@ public class Effect
 
     public void End(CharacterStats stats)
     {
+        GameObject.Destroy(activeIcon.gameObject);
         onEnd?.Invoke(this, stats);
     }
 
@@ -56,6 +60,8 @@ public class Effect
                 End(stats);
             }
         }
+        if (activeIcon != null)
+            activeIcon.UpdateBar(1-(currentTime / duration));
     }
 
     public static string GetIDFromName(string name)

@@ -19,6 +19,7 @@ public class ItemRegistry : Registry<Item>
     {
         var potion = AddItemWithVariables("HP Potion", "hp_potion", CharacterType.None, "On use gain {HP} Health", null, 100, 0, new Dictionary<string, object>() { { "HP", 100 } }, null, (Item item, CharacterStats stats, int slot) =>
         {
+
             stats.Heal((int)item.variables["HP"]);
             stats.GetComponent<Inventory>().RemoveItem(slot);
         });
@@ -90,7 +91,7 @@ public class ItemRegistry : Registry<Item>
         var blood_blade = AddItemWithVariables("Bloodlords Blade", "sword_02", CharacterType.Damage, "Gain {LifeSteal}% Lifesteal", new StatBlock(40, 0, 10, 50, 0), 1700, 0,
             new Dictionary<string, object>() { { "LifeSteal", 15f } }, (item, stats, _) =>
         {
-            var controller = stats.GetComponent<PlayerController>();
+            var controller = stats.GetComponent<PlayerAttack>();
             AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong _, ulong _, ref int damage) =>
             {
                 stats.Heal((int)(damage * ((float)item.variables["LifeSteal"] / 100f)));
@@ -100,7 +101,7 @@ public class ItemRegistry : Registry<Item>
         var blood_spear = AddItemWithVariables("Bloodlords Spear", "spear_02", CharacterType.Damage, "Attacks deal an additional {CurrentHealthPerc}% current health damage. Heal for that amount. Only works on players", new StatBlock(35, 0, 10, 50, 0), 1700, 0,
             new Dictionary<string, object>() { { "CurrentHealthPerc", 5f } }, (item, stats, _) =>
             {
-                var controller = stats.GetComponent<PlayerController>();
+                var controller = stats.GetComponent<PlayerAttack>();
                 AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong _, ref int damage) =>
                 {
                     var targetStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target].GetComponent<PlayerStats>();
@@ -156,7 +157,7 @@ public class ItemRegistry : Registry<Item>
             new StatBlock(50, 0, 5, 50, 0), 2000, 10,
             new Dictionary<string, object>() { { "ExecutePerc", 5f } }, (item, stats, _) =>
             {
-                var controller = stats.GetComponent<PlayerController>();
+                var controller = stats.GetComponent<PlayerAttack>();
                 AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong damager, ref int damage) =>
                 {
                     if (!item.CanUse) return;
@@ -243,7 +244,7 @@ public class ItemRegistry : Registry<Item>
            new Dictionary<string, object>() { { "Damage", 50 }, { "Triggered", false } }, (item, stats, _) =>
            {
                AbstractSpecial special = stats.GetComponent<AbstractSpecial>();
-               PlayerController controller = stats.GetComponent<PlayerController>();
+               PlayerAttack controller = stats.GetComponent<PlayerAttack>();
                AddToAction(item, () => special.onSpecial, (AbstractSpecial.SpecialDelegate value) => special.onSpecial = value, () =>
                {
                    if (item.CanUse)
@@ -292,7 +293,7 @@ public class ItemRegistry : Registry<Item>
            new StatBlock(30, 0, 0, 0, 0), 1600, 10,
            new Dictionary<string, object>() { { "MaxHP", 5f } }, (item, stats, _) =>
            {
-               PlayerController controller = stats.GetComponent<PlayerController>();
+               PlayerAttack controller = stats.GetComponent<PlayerAttack>();
                AddToAction(item, () => stats.OnClientTakeDamage, (value) => stats.OnClientTakeDamage = value, (_, _) =>
                {
                    item.StartCooldown();
@@ -353,7 +354,7 @@ public class ItemRegistry : Registry<Item>
         AddItemWithVariables("Bleeding Scythe", "hi_quality_scethe", CharacterType.Damage, "Applies Bleeding for {BleedTime} seconds on attack. The Bleed deals {Damage} every 1 second. Can only happen every {Cooldown} seconds.", new StatBlock(30, 0, 5, 25, 0), 1400, 2,
             new Dictionary<string, object>() { { "BleedTime", 5 }, { "Damage", 5 } }, (item, stats, _) =>
             {
-                PlayerController controller = stats.GetComponent<PlayerController>();
+                PlayerAttack controller = stats.GetComponent<PlayerAttack>();
                 AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong _, ref int damage) =>
                 {
                     if (item.CanUse)
@@ -363,6 +364,42 @@ public class ItemRegistry : Registry<Item>
                         item.StartCooldown();
                     }
                 });
+            });
+
+        AddItemWithVariables("Cursed Shield", "shield_02", CharacterType.Tank, "On taking damage curse the target for {Duration} seconds, reducing healing by {Amount}%", new StatBlock(0, 0, 0, 50, 5), 1600, 0,
+            new Dictionary<string, object>() { { "Duration", 3 }, { "Amount", 30 } }, (item, stats, _) =>
+            {
+                AddToAction(item, () => stats.OnClientTakeDamage, (value) => stats.OnClientTakeDamage = value, (ulong damagerId, int damage) =>
+                {
+                    var targetStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerId].GetComponent<PlayerStats>();
+                    if (targetStats != null)
+                    {
+                        var effects = targetStats.GetComponent<EffectManager>();
+                        effects.AddEffect("curse", (int)item.variables["Duration"], (int)item.variables["Amount"], stats);
+                    }
+                });
+            });
+        AddItemWithVariables("Cursed Cloth", "fablic_clothe", CharacterType.Damage, "On dealing damage curse the target for {Duration} seconds, reducing healing by {Amount}%", new StatBlock(25, 0, 0, 50, 0), 1600, 0,
+            new Dictionary<string, object>() { { "Duration", 3 }, { "Amount", 30 } }, (item, stats, _) =>
+            {
+                PlayerAttack controller = stats.GetComponent<PlayerAttack>();
+                AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong _, ref int damage) =>
+                {
+                    var targetObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target];
+                    targetObject.GetComponent<EffectManager>().AddEffect("curse", (int)item.variables["Duration"], (int)item.variables["Amount"], stats);
+                });
+            });
+        AddItemWithVariables("Cursed Book", "book", CharacterType.Support, "On use curse the target for {Duration} seconds, reducing healing by {Amount}%", new StatBlock(0, 15, 5, 50, 0), 1600, 30,
+            new Dictionary<string, object>() { { "Duration", 3 }, { "Amount", 100 } }, null, (item, stats, _) =>
+            {
+                var controller = stats.GetComponent<PlayerController>();
+                if (controller == null) return;
+                if (controller.HoveredStats == null) return;
+                if (item.CanUse)
+                {
+                    controller.HoveredStats.GetComponent<EffectManager>().AddEffect("curse", (int)item.variables["Duration"], (int)item.variables["Amount"], stats);
+                    item.StartCooldown();
+                }
             });
     }
 

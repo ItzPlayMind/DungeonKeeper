@@ -7,52 +7,43 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UIElements;
+using static PlayerAttack;
 
 public class PlayerController : NetworkBehaviour
 {
     public static PlayerController LocalPlayer { get; private set; }
     public static System.Action OnLocalPlayerSetup;
 
-    [System.Serializable]
-    private class AttackSetting
-    {
-        public float damageMultiplier = 1;
-        public float knockBack = 4;
-        public float selfKnockBack = 0;
-    }
-
     [SerializeField] private SpriteRenderer gfx;
-    [SerializeField] private float attackComboTime = 0.2f;
-    [SerializeField] private AttackSetting[] attackSettings = new AttackSetting[2];
-    [SerializeField] private Transform hitboxes;
     [SerializeField] private ShopPanel shopPanel;
-    [SerializeField] private GameObject pausePanel;
-    private Inventory inventory;
-    private NetworkVariable<bool> isFlipped = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    private AbstractSpecial special;
-    private AnimationEventSender animatorEvent;
-    private InputManager inputManager;
+    [SerializeField] private GameObject pausePanel; 
     private Rigidbody2D rb;
     private Animator animator;
-    private bool isAttacking;
+    private Inventory inventory; 
+    private AnimationEventSender animatorEvent;
+    public NetworkVariable<bool> isFlipped = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    private AbstractSpecial special;
+    private InputManager inputManager;
     private PlayerStats stats;
-    private int currentAttack = 0;
-    private float attackComboTimer = 0;
-    public delegate void ActionDelegate(ulong target, ulong user, ref int amount);
-    public ActionDelegate OnAttack;
-    public System.Action OnAttackPress;
     public ActionDelegate OnHeal;
+
+    private PlayerAttack attack;
+
+    public PlayerAttack Attack { get => attack; }
 
     public CharacterStats HoveredStats { get; private set; }
 
-    public bool canMove { get => !isAttacking || (special != null && special.isUsing && special.CanMoveWhileUsing()); }
-
-    private bool currentAttackFixed = false;
+    public bool canMove { get => !attack.isAttacking || (special != null && special.isUsing && special.CanMoveWhileUsing()); }
 
     public override void OnNetworkSpawn()
     {
         if (!IsLocalPlayer)
             return;
+        attack = GetComponent<PlayerAttack>();
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
+        stats = GetComponent<PlayerStats>();
+        animatorEvent = animator.GetComponent<AnimationEventSender>();
         InputManager.Instance.PlayerControls.UI.Close.performed += CloseShopOrExit;
         LocalPlayer = this;
         OnLocalPlayerSetup?.Invoke();
@@ -61,39 +52,9 @@ public class PlayerController : NetworkBehaviour
         camera.Follow = transform;
         special = GetComponent<AbstractSpecial>();
         inputManager = InputManager.Instance;
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponentInChildren<Animator>();
-        animatorEvent = animator.GetComponent<AnimationEventSender>();
-        stats = GetComponent<PlayerStats>();
-        stats.OnClientRespawn += () =>
-        {
-            isAttacking = false;
-            currentAttack = 0;
-        };
-        if (animatorEvent != null)
-            animatorEvent.OnAnimationEvent += AnimationEventCallaback; 
-        foreach (var item in hitboxes.GetComponentsInChildren<CollisionSender>())
-        {
-            item.onCollisionEnter += (collider) =>
-            {
-                if (collider == gameObject)
-                    return;
-                var stats = collider.GetComponent<CharacterStats>();
-                if (stats != null && !stats.IsDead)
-                {
-                    var damage = (int)(this.stats.stats.damage.Value * attackSettings[currentAttack].damageMultiplier);
-                    OnAttack?.Invoke(stats.NetworkObjectId, this.stats.NetworkObjectId, ref damage);
-                    stats.TakeDamage(damage, stats.GenerateKnockBack(stats.transform, transform, attackSettings[currentAttack].knockBack), this.stats);
-                }
-            };
-        }
+        animatorEvent.OnAnimationEvent += AnimationEventCallaback;
     }
 
-    public void SetCurrentAttackIndex(int index)
-    {
-        currentAttack = index;
-        currentAttackFixed = true;
-    }
 
     public void Heal(CharacterStats stats, int amount)
     {
@@ -131,23 +92,13 @@ public class PlayerController : NetworkBehaviour
             }
             return;
         }
-        for (int i = 0; i < hitboxes.childCount; i++)
-            hitboxes.GetChild(i).gameObject.layer = gameObject.layer;
+        attack.OnTeamAssigned();
     }
 
     private void AnimationEventCallaback(AnimationEventSender.AnimationEvent animationEvent)
     {
         switch (animationEvent)
         {
-            case AnimationEventSender.AnimationEvent.EndAttack:
-                animator.ResetTrigger("attacking");
-                attackComboTimer = attackComboTime;
-                currentAttack = (currentAttack + 1) % attackSettings.Length;
-                isAttacking = false;
-                break;
-            case AnimationEventSender.AnimationEvent.SelfKnockBack:
-                rb.AddForce((isFlipped.Value ? transform.right : -transform.right) * attackSettings[currentAttack].selfKnockBack, ForceMode2D.Impulse);
-                break;
             case AnimationEventSender.AnimationEvent.Special:
                 Special();
                 break;
@@ -181,23 +132,8 @@ public class PlayerController : NetworkBehaviour
         if (inputManager.PlayerShopTrigger)
             shopPanel.Toggle();
         if (stats.IsDead) return;
-        /*bool isInLight = false;
-        Debug.Log(GameManager.instance.GetLights().Length);
-        foreach (var light in GameManager.instance.GetLights())
-        {
-            var distance = (light.transform.position - transform.position).magnitude;
-            if (distance <= light.pointLightOuterRadius)
-            {
-                isInLight = true;
-                SetInLight(true);
-                break;
-            }
-        }
-        if (!isInLight && transform.tag == "InLight")
-            SetInLight(false);
-        */
         inventory.UpdateItems();
-        if (!isAttacking || (special != null && special.UseRotation && special.isUsing))
+        if (!attack.isAttacking || (special != null && special.UseRotation && special.isUsing))
         {
             Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(inputManager.MousePosition);
             if (transform.position.x > mouseWorldPos.x)
@@ -205,16 +141,11 @@ public class PlayerController : NetworkBehaviour
             if (transform.position.x < mouseWorldPos.x)
                 isFlipped.Value = false;
         }
-        if (isAttacking)
+        if (attack.isAttacking)
             return; 
         if (inputManager.PlayerAttackTrigger || inputManager.PlayerAttackHold)
         {
-            animator.SetInteger("attack", currentAttack);
-            animator.SetTrigger("attacking");
-            rb.velocity = Vector2.zero;
-            OnAttackPress?.Invoke();
-            isAttacking = true;
-            currentAttackFixed = false;
+            attack.Attack();
         }
         if (inputManager.PlayerSpecialTrigger)
         {
@@ -224,36 +155,13 @@ public class PlayerController : NetworkBehaviour
                     rb.velocity = Vector2.zero;
                     special.OnSpecialPress(this);
                     animator.SetTrigger("special");
-                    isAttacking = true;
+                    attack.SetAttacking();
                 }
             }
         }
         for (int i = 0; i < 6; i++)
             if(InputManager.Instance.PlayerInventoryActiveItemTriggered(i+1))
                 inventory.UseItem(i);
-        if (!currentAttackFixed)
-        {
-            if (attackComboTimer > 0)
-                attackComboTimer -= Time.deltaTime;
-            else if (currentAttack != 0)
-                currentAttack = 0;
-        }
-    }
-
-    private void SetInLight(bool value)
-    {
-        SetInLightServerRpc(value);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void SetInLightServerRpc(bool value) {
-        SetInLightClientRpc(value);
-    }
-
-    [ClientRpc]
-    private void SetInLightClientRpc(bool value)
-    {
-        transform.tag = value ? "InLight" : "Untagged";
     }
 
     private void Special()

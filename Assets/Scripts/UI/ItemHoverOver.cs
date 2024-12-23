@@ -3,18 +3,8 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class ItemHoverOver : NetworkBehaviour
+public class ItemHoverOver : HoverOver<Item>
 {
-    private static ItemHoverOver Instance;
-
-    public override void OnNetworkSpawn()
-    {
-        if (IsLocalPlayer)
-        {
-            Instance = this;
-            Hide();
-        }
-    }
 
     [SerializeField] private TMPro.TextMeshProUGUI nameText;
     [SerializeField] private TMPro.TextMeshProUGUI cashText;
@@ -32,18 +22,8 @@ public class ItemHoverOver : NetworkBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI descriptionText;
     [SerializeField] private RectTransform description;
 
-    public static void Show(Item item)
-    {
-        Instance.gameObject.SetActive(true);
-        Instance._Show(item);
-    }
 
-    public static void Hide()
-    {
-        Instance.gameObject.SetActive(false);
-    }
-
-    private void _Show(Item item)
+    protected override void _Show(Item item)
     {
         nameText.text = item.Name;
         cashText.text = item.cost.ToString();
@@ -83,17 +63,5 @@ public class ItemHoverOver : NetworkBehaviour
         description.gameObject.SetActive(!string.IsNullOrEmpty(item.Description));
         var rectTransform = (transform as RectTransform);
         rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, (20 + 20 + 15 + height+30));
-    }
-
-    private void Update()
-    {
-        if(gameObject.activeSelf)
-        {
-            transform.position = InputManager.Instance.MousePosition;
-            if(transform.position.y > Screen.height / 2)
-                (transform as RectTransform).pivot = new Vector2(-0.02f, 1.03f);
-            else
-                (transform as RectTransform).pivot = new Vector2(-0.02f, 0.03f);
-        }
     }
 }

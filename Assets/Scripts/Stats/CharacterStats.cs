@@ -18,13 +18,15 @@ public class CharacterStats : NetworkBehaviour
     protected NetworkVariable<int> currentHealth = new NetworkVariable<int>(0);
 
     public delegate void DamageDelegate(ulong damager, int damage);
+    public delegate void HealDelegate(ref int amount);
     public delegate void DeathDelegate(ulong killer);
 
     public int Health { get => currentHealth.Value; }
     public System.Action<int, int> OnHealthChange;
     public DamageDelegate OnServerTakeDamage;
     public DamageDelegate OnClientTakeDamage;
-    public DeathDelegate OnServerDeath;
+    public DeathDelegate OnServerDeath; 
+    public HealDelegate OnClientHeal;
     public System.Action OnServerRespawn;
     Rigidbody2D rb;
     public bool IsDead { get => dead.Value; }
@@ -77,7 +79,8 @@ public class CharacterStats : NetworkBehaviour
     {
         if (IsDead)
             return;
-        ShowHealtBar();
+        if(damager.NetworkObjectId == PlayerController.LocalPlayer.NetworkObjectId)
+            ShowHealtBar();
         TakeDamageServerRPC(damage, knockback, damager == null ? ulong.MaxValue : damager.NetworkObjectId);
     }
 
@@ -175,6 +178,7 @@ public class CharacterStats : NetworkBehaviour
 
     public void Heal(int health)
     {
+        OnClientHeal?.Invoke(ref health);
         HealServerRPC(health);
     }
 

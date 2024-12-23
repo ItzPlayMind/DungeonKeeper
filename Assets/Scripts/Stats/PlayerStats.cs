@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
 public class PlayerStats : CharacterStats
@@ -144,8 +146,11 @@ public class PlayerStats : CharacterStats
     protected override void HealClientRPC(int health)
     {
         base.HealClientRPC(health);
-        playerHealthBar.UpdateBar(Health / (float)stats.health.Value);
-        (playerHealthBar as TextUIBar).Text = Health + "/" + stats.health.Value;
+        if (IsLocalPlayer)
+        {
+            playerHealthBar.UpdateBar(Health / (float)stats.health.Value);
+            (playerHealthBar as TextUIBar).Text = Health + "/" + stats.health.Value;
+        }
     }
 
     private float healthTimer = 1f;
@@ -162,10 +167,11 @@ public class PlayerStats : CharacterStats
         }
         if (IsServer)
         {
-            foreach(var key in assistTimers.Keys)
+            var keys = assistTimers.Keys.ToArray();
+            for (int i = 0; i < keys.Length; i++)
             {
-                if (assistTimers[key] > 0)
-                    assistTimers[key] -= Time.deltaTime;
+                if (assistTimers[keys[i]] > 0)
+                    assistTimers[keys[i]] -= Time.deltaTime;
             }
             if (healthTimer > 0f)
                 healthTimer -= Time.deltaTime;

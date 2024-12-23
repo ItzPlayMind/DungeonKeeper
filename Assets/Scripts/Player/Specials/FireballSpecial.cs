@@ -16,7 +16,7 @@ public class FireballSpecial : AbstractSpecial
     {
         base._Start();
         if (!IsLocalPlayer) return;
-        GetComponent<PlayerController>().OnAttack += (ulong _, ulong _, ref int damage) =>
+        GetComponent<PlayerAttack>().OnAttack += (ulong _, ulong _, ref int damage) =>
         {
             Resource += 20;
         };
