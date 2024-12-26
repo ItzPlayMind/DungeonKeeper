@@ -9,16 +9,27 @@ using UnityEngine.UI;
 
 public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] private Button iconButtonPrefab;
+    [SerializeField] private UIButton iconButtonPrefab;
     [SerializeField] private Transform[] shopTransforms;
     [SerializeField] private TMPro.TextMeshProUGUI cashText;
-    [SerializeField] private GameObject panel;
+    [SerializeField] private Transform otherPlayerItems;
+    [SerializeField] private Button otherPlayerButton;
+    [SerializeField] private PlayerItemShow playerItemShowPrefab;
+    [SerializeField] private Transform playerItemShowParent;
+    private GameObject panel;
 
     private Inventory inventory;
 
     public bool IsActive { get => panel.activeSelf; }
 
     private Dictionary<string, Button> itemButtons = new Dictionary<string, Button>();
+
+    public static ShopPanel Instance;
+
+    public void SetInstanceToThis()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -40,7 +51,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             var buttonListener = new Button.ButtonClickedEvent();
             buttonListener.AddListener(() =>
             {
-                if (inventory.Cash >= item.cost && inventory.CanAddItem)
+                if (inventory.Cash >= item.cost && inventory.CanAddItem())
                 {
                     inventory.RemoveCash(item.cost);
                     inventory.AddItem(item);
@@ -50,8 +61,22 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                         itemButtons[item1].interactable = false;
                 }
             });
+            var buttonRightListener = new Button.ButtonClickedEvent();
+            buttonRightListener.AddListener(() =>
+            {
+                if (inventory.Cash >= item.cost && inventory.CanAddItem(true))
+                {
+                    inventory.RemoveCash(item.cost);
+                    inventory.AddItemToTeamFromPlayer(item);
+                    /*if (!item.multiple)
+                        iconButton.interactable = false;
+                    foreach (var item1 in item.sameItems)
+                        itemButtons[item1].interactable = false;*/
+                }
+            });
             itemButtons.Add(item.ID, iconButton);
             iconButton.onClick = buttonListener;
+            iconButton.onRightClick = buttonRightListener;
         }
     }
 
@@ -66,11 +91,34 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             itemButtons[item1].interactable = true;
     }
 
+    public void AddItemFromTeamToPlayer(int slot) 
+    {
+        if (!inventory.CanAddItem()) return;
+        var item = inventory.GetItem(slot,true);
+        if (item == null) return;
+        inventory.AddItem(item);
+        inventory.RemoveItemFromTeamFromPlayer(slot);
+    }
+
+    public void ToggleOtherPlayerItems()
+    {
+        otherPlayerItems.gameObject.SetActive(!otherPlayerItems.gameObject.activeSelf);
+        otherPlayerButton.transform.localScale = new Vector3(otherPlayerItems.gameObject.activeSelf ? 1 : -1, 1, 1);
+    }
+
     public void Toggle()
     {
         panel.SetActive(!panel.activeSelf);
         if (!panel.activeSelf)
             ItemHoverOver.Hide();
+    }
+
+    public PlayerItemShow CreatePlayerItemsShow(string name)
+    {
+        Debug.Log(name + " CREATED SHOW");
+        var itemShow = Instantiate(playerItemShowPrefab, playerItemShowParent);
+        itemShow.SetName(name);
+        return itemShow;
     }
 
     public void OnPointerEnter(PointerEventData eventData)

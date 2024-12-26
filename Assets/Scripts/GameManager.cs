@@ -416,6 +416,18 @@ public class GameManager : NetworkBehaviour
             NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.AddCash(cash);
     }
 
+    public void AddItemToTeamFromPlayer(ulong id, Item item)
+    {
+        List<ulong> team = null;
+        if (checkIfIsInTeam(id, redTeam))
+            team = redTeam;
+        if (checkIfIsInTeam(id, blueTeam))
+            team = blueTeam;
+        if (team == null) return;
+        foreach (var player in team)
+            NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.AddItem(item, true);
+    }
+
     private bool checkIfIsInTeam(ulong id, List<ulong> team)
     {
         foreach (var item in team)
@@ -428,5 +440,39 @@ public class GameManager : NetworkBehaviour
         if (LayerMask.LayerToName(layer) == redTeamlayer) return redTeamSpawn;
         if (LayerMask.LayerToName(layer) == blueTeamlayer) return blueTeamSpawn;
         return redTeamSpawn;
+    }
+
+    public void SwapItemsForTeamFromPlayer(ulong id, int src, int dest)
+    {
+        List<ulong> team = null;
+        if (checkIfIsInTeam(id, redTeam))
+            team = redTeam;
+        if (checkIfIsInTeam(id, blueTeam))
+            team = blueTeam;
+        if (team == null) return;
+        foreach (var player in team)
+            NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.SwapItems(src,dest,true);
+    }
+
+    public void RemoveItemToTeamFromPlayer(ulong id, int slot)
+    {
+        List<ulong> team = null;
+        if (checkIfIsInTeam(id, redTeam))
+            team = redTeam;
+        if (checkIfIsInTeam(id, blueTeam))
+            team = blueTeam;
+        if (team == null) return;
+        foreach (var player in team)
+            NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.RemoveItem(slot, true);
+    }
+
+    public ulong GetPlayerIDFromNetworkID(ulong id)
+    {
+        foreach (var item in playerIDNetworkID)
+        {
+            if (item.Value == id)
+                return item.Key;
+        }
+        return 0;
     }
 }

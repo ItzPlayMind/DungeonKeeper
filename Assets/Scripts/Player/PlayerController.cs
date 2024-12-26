@@ -37,8 +37,10 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        inventory = GetComponent<Inventory>();
         if (!IsLocalPlayer)
             return;
+        shopPanel.SetInstanceToThis();
         attack = GetComponent<PlayerAttack>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
@@ -47,7 +49,6 @@ public class PlayerController : NetworkBehaviour
         InputManager.Instance.PlayerControls.UI.Close.performed += CloseShopOrExit;
         LocalPlayer = this;
         OnLocalPlayerSetup?.Invoke();
-        inventory = GetComponent<Inventory>();
         var camera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
         camera.Follow = transform;
         special = GetComponent<AbstractSpecial>();
@@ -84,6 +85,7 @@ public class PlayerController : NetworkBehaviour
 
     public void OnTeamAssigned()
     {
+        inventory.OnTeamAssigned();
         if (!IsLocalPlayer)
         {
             if (NetworkManager.Singleton.LocalClient.PlayerObject.gameObject.layer != gameObject.layer)

@@ -6,19 +6,24 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class Inventory : NetworkBehaviour
 {
     public static int INVENTORY_SIZE = 6;
     [SerializeField] private NetworkVariable<int> cash = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] private UIIconBar[] inventorySlots = new UIIconBar[INVENTORY_SIZE];
+    [SerializeField] private UIIconBar[] teamInventorySlots = new UIIconBar[3];
     [SerializeField] private GameObject inventoryPanel;
     [SerializeField] private Sprite emptySlot;
+
+    private PlayerItemShow playerItemShow;
     private Item[] items;
+    private Item[] teamItems;
     public int Cash { get => cash.Value; }
 
-    public Item GetItem(int slot)
+    public Item GetItem(int slot, bool team = false)
     {
-        return items[slot];
+        return (team ? teamItems : items)[slot];
     }
 
     public void OnCashChange(System.Action<int> callback)
@@ -65,69 +70,85 @@ public class Inventory : NetworkBehaviour
             cash.Value += 2000;
 #endif
         items = new Item[INVENTORY_SIZE];
+        teamItems = new Item[3];
         stats = GetComponent<CharacterStats>();
     }
 
-    public bool CanAddItem
+    public void OnTeamAssigned()
     {
-        get
-        {
-            for (int i = 0; i < items.Length; i++)
-                if (items[i] == null) return true;
-            return false;
-        }
+        if(!IsLocalPlayer)
+            playerItemShow = ShopPanel.Instance.CreatePlayerItemsShow(GameManager.instance.PlayerStatistics.GetNameByClientID(OwnerClientId));
     }
 
-    public void RemoveItem(int slot)
+    public bool CanAddItem(bool team = false)
     {
-        RemoveItemServerRPC(slot);
+        var items = team ? teamItems : this.items;
+        for (int i = 0; i < items.Length; i++)
+            if (items[i] == null) return true;
+        return false;
+    }
+
+    public void RemoveItem(int slot, bool team = false)
+    {
+        RemoveItemServerRPC(slot,team);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void RemoveItemServerRPC(int slot)
+    private void RemoveItemServerRPC(int slot, bool team)
     {
-        RemoveItemClientRPC(slot);
+        RemoveItemClientRPC(slot,team);
     }
 
     [ClientRpc]
-    private void RemoveItemClientRPC(int slot)
+    private void RemoveItemClientRPC(int slot, bool team)
     {
+        var slots = team ? this.teamInventorySlots: inventorySlots;
+        var items = team ? teamItems : this.items;
         var item = items[slot];
         if (item == null) return;
         items[slot] = null;
         if (IsLocalPlayer)
         {
-            inventorySlots[slot].Icon = emptySlot;
-            inventorySlots[slot].UpdateBar(0f);
+            slots[slot].Icon = emptySlot;
+            slots[slot].UpdateBar(0f);
         }
-        item?.OnUnequip(stats, slot);
+        else
+        {
+            playerItemShow?.SetItemInSlot(emptySlot, slot);
+        }
+        if(!team)
+            item?.OnUnequip(stats, slot);
     }
 
-    public void AddItem(Item item)
+    public void AddItem(Item item, bool team = false)
     {
         int index;
-        for (index = 0; index < INVENTORY_SIZE; index++)
+        var items = team ? this.teamItems : this.items;
+        for (index = 0; index < (team ? 3 : INVENTORY_SIZE); index++)
         {
             if (items[index] == null)
                 break;
         };
-        AddItemServerRPC(item.ID, index);
+        AddItemServerRPC(item.ID, index, team);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void AddItemServerRPC(string itemID, int slot)
+    private void AddItemServerRPC(string itemID, int slot, bool team)
     {
-        AddItemClientRPC(itemID,slot);
+        AddItemClientRPC(itemID,slot,team);
     }
 
     [ClientRpc]
-    private void AddItemClientRPC(string itemID, int slot)
+    private void AddItemClientRPC(string itemID, int slot, bool team)
     {
         var item = (ItemRegistry.Instance as ItemRegistry).GetByID(itemID);
-        items[slot] = item;
+        (team ? teamItems : items)[slot] = item;
         if (IsLocalPlayer)
-            inventorySlots[slot].Icon = item.icon;
-        item?.OnEquip(stats, slot);
+            (team ? teamInventorySlots : inventorySlots)[slot].Icon = item.icon;
+        else
+            playerItemShow?.SetItemInSlot(item.icon, slot);
+        if (!team)
+            item?.OnEquip(stats, slot);
     }
 
     private float goldTimer = 1f;
@@ -153,20 +174,33 @@ public class Inventory : NetworkBehaviour
         }
     }
 
-    public void SwapItems(int src, int dest)
+    public void SwapItems(int src, int dest, bool team = false)
     {
-        SwapItemsServerRPC(src, dest);
+        SwapItemsServerRPC(src, dest,team);
+    }
+
+    public void SwapItemsForTeamFromPlayer(int src, int dest)
+    {
+        SwapItemsForTeamFromPlayerServerRPC(src, dest);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SwapItemsServerRPC(int src, int dest)
+    private void SwapItemsForTeamFromPlayerServerRPC(int src, int dest)
     {
-        SwapItemsClientRPC(src, dest);
+        GameManager.instance.SwapItemsForTeamFromPlayer(NetworkObjectId,src,dest);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SwapItemsServerRPC(int src, int dest, bool team)
+    {
+        SwapItemsClientRPC(src, dest,team);
     }
 
     [ClientRpc]
-    private void SwapItemsClientRPC(int src, int dest)
+    private void SwapItemsClientRPC(int src, int dest, bool team)
     {
+        var items = team ? teamItems : this.items;
+        var inventorySlots = team ? teamInventorySlots : this.inventorySlots;
         var oldItem = items[src];
         items[src] = items[dest];
         items[dest] = oldItem;
@@ -176,5 +210,33 @@ public class Inventory : NetworkBehaviour
             inventorySlots[src].Icon = items[src] != null ? items[src].icon : emptySlot;
             inventorySlots[dest].Icon = items[dest] != null ? items[dest].icon : emptySlot;
         }
+        else
+        {
+            playerItemShow?.SetItemInSlot(items[src] != null ? items[src].icon : emptySlot, src);
+            playerItemShow?.SetItemInSlot(items[dest] != null ? items[dest].icon : emptySlot, dest);
+        }
+    }
+
+    public void AddItemToTeamFromPlayer(Item item)
+    {
+        AddItemToTeamFromPlayerServerRPC(item.ID);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void AddItemToTeamFromPlayerServerRPC(string itemID)
+    {
+        var item = ItemRegistry.Instance.GetByID(itemID);
+        GameManager.instance.AddItemToTeamFromPlayer(NetworkObjectId, item);
+    }
+
+    public void RemoveItemFromTeamFromPlayer(int slot)
+    {
+        RemoveItemFromTeamPlayerServerRPC(slot);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RemoveItemFromTeamPlayerServerRPC(int slot)
+    {
+        GameManager.instance.RemoveItemToTeamFromPlayer(NetworkObjectId, slot);
     }
 }
