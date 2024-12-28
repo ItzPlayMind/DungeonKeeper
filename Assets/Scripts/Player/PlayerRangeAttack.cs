@@ -55,7 +55,6 @@ public class PlayerRangeAttack : PlayerAttack
         if (!IsLocalPlayer) return;
         obj.GetComponent<CollisionSender>().onCollisionEnter += (collider) =>
         {
-            Debug.Log(collider.name);
             if (collider == gameObject)
                 return;
             if (collider.gameObject.layer == gameObject.layer) return;

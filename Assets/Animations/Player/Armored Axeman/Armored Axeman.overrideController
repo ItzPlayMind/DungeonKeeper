@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Armored Axeman
+  m_Controller: {fileID: 9100000, guid: f0d4d41c349c96d48b8a384e0b8c40a0, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 351056548a3b9824a8f585425041fdc8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: f08d80fdbc36e9e4c8ac70aeb3d6e038, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: ce31d2a1711220d45917723c22a2342d, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 605cece94533a3a42b3289a10200076c, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 46cc94e053f5383408026133d79d6fcd, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: f166943565bca3643ac5edb0ae874f8b, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: b6582bb084ac7f343a6d0b7386962f91, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 4dff4e72bae27f0419ab2ac4df5aeb3f, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: fb7401d66f5194a45ac8399355f4f9d2, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 3face7a36f3d4454791965a13bedd8e3, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 9ceb0cb4e3fa42e4f90a06e1d6c57260, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: d28dd24d39f3e4a429fba62e5d424203, type: 2}

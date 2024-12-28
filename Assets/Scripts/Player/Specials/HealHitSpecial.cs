@@ -14,7 +14,7 @@ public class HealHitSpecial : AbstractSpecial
         controller = GetComponent<PlayerController>();
         GetComponent<PlayerAttack>().OnAttack += (ulong target, ulong user, ref int amount) =>
         {
-            if(Resource < resourceAmount)
+            if(Resource < characterStats.stats.resource.Value)
                 Resource++;
         };
         hitbox.gameObject.layer = gameObject.layer;

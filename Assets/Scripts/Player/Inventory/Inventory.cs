@@ -67,7 +67,7 @@ public class Inventory : NetworkBehaviour
     {
 #if UNITY_EDITOR
         if(IsServer)
-            cash.Value += 2000;
+            cash.Value += 20000;
 #endif
         items = new Item[INVENTORY_SIZE];
         teamItems = new Item[3];

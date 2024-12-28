@@ -34,6 +34,21 @@ public class EffectRegistry : Registry<Effect>
                 heal = (int)(heal * (1-(float)effect.amount/100f));
             });
         });
+        AddEffect("Timewarped", "timewarped", (Effect effect, CharacterStats stats) =>
+        {
+            effect.variables["DecayFactor"] = effect.amount / effect.duration;
+            AddToAction(effect, () => stats.stats.speed.ChangeValueAdd, (value) => stats.stats.speed.ChangeValueAdd = value, (ref int speed, int old) =>
+            {
+                speed -= (int)effect.amount;
+            });
+            AddToAction(effect, () => stats.stats.attackSpeed.ChangeValueAdd, (value) => stats.stats.attackSpeed.ChangeValueAdd = value, (ref int speed, int old) =>
+            {
+                speed -= (int)effect.amount;
+            });
+        }, (Effect effect, CharacterStats stats) =>
+        {
+            effect.amount -= (float)effect.variables["DecayFactor"] * Time.deltaTime;
+        });
     }
 
     public Effect AddEffect(string name, string iconName, Effect.EffectFunction onStart = null, Effect.EffectFunction onUpdate = null)

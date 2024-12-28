@@ -16,7 +16,6 @@ public abstract class AbstractSpecial : NetworkBehaviour
     [SerializeField] private Sprite icon;
     [SerializeField] private HoverEvent hoverEvent;
     [Multiline][SerializeField] private string description;
-    [SerializeField] protected int resourceAmount;
     [SerializeField] private int damage = 5;
     [DescriptionVariable]
     [SerializeField] private float damageMultiplier = 1;
@@ -32,7 +31,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
     public SpecialDelegate onSpecial;
 
     protected PlayerStats characterStats;
-    [DescriptionVariable]
+    [DescriptionVariable("white")]
     public float Cooldown { get => MaxCooldown; }
     [DescriptionVariable]
     public int Damage { get => (int)(damage + characterStats.stats.specialDamage.Value * damageMultiplier); }
@@ -45,14 +44,14 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     public int Resource
     {
-        get => resource; set => resource = Mathf.Clamp(value, 0, resourceAmount);
+        get => Mathf.Clamp(resource,0, characterStats.stats.resource.Value); set => resource = Mathf.Clamp(value, 0, characterStats.stats.resource.Value);
     }
 
     protected void UpdateResourceBar()
     {
-        resourceBar.UpdateBar(resource / (float)resourceAmount);
-        if (resource == 0 && resourceAmount == 0) return;
-        resourceBar.Text = resource + "/" + resourceAmount;
+        resourceBar.UpdateBar(Resource / (float)characterStats.stats.resource.Value);
+        if (resource == 0 && characterStats.stats.resource.Value == 0) return;
+        resourceBar.Text = Resource + "/" + characterStats.stats.resource.Value;
     }
 
     public virtual bool CanMoveWhileUsing() => false;
@@ -66,7 +65,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
         characterStats = GetComponent<PlayerStats>();
         if (IsLocalPlayer)
         {
-            resource = resourceAmount;
+            resource = characterStats.stats.resource.Value;
             characterStats.OnClientRespawn += () =>
             {
                 used = false;
@@ -83,9 +82,9 @@ public abstract class AbstractSpecial : NetworkBehaviour
     }
 
     public string Description { get => DescriptionCreator.Generate(description, GetVariablesForDescription()); }
-    protected virtual Dictionary<string, object> GetVariablesForDescription()
+    protected virtual Dictionary<string, Variable> GetVariablesForDescription()
     {
-        var dictionary = new Dictionary<string, object>();
+        var dictionary = new Dictionary<string, Variable>();
         AddVariablesToDictionary(this, GetType().BaseType, dictionary);
         AddVariablesToDictionary(this, GetType(), dictionary);
         AddPropertiesToDictionary(this, GetType(), dictionary);

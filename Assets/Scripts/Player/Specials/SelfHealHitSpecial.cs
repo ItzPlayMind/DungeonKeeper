@@ -5,9 +5,9 @@ using UnityEngine;
 public class SelfHealHitSpecial : AbstractSpecial
 {
     [SerializeField] CollisionSender hitbox;
-    [DescriptionCreator.DescriptionVariable]
+    [DescriptionCreator.DescriptionVariable("green")]
     [SerializeField] private float maxHealthPerc = 2f;
-    [DescriptionCreator.DescriptionVariable]
+    [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int onHitSecondsReduce = 5;
 
     private List<ulong> hits = new List<ulong>();

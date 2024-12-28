@@ -34,7 +34,7 @@ public abstract class ObjectiveAI : NetworkBehaviour
     {
         if (!IsServer) return;
         stats = GetComponent<CharacterStats>();
-        stats.stats.damageReduction.ChangeValueAdd += (ref float value, float _) =>
+        stats.stats.damageReduction.ChangeValueAdd += (ref int value, int _) =>
         {
             if (target == null) value = 90;
             else value = 0;

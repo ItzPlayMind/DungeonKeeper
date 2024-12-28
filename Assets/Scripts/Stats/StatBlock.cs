@@ -58,24 +58,30 @@ public class StatBlock
 
     public Stat<int> damage = new Stat<int>(80);
     public Stat<int> specialDamage = new Stat<int>(0);
+    public Stat<int> attackSpeed = new Stat<int>(0);
     public Stat<int> speed = new Stat<int>(0);
     public Stat<int> health = new Stat<int>(2000);
-    public Stat<float> damageReduction = new Stat<float>(0);
+    public Stat<int> damageReduction = new Stat<int>(0);
+    public Stat<int> resource = new Stat<int>(0);
     public System.Action OnValuesChange;
 
-    public StatBlock(int damage, int specialDamage, int speed, int health, float damageReduction)
+    public StatBlock(int damage, int specialDamage, int attackSpeed, int speed, int health, int damageReduction, int resource = 0)
     {
         this.damage = new Stat<int>(damage);
         this.specialDamage = new Stat<int>(specialDamage);
+        this.attackSpeed = new Stat<int>(attackSpeed);
         this.speed = new Stat<int>(speed);
         this.health = new Stat<int>(health);
-        this.damageReduction = new Stat<float>(damageReduction);
+        this.damageReduction = new Stat<int>(damageReduction);
+        this.resource = new Stat<int>(resource);
 
-        this.damageReduction.ConstraintValue += (ref float value, float old) => { value = Mathf.Clamp(value, 0, 100); };
+        this.damageReduction.ConstraintValue += (ref int value, int old) => { value = Mathf.Clamp(value, 0, 100); };
         this.damage.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
         this.specialDamage.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
         this.health.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
         this.speed.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
+        this.attackSpeed.ConstraintValue += (ref int value, int old) => { value = Mathf.Clamp(value, 0, 100); };
+        this.resource.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
     }
 
     public void Add(StatBlock stats)
@@ -83,8 +89,10 @@ public class StatBlock
         damage.ChangeValueAdd += (ref int value, int _) => value += stats.damage.Value;
         specialDamage.ChangeValueAdd += (ref int value, int _) => value += stats.specialDamage.Value;
         speed.ChangeValueAdd += (ref int value, int _) => value += stats.speed.Value;
+        attackSpeed.ChangeValueAdd += (ref int value, int _) => value += stats.attackSpeed.Value;
         health.ChangeValueAdd += (ref int value, int _) => value += stats.health.Value;
-        damageReduction.ChangeValueAdd += (ref float value, float _) => value += stats.damageReduction.Value;
+        damageReduction.ChangeValueAdd += (ref int value, int _) => value += stats.damageReduction.Value;
+        resource.ChangeValueAdd += (ref int value, int _) => value += stats.resource.Value;
         OnValuesChange?.Invoke();
     }
 
@@ -93,9 +101,11 @@ public class StatBlock
     {
         damage.ChangeValueAdd += (ref int value, int _) => value -= stats.damage.Value;
         specialDamage.ChangeValueAdd += (ref int value, int _) => value -= stats.specialDamage.Value;
-        speed.ChangeValueAdd += (ref int value, int _) => value -= stats.speed.Value;
+        speed.ChangeValueAdd += (ref int value, int _) => value -= stats.speed.Value; 
+        attackSpeed.ChangeValueAdd += (ref int value, int _) => value -= stats.attackSpeed.Value;
         health.ChangeValueAdd += (ref int value, int _) => value -= stats.health.Value;
-        damageReduction.ChangeValueAdd += (ref float value, float _) => value -= stats.damageReduction.Value;
+        damageReduction.ChangeValueAdd += (ref int value, int _) => value -= stats.damageReduction.Value;
+        resource.ChangeValueAdd += (ref int value, int _) => value -= stats.resource.Value;
         OnValuesChange?.Invoke();
     }
 }

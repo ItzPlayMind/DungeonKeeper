@@ -15,6 +15,7 @@ public class PlayerStats : CharacterStats
     [SerializeField] private TMPro.TextMeshProUGUI damageText;
     [SerializeField] private TMPro.TextMeshProUGUI specialDamageText;
     [SerializeField] private TMPro.TextMeshProUGUI speedText;
+    [SerializeField] private TMPro.TextMeshProUGUI attackSpeedText;
     [SerializeField] private TMPro.TextMeshProUGUI healthText;
     [SerializeField] private TMPro.TextMeshProUGUI damageReductionText;
 
@@ -51,14 +52,9 @@ public class PlayerStats : CharacterStats
             stats.damage.OnChangeValue += () => damageText.text = stats.damage.Value.ToString();
             stats.specialDamage.OnChangeValue += () => specialDamageText.text = stats.specialDamage.Value.ToString();
             stats.speed.OnChangeValue += () => speedText.text = stats.speed.Value.ToString();
+            stats.attackSpeed.OnChangeValue += () => attackSpeedText.text = stats.attackSpeed.Value.ToString();
             stats.health.OnChangeValue += () => healthText.text = (stats.health.Value-stats.health.BaseValue).ToString();
             stats.damageReduction.OnChangeValue += () => damageReductionText.text = stats.damageReduction.Value.ToString();
-
-            damageText.text = stats.damage.Value.ToString();
-            specialDamageText.text = stats.specialDamage.Value.ToString();
-            speedText.text = stats.speed.Value.ToString();
-            healthText.text = (stats.health.Value - stats.health.BaseValue).ToString();
-            damageReductionText.text = stats.damageReduction.Value.ToString();
 
             Healthbar.transform.parent.gameObject.SetActive(false);
             playerHealthBar = playerUI.transform.Find("Healthbar").GetComponent<UIBar>();
@@ -154,7 +150,7 @@ public class PlayerStats : CharacterStats
     }
 
     private float healthTimer = 1f;
-
+    private float statTimer = 0f;
     protected override void Update()
     {
         if (IsLocalPlayer)
@@ -163,7 +159,18 @@ public class PlayerStats : CharacterStats
                 deathScreenEffect.weight += Time.deltaTime;
             if (!IsDead && deathScreenEffect.weight > 0)
                 deathScreenEffect.weight -= Time.deltaTime;
-            
+            if (statTimer > 0)
+            {
+                statTimer -= Time.deltaTime;
+            } else {
+                damageText.text = stats.damage.Value.ToString();
+                specialDamageText.text = stats.specialDamage.Value.ToString();
+                speedText.text = stats.speed.Value.ToString();
+                attackSpeedText.text = stats.attackSpeed.Value.ToString();
+                healthText.text = (stats.health.Value - stats.health.BaseValue).ToString();
+                damageReductionText.text = stats.damageReduction.Value.ToString();
+                statTimer = 0.1f;
+            }
         }
         if (IsServer)
         {

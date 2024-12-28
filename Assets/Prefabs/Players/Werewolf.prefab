@@ -538,6 +538,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3107465351032906959, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: attackSettings.Array.data[1].selfKnockBack
+      value: -16
+      objectReference: {fileID: 0}
+    - target: {fileID: 3107465351032906959, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: attackSettings.Array.data[1].damageMultiplier
       value: 0.3
       objectReference: {fileID: 0}

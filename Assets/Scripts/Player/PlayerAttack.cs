@@ -17,6 +17,7 @@ public abstract class PlayerAttack : NetworkBehaviour
     public ActionDelegate OnAttack;
     public System.Action OnAttackPress;
     protected PlayerController controller;
+    private NetworkVariable<float> animationSpeed = new NetworkVariable<float>(1,NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     public void SetAttacking()
     {
@@ -25,11 +26,11 @@ public abstract class PlayerAttack : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        animator = GetComponentInChildren<Animator>();
         if (!IsLocalPlayer)
             return;
         controller = GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponentInChildren<Animator>();
         animatorEvent = animator.GetComponent<AnimationEventSender>();
         stats = GetComponent<PlayerStats>();
         stats.OnClientRespawn += () =>
@@ -47,6 +48,7 @@ public abstract class PlayerAttack : NetworkBehaviour
             case AnimationEventSender.AnimationEvent.EndAttack:
                 animator.ResetTrigger("attacking");
                 OnAttackEnd();
+                animationSpeed.Value = 1;
                 isAttacking = false;
                 break;
             case AnimationEventSender.AnimationEvent.SelfKnockBack:
@@ -67,6 +69,7 @@ public abstract class PlayerAttack : NetworkBehaviour
     {
         if (isAttacking)
             return;
+        animationSpeed.Value = 1 + (stats.stats.attackSpeed.Value/100f);
         OnAttackTriggered();
         animator.SetTrigger("attacking");
         rb.velocity = Vector2.zero;
@@ -78,6 +81,7 @@ public abstract class PlayerAttack : NetworkBehaviour
 
     private void Update()
     {
+        animator.speed = animationSpeed.Value;
         if (isAttacking)
             return;
         _Update();

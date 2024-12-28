@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
+using static DescriptionCreator;
 
 public class ComboSpecial : AbstractSpecial
 {
@@ -29,11 +30,11 @@ public class ComboSpecial : AbstractSpecial
 
     private bool hit;
 
-    protected override Dictionary<string, object> GetVariablesForDescription()
+    protected override Dictionary<string, Variable> GetVariablesForDescription()
     {
         var variables = base.GetVariablesForDescription();
         for (int i = 0; i < hitboxes.Length; i++)
-            variables.Add("Damage" + (i + 1), (int)(Damage * hitboxes[i].damageMultiplier));
+            variables.Add("Damage" + (i + 1), new Variable() { value = (int)(Damage * hitboxes[i].damageMultiplier), color = "blue"});
         return variables;
     }
 

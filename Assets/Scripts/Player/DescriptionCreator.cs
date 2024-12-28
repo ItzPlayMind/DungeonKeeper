@@ -8,9 +8,22 @@ using UnityEngine;
 
 public class DescriptionCreator
 {
-    public class DescriptionVariable : System.Attribute { }
+    public class DescriptionVariable : System.Attribute {
+        public string color;
 
-    public static string Generate(string description, Dictionary<string,object> variables)
+        public DescriptionVariable(string color = "blue")
+        {
+            this.color = color;
+        }
+    }
+
+    public class Variable
+    {
+        public object value;
+        public string color = "white";
+    }
+
+    public static string Generate(string description, Dictionary<string, Variable> variables)
     {
         var words = description.Split(" ");
         string text = "";
@@ -22,7 +35,9 @@ public class DescriptionCreator
                 int indexOfEnd = word.IndexOf("}");
                 var variableName = word.Substring(indexOfBegin + 1, indexOfEnd - indexOfBegin - 1);
                 if (variables.ContainsKey(variableName))
-                    text += "<color=red>" + variables[variableName] + word.Substring(indexOfEnd + 1) + "</color>";
+                {
+                    text += $"<color={variables[variableName].color}>" + variables[variableName].value + word.Substring(indexOfEnd + 1) + "</color>";
+                }
                 else
                     text += word;
             }
@@ -44,23 +59,25 @@ public class DescriptionCreator
     }
 
 
-    public static void AddVariablesToDictionary(object obj, Type type, Dictionary<string, object> dic)
+    public static void AddVariablesToDictionary(object obj, Type type, Dictionary<string, Variable> dic)
     {
         var variables = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.GetProperty).Where(field => field.GetCustomAttribute<DescriptionVariable>() != null).ToList();
         var dictionary = new Dictionary<string, object>();
         foreach (var variable in variables)
         {
-            dic.Add(FirstLetterToUpperCase(variable.Name), variable.GetValue(obj));
+            var attribute = variable.GetAttribute<DescriptionVariable>();
+            dic.Add(FirstLetterToUpperCase(variable.Name), new Variable() { value = variable.GetValue(obj), color = attribute.color });
         }
     }
 
-    public static void AddPropertiesToDictionary(object obj, Type type, Dictionary<string, object> dic)
+    public static void AddPropertiesToDictionary(object obj, Type type, Dictionary<string, Variable> dic)
     {
         var variables = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.GetProperty).Where(field => field.GetCustomAttribute<DescriptionVariable>() != null).ToList();
         var dictionary = new Dictionary<string, object>();
         foreach (var variable in variables)
         {
-            dic.Add(FirstLetterToUpperCase(variable.Name), variable.GetValue(obj));
+            var attribute = variable.GetAttribute<DescriptionVariable>();
+            dic.Add(FirstLetterToUpperCase(variable.Name), new Variable() { value = variable.GetValue(obj), color = attribute.color });
         }
     }
 }

@@ -116,7 +116,7 @@ public class FireballSpecial : AbstractSpecial
         {
             if (timer <= 0f)
             {
-                if (Resource < resourceAmount)
+                if (Resource < characterStats.stats.resource.Value)
                 {
                     Resource += 2;
                 }

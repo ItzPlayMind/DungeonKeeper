@@ -7,7 +7,7 @@ using static DescriptionCreator;
 public class OnHitDamageAndHealSpecial : AbstractSpecial
 {
     [DescriptionVariable]
-    public int ResourceDamage { get => (int)(Damage * (Resource / (float)resourceAmount)); }
+    public int ResourceDamage { get => (int)(Damage * (Resource / (float)characterStats.stats.resource.Value)); }
     [DescriptionVariable]
     public int HealAmount { get => (int)((characterStats.stats.health.Value-characterStats.Health) * 0.1f) + ResourceDamage * 2; }
 

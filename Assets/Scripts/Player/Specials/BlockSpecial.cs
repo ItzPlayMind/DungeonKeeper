@@ -35,7 +35,7 @@ public class BlockSpecial : AbstractSpecial
         isBlocking = true;
     }
 
-    private void ChangeDamageReduction(ref float newValue, float value)
+    private void ChangeDamageReduction(ref int newValue, int value)
     {
         newValue = 100;
     }

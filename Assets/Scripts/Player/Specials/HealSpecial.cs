@@ -7,6 +7,7 @@ public class HealSpecial : AbstractSpecial
 {
     [SerializeField] private NetworkObject healFieldPrefab;
     [SerializeField] private float healRange;
+    [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private float healDuration;
     Vector2 mouseWorldPos;
     protected override void _OnSpecialFinish(PlayerController controller)
@@ -17,19 +18,12 @@ public class HealSpecial : AbstractSpecial
 
     protected override bool HasResource()
     {
-        return Resource >= 50;
+        return Resource >= 30;
     }
 
     protected override void RemoveResource()
     {
-        Resource -= 50;
-    }
-
-    protected override Dictionary<string, object> GetVariablesForDescription()
-    {
-        var variables = base.GetVariablesForDescription();
-        variables.Add("HealDuration", healDuration);
-        return variables;
+        Resource -= 30;
     }
 
     [ServerRpc]
@@ -80,7 +74,7 @@ public class HealSpecial : AbstractSpecial
         {
             if (timer <= 0f)
             {
-                if (Resource < resourceAmount)
+                if (Resource < characterStats.stats.resource.Value)
                 {
                     Resource += 2;
                 }

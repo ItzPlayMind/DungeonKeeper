@@ -32950,6 +32950,12 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+  - character: {fileID: 8245200998436573719, guid: 7b56ec5580eed7d488b53535b8138ae6, type: 3}
+    type: 1
+    characterSprite: {fileID: 432384934, guid: 52902c7edc6bbe7498c8bdd3afb64268, type: 3}
+    locked: 0
+    characterPotrait: {fileID: 0}
+    selectionObject: {fileID: 0}
   readyStatePrefab: {fileID: 8413485153226263575, guid: cb1058b744870904180cf3fc8e3c8a75, type: 3}
   readyStateTransform: {fileID: 1604459201}
 --- !u!114 &1446889119

@@ -8,9 +8,9 @@ public class ArrowStanceSpecial : AbstractSpecial
 {
     [SerializeField] private NetworkObject enhancedArrowPrefab;
     [SerializeField] private float enhancedArrowSpeed = 15;
-    [DescriptionCreator.DescriptionVariable]
+    [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int slowAmount = 25;
-    [DescriptionCreator.DescriptionVariable]
+    [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int slowDuration = 1;
     private Animator animator;
     private PlayerController controller;

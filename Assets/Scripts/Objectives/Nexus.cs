@@ -28,11 +28,11 @@ public class Nexus : ObjectiveAI
             if (e == AnimationEventSender.AnimationEvent.EndAttack)
                 canAttack = true;
             if(e == AnimationEventSender.AnimationEvent.Special)
-                target.TakeDamage(stats.stats.damage.Value, Vector2.zero, stats);
+                target?.TakeDamage(stats.stats.damage.Value, Vector2.zero, stats);
             if (e == AnimationEventSender.AnimationEvent.SelfKnockBack)
                 OnMinionSpawnEvent?.Invoke();
         };
-        stats.stats.damageReduction.ChangeValueAdd += (ref float value, float old) =>
+        stats.stats.damageReduction.ChangeValueAdd += (ref int value, int old) =>
         {
             if (otherObjectives.Any(x => x != null)) value = 100;
         };

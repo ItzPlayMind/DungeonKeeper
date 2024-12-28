@@ -19,6 +19,8 @@ public class ItemHoverOver : HoverOver<Item>
     [SerializeField] private GameObject damageReductionIcon;
     [SerializeField] private TMPro.TextMeshProUGUI movementSpeedText;
     [SerializeField] private GameObject movementSpeedIcon;
+    [SerializeField] private TMPro.TextMeshProUGUI attackSpeedText;
+    [SerializeField] private GameObject attackSpeedIcon;
     [SerializeField] private TMPro.TextMeshProUGUI descriptionText;
     [SerializeField] private RectTransform description;
 
@@ -38,6 +40,8 @@ public class ItemHoverOver : HoverOver<Item>
             damageReductionIcon.SetActive(item.stats.damageReduction.Value > 0);
             movementSpeedText.text =  item.stats.speed.Value.ToString();
             movementSpeedIcon.SetActive(item.stats.speed.Value > 0);
+            attackSpeedText.text = item.stats.attackSpeed.Value.ToString();
+            attackSpeedIcon.SetActive(item.stats.attackSpeed.Value > 0);
         }
         else
         {
@@ -46,6 +50,7 @@ public class ItemHoverOver : HoverOver<Item>
             healthIcon.SetActive(false);
             damageReductionIcon.SetActive(false);
             movementSpeedIcon.SetActive(false);
+            attackSpeedIcon.SetActive(false);
         }
         int activeChildren = 0;
         for (int i = 0; i < statBlock.childCount; i++)

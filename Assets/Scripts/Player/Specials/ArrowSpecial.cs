@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class ArrowSpecial : AbstractSpecial
 {
+    [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int arrowAmount = 3;
     [SerializeField] private NetworkObject arrowPrefab;
     [SerializeField] private float arrowSpeed = 5f;

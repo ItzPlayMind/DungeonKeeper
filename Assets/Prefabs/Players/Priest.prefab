@@ -477,6 +477,10 @@ PrefabInstance:
       value: 900
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.resource.baseValue
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.specialDamage.baseValue
       value: 0
       objectReference: {fileID: 0}
@@ -650,7 +654,6 @@ MonoBehaviour:
   hoverEvent: {fileID: 3713717656474766349}
   description: Place down a heal field that heals {Damage} HP every 0.1 seconds for
     {HealDuration} seconds.
-  resourceAmount: 100
   damage: 2
   damageMultiplier: 0.1
   MaxCooldown: 15

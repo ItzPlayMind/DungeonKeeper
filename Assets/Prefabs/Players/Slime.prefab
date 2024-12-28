@@ -667,6 +667,10 @@ PrefabInstance:
       value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.resource.baseValue
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.specialDamage.baseValue
       value: 20
       objectReference: {fileID: 0}
@@ -869,7 +873,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: efc3b6f008d6c4646aa846871efcd4c9, type: 3}
   hoverEvent: {fileID: 1759960633235569115}
   description: On enemy hit heal all teammates by {Damage} HP.
-  resourceAmount: 2
   damage: 30
   damageMultiplier: 0.5
   MaxCooldown: 10

@@ -25,7 +25,7 @@ public class Item
     public float cooldown;
     public bool multiple;
     public List<string> sameItems = new List<string>();
-    [HideInInspector] public Dictionary<string, object> variables = new Dictionary<string, object>();
+    [HideInInspector] public Dictionary<string, DescriptionCreator.Variable> variables = new Dictionary<string, DescriptionCreator.Variable>();
 
     private float timer;
 
@@ -65,7 +65,7 @@ public class Item
         this.timer = item.timer;
         this.multiple = item.multiple;
         this.sameItems = item.sameItems;
-        variables["Cooldown"] = cooldown;
+        variables["Cooldown"] = new DescriptionCreator.Variable() { value=cooldown };
     }
 
     public Item(string name)
