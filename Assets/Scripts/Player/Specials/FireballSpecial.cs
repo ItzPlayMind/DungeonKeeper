@@ -26,6 +26,7 @@ public class FireballSpecial : AbstractSpecial
     {
         Resource -= 20 + (4 * stacks);
         stacks = Mathf.Min(stacks + 1, 5);
+        UpdateAmountText(stacks.ToString());
     }
 
     protected override bool HasResource()
@@ -49,6 +50,7 @@ public class FireballSpecial : AbstractSpecial
     protected override void OnActiveOver()
     {
         stacks = 0;
+        UpdateAmountText("");
         StartCooldown();
     }
 
@@ -71,7 +73,8 @@ public class FireballSpecial : AbstractSpecial
         fireball.GetComponent<SpriteRenderer>().material = GameManager.instance.UNLIT_MATERIAL;
         fireball.transform.rotation = Quaternion.FromToRotation(fireball.transform.right, dir);
         fireball.AddForce(fireball.transform.right * fireballSpeed, ForceMode2D.Impulse);
-        fireball.GetComponent<Fireball>().onExplosionCollision += (collider) =>
+        var fireballScript = fireball.GetComponent<Fireball>();
+        fireballScript.onExplosionCollision += (collider) =>
         {
             if (collider == gameObject)
                 return;
@@ -79,25 +82,23 @@ public class FireballSpecial : AbstractSpecial
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
-                stats.TakeDamage(Damage+(int)(stacks*(Damage/5f)), Vector2.zero, characterStats);
+                stats.TakeDamage(Damage+(int)((stacks - 1) * (Damage/5f)), Vector2.zero, characterStats);
             }
         };
-        fireball.GetComponent<Fireball>().onDirectHit += (collider) =>
+        fireballScript.onDirectHit += (collider) =>
         {
             if (collider == gameObject)
-                return false;
-            if (collider.layer == gameObject.layer) return false;
+                return;
+            if (collider.layer == gameObject.layer) return;
             var stats = collider.GetComponent<CharacterStats>();
-            if (stats != null)
+            if ((collider.transform.tag != "Special"))
             {
-                stats.TakeDamage(Damage + (int)(stacks * (Damage / 5f)), stats.GenerateKnockBack(stats.transform, fireball.transform, fireballKnockback), characterStats);
-            }
-            if((collider.transform.tag != "Special"))
-            {
+                if (stats != null)
+                {
+                    stats.TakeDamage(Damage + (int)((stacks - 1) * (Damage / 5f)), Vector2.zero, characterStats);
+                }
                 DespawnArrowServerRPC(fireball.GetComponent<NetworkBehaviour>().NetworkObjectId);
-                return true;
             }
-            return false;
         };
         mouseWorldPos = transform.position;
     }

@@ -672,6 +672,10 @@ PrefabInstance:
       propertyPath: stats.speed.baseValue.y
       value: 130
       objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.resource.baseValue
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8082572561042905563, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -821,7 +825,6 @@ MonoBehaviour:
   hoverEvent: {fileID: 4996886619779994686}
   description: Charge forward for 1.1 seconds, deal {Damage} to all enemies and push
     them back.
-  resourceAmount: 0
   damage: 10
   damageMultiplier: 1
   MaxCooldown: 35

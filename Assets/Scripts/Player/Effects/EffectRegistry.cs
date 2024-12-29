@@ -12,12 +12,12 @@ public class EffectRegistry : Registry<Effect>
     {
         AddEffect("Slow", "slow", (Effect effect, CharacterStats stats) =>
         {
-        AddToAction(effect, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
-            {
-                speed *= (int)(effect.amount/100f);
-            });
+            AddToAction(effect, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
+                {
+                    speed = (int)(speed * (1-(effect.amount / 100f)));
+                });
         });
-        AddEffect("Bleed", "bleed", new Dictionary<string, object>() { { "Timer", 1f} }, null, (Effect effect, CharacterStats stats) =>
+        AddEffect("Bleed", "bleed", new Dictionary<string, object>() { { "Timer", 1f } }, null, (Effect effect, CharacterStats stats) =>
         {
             if ((float)effect.variables["Timer"] <= 0f)
             {
@@ -31,7 +31,7 @@ public class EffectRegistry : Registry<Effect>
         {
             AddToAction(effect, () => stats.OnClientHeal, (value) => stats.OnClientHeal = value, (ref int heal) =>
             {
-                heal = (int)(heal * (1-(float)effect.amount/100f));
+                heal = (int)(heal * (1 - (float)effect.amount / 100f));
             });
         });
         AddEffect("Timewarped", "timewarped", (Effect effect, CharacterStats stats) =>

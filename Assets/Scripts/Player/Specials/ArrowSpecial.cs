@@ -5,22 +5,32 @@ using UnityEngine;
 
 public class ArrowSpecial : AbstractSpecial
 {
-    [DescriptionCreator.DescriptionVariable("white")]
-    [SerializeField] private int arrowAmount = 3;
     [SerializeField] private NetworkObject arrowPrefab;
     [SerializeField] private float arrowSpeed = 5f;
+    [DescriptionCreator.DescriptionVariable("white")]
+    [SerializeField] private int maxStackCount = 3;
 
-    private int currentArrowAmount;
+    [DescriptionCreator.DescriptionVariable]
+    private int DamageStacks { get => Damage + DamagePerStack * stacks; }
+    [DescriptionCreator.DescriptionVariable]
+    private int DamagePerStack { get => Damage / maxStackCount; }
+
+    private int stacks = 0;
     Vector2 mouseWorldPos;
-    protected override void _Start()
-    {
-        currentArrowAmount = arrowAmount;
-        UpdateAmountText(currentArrowAmount.ToString());
-    }
 
     public override bool canUse()
     {
-        return currentArrowAmount > 0;
+        return HasResource();
+    }
+
+    protected override bool HasResource()
+    {
+        return Resource > 0;
+    }
+
+    protected override void RemoveResource()
+    {
+        Resource--;
     }
 
     protected override void _OnSpecialPress(PlayerController controller)
@@ -31,24 +41,19 @@ public class ArrowSpecial : AbstractSpecial
 
     protected override void _OnSpecialFinish(PlayerController controller)
     {
-        currentArrowAmount--;
-        UpdateAmountText(currentArrowAmount.ToString());
         SpawnArrowServerRPC(OwnerClientId,gameObject.layer);
     }
 
     protected override void FinishedCooldown()
     {
-        currentArrowAmount++;
-        UpdateAmountText(currentArrowAmount.ToString());
-        if (currentArrowAmount < arrowAmount)
-        {
+        Resource++;
+        if (Resource < characterStats.stats.resource.Value)
             StartCooldown();
-        }
     }
 
     protected override void _Update()
     {
-        if(currentArrowAmount < arrowAmount && !OnCooldown)
+        if(Resource < characterStats.stats.resource.Value && !OnCooldown)
         {
             StartCooldown();
         }
@@ -73,18 +78,38 @@ public class ArrowSpecial : AbstractSpecial
         arrow.GetComponent<SpriteRenderer>().material = GameManager.instance.UNLIT_MATERIAL;
         arrow.transform.rotation = Quaternion.FromToRotation(arrow.transform.right,dir);
         arrow.AddForce(arrow.transform.right * arrowSpeed, ForceMode2D.Impulse);
-        arrow.GetComponent<Projectile>().onCollisionEnter += (collider) =>
+        var proj = arrow.GetComponent<Projectile>();
+        proj.onCollisionEnter += (collider) =>
         {
+            bool hasHitTarget = false;
             if (collider == gameObject)
                 return;
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
-                stats.TakeDamage(Damage, Vector2.zero, characterStats);
+                stats.TakeDamage(DamageStacks, Vector2.zero, characterStats);
+                SetCooldown(0);
+                stacks = Mathf.Clamp(stacks+1,0,maxStackCount);
+                UpdateAmountText(stacks.ToString());
+                hasHitTarget = true;
             }
             if (stats != null || collider.layer == LayerMask.NameToLayer("Default"))
+            {
                 DespawnArrowServerRPC(arrow.GetComponent<NetworkBehaviour>().NetworkObjectId);
+                if (!hasHitTarget)
+                {
+                    stacks = 0;
+                    UpdateAmountText("");
+                }
+            }
         };
+        proj.OnMaxRangeReached += () =>
+        {
+            DespawnArrowServerRPC(arrow.GetComponent<NetworkBehaviour>().NetworkObjectId);
+            stacks = 0;
+            UpdateAmountText("");
+        };
+        proj.startPos = transform.position;
         mouseWorldPos = transform.position;
     }
 

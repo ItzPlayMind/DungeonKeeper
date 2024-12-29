@@ -695,7 +695,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.health.baseValue
-      value: 900
+      value: 1050
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.resource.baseValue
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.damageReduction.baseValue
@@ -894,7 +898,7 @@ MonoBehaviour:
   specialIcon: {fileID: 4377899987679212842}
   specialInUseIcon: {fileID: 5921983413762909488}
   resourceBar: {fileID: 1580187499164412917}
-  executeThreshold: 15
+  baseExecuteThreshold: 15
   hitbox: {fileID: 2403472500223742887}
   bleedAmount: 5
   bleedDuration: 5

@@ -7,6 +7,12 @@ using UnityEngine;
 public class Projectile : CollisionSender
 {
     Vector2 lastPos = Vector2.zero;
+    public System.Action OnMaxRangeReached;
+    public float range = 3f;
+    [HideInInspector] public Vector2 startPos;
+
+    private bool maxReached = false;
+
     protected override void Start()
     {
         base.Start();
@@ -15,6 +21,12 @@ public class Projectile : CollisionSender
 
     public void Update()
     {
+        if(Vector3.Distance(transform.position, startPos) >= range) {
+            OnMaxRangeReached?.Invoke();
+            maxReached = true;
+        }
+        if (maxReached) return;
+
         RaycastHit2D hit = Physics2D.Linecast(lastPos, transform.position);
 
         if (hit.transform != null)

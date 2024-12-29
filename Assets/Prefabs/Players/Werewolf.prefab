@@ -837,6 +837,10 @@ PrefabInstance:
       propertyPath: stats.health.baseValue
       value: 800
       objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.resource.baseValue
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8082572561042905563, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -994,7 +998,6 @@ MonoBehaviour:
   hoverEvent: {fileID: 4208824033739888274}
   description: Become invisible for {ActiveTime} seconds. Taking Damage or attacking
     removes invisibility. The next attack becomes empowered.
-  resourceAmount: 0
   damage: 0
   damageMultiplier: 0
   MaxCooldown: 30

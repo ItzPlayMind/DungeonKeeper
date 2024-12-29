@@ -83,8 +83,8 @@ public class PlayerStats : CharacterStats
     protected override void TakeDamageServerRPC(int damage, Vector2 knockback, ulong damagerID)
     {
         healthTimer = GameManager.instance.OUT_OF_COMBAT_TIME;
-        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerID].GetComponent<PlayerStats>() != null)
-            assistTimers[damagerID] = GameManager.instance.OUT_OF_COMBAT_TIME;
+        /*if (NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerID].GetComponent<PlayerStats>() != null)
+            assistTimers[damagerID] = GameManager.instance.OUT_OF_COMBAT_TIME;*/
         base.TakeDamageServerRPC(damage, knockback, damagerID);
     }
 
@@ -96,14 +96,15 @@ public class PlayerStats : CharacterStats
 
     protected override void Die(ulong damagerID)
     {
-        NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerID].GetComponent<Inventory>()?.AddCash(GameManager.instance.GOLD_FOR_KILL);
-        foreach(var key in assistTimers.Keys)
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerID].GetComponent<Inventory>()?.AddCash(GameManager.instance.GOLD_FOR_KILL/4*3);
+        /*foreach(var key in assistTimers.Keys)
         {
             if (key == damagerID) continue;
             if (assistTimers[key] > 0)
                 NetworkManager.Singleton.SpawnManager.SpawnedObjects[key].GetComponent<Inventory>()?.AddCash(GameManager.instance.GOLD_FOR_KILL/4);
         }
-        assistTimers.Clear();
+        assistTimers.Clear();*/
+        GameManager.instance.AddCashToTeamFromPlayer(NetworkObjectId, GameManager.instance.GOLD_FOR_KILL / 4);
         respawnTime = GameManager.instance.RESPAWN_TIME.Value;
         base.Die(damagerID);
         GameManager.instance.Chat.AddMessage($"{damagerID} <color=red>killed</color> {NetworkObjectId}");
@@ -174,12 +175,12 @@ public class PlayerStats : CharacterStats
         }
         if (IsServer)
         {
-            var keys = assistTimers.Keys.ToArray();
+            /*var keys = assistTimers.Keys.ToArray();
             for (int i = 0; i < keys.Length; i++)
             {
                 if (assistTimers[keys[i]] > 0)
                     assistTimers[keys[i]] -= Time.deltaTime;
-            }
+            }*/
             if (healthTimer > 0f)
                 healthTimer -= Time.deltaTime;
             else

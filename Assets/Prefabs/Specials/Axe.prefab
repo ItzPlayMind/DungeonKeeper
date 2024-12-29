@@ -79,6 +79,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CanHitMultiple: 1
+  range: 3
+  startPos: {x: 0, y: 0}
 --- !u!111 &568295066177303335
 Animation:
   m_ObjectHideFlags: 0
@@ -178,7 +180,7 @@ MonoBehaviour:
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
-  Interpolate: 1
+  Interpolate: 0
   SlerpPosition: 0
 --- !u!114 &5549144283258481523
 MonoBehaviour:

@@ -32,8 +32,11 @@ public class EffectManager : NetworkBehaviour
     {
         if(activeEffects.ContainsKey(effect.ID))
         {
-            activeEffects[effect.ID].End(stats);
-            activeEffects.Remove(effect.ID);
+            if (activeEffects[effect.ID].amount < effect.amount)
+            {
+                activeEffects[effect.ID].End(stats);
+                activeEffects.Remove(effect.ID);
+            }
         }
         activeEffects.Add(effect.ID, effect);
         effect.onEnd += (_, _) => activeEffects.Remove(effect.ID);

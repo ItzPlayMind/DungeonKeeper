@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class ExecuteSpecial : AbstractSpecial
 {
-    [SerializeField] private int baseExecuteThreshold = 15;
-    [DescriptionCreator.DescriptionVariable("red")]
+    [SerializeField] private int baseExecuteThreshold = 10;
+    [DescriptionCreator.DescriptionVariable("green")]
     private int executeThreshold
     {
-        get => baseExecuteThreshold + (int)(characterStats.stats.damage.Value * (5f / 100f));
+        get => baseExecuteThreshold + (int)(characterStats.stats.health.Value * (5f / 1000f));
     }
     [SerializeField] private CollisionSender hitbox;
-    [DescriptionCreator.DescriptionVariable]
-    [SerializeField] private int bleedAmount = 5;
+    [SerializeField] private int baseBleedAmount = 5;
+
+    [DescriptionCreator.DescriptionVariable("green")]
+    [SerializeField] private int bleedAmount { get => baseBleedAmount + (int)(characterStats.stats.health.Value * (5f / 1000f)); }
     [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int bleedDuration = 5;
 

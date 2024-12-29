@@ -340,6 +340,10 @@ PrefabInstance:
       propertyPath: stats.speed.baseValue.y
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.resource.baseValue
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8189507989608339147, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Controller
       value: 
@@ -375,6 +379,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee50788519ad864882ca23d4a9c42b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4037622077478276024 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5813092486509865957, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 7540366297280258141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5344524070209225449 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2490300795773199028, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
@@ -394,13 +409,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Axe Throw
   icon: {fileID: 21300000, guid: 23aadc8fc66066f40b3f0da2983e2cad, type: 3}
-  hoverEvent: {fileID: 0}
+  hoverEvent: {fileID: 4037622077478276024}
   description: 'Throw an axe at the mouse position. If it hits a target return to
     the user and deal {Damage} damage.
 
     On return deal {ReturnDamage} damage
     to all enemies in the way.'
-  resourceAmount: 0
   damage: 50
   damageMultiplier: 1
   MaxCooldown: 20

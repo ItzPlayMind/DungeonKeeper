@@ -465,6 +465,10 @@ PrefabInstance:
       value: 800
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.resource.baseValue
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.attackSpeed.baseValue
       value: 0
       objectReference: {fileID: 0}
@@ -629,7 +633,6 @@ MonoBehaviour:
 
     Change back to normal stance after {ActiveTime} or by using special
     again.'
-  resourceAmount: 0
   damage: 30
   damageMultiplier: 1
   MaxCooldown: 10
@@ -640,7 +643,7 @@ MonoBehaviour:
   enhancedArrowPrefab: {fileID: 7306826740333165070, guid: bcd0a438d8e789543ac658f470411fec, type: 3}
   enhancedArrowSpeed: 15
   slowAmount: 25
-  slowDuration: 1
+  slowDuration: 2
 --- !u!114 &3384574628130357759 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 201704820803556755, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}

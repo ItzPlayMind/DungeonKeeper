@@ -20,7 +20,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
     [DescriptionVariable]
     [SerializeField] private float damageMultiplier = 1;
     [SerializeField] private float MaxCooldown;
-    [DescriptionVariable]
+    [DescriptionVariable("white")]
     [SerializeField] private float activeTime;
     [SerializeField] private UIBar specialIcon;
     [SerializeField] private UIBar specialInUseIcon;
@@ -41,6 +41,12 @@ public abstract class AbstractSpecial : NetworkBehaviour
     private int resource;
 
     public bool IsActive { get => activeTimer > 0 && !OnCooldown; }
+
+    [DescriptionVariable("white")]
+    public int MaxResource
+    {
+        get => characterStats.stats.resource.Value;
+    }
 
     public int Resource
     {
@@ -66,6 +72,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
         if (IsLocalPlayer)
         {
             resource = characterStats.stats.resource.Value;
+            UpdateResourceBar();
             characterStats.OnClientRespawn += () =>
             {
                 used = false;

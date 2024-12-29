@@ -441,6 +441,10 @@ PrefabInstance:
       propertyPath: stats.speed.baseValue.y
       value: 80
       objectReference: {fileID: 0}
+    - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: stats.resource.baseValue
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8189507989608339147, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Controller
       value: 
@@ -536,7 +540,6 @@ MonoBehaviour:
   hoverEvent: {fileID: 321380862266279876}
   description: Slam the ground, deal {Damage} damage to all enemies hit and push
     them back. Hit players are slowed by {SlowAmount}% for {SlowDuration}.
-  resourceAmount: 0
   damage: 35
   damageMultiplier: 1
   MaxCooldown: 15

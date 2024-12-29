@@ -68,6 +68,13 @@ public class PlayerRangeAttack : PlayerAttack
             }
             OnAttackHit(obj,collider);
         };
+        var proj = obj.GetComponent<Projectile>();
+        if (proj == null) return;
+        proj.startPos = obj.transform.position;
+        proj.OnMaxRangeReached += () =>
+        {
+            DestroyServerRPC(obj.NetworkObjectId);
+        };
     }
 
     [ServerRpc(RequireOwnership = false)]
