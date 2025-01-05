@@ -46,7 +46,7 @@ public class ComboSpecial : AbstractSpecial
         foreach (var hitbox in hitboxes)
         {
             hitbox.hitbox.gameObject.layer = gameObject.layer;
-            hitbox.hitbox.onCollisionEnter += (GameObject collider) =>
+            hitbox.hitbox.onCollisionEnter += (GameObject collider, ref bool hit) =>
             {
                 var target = collider.GetComponent<CharacterStats>();
                 if (target == null) return;

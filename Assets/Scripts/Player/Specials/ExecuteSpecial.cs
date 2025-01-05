@@ -24,7 +24,7 @@ public class ExecuteSpecial : AbstractSpecial
     {
         base.OnNetworkSpawn();
         if (!IsLocalPlayer) return;
-        hitbox.onCollisionEnter += (GameObject collider) =>
+        hitbox.onCollisionEnter += (GameObject collider, ref bool hit) =>
         {
             if (collider.gameObject == gameObject) return;
             if (collider.gameObject.layer == gameObject.layer) return;

@@ -46,7 +46,7 @@ public class ChargeSpecial : AbstractSpecial
         isCharging = true;
     }
 
-    private void Hit(GameObject collision)
+    private void Hit(GameObject collision, ref bool hit)
     {
         if (collision == gameObject)
             return;

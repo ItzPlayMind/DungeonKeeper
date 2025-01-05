@@ -29,7 +29,7 @@ public class PlayerMeeleAttack : PlayerAttack
             return;
         foreach (var item in hitboxes.GetComponentsInChildren<CollisionSender>())
         {
-            item.onCollisionEnter += (collider) =>
+            item.onCollisionEnter += (GameObject collider, ref bool _) =>
             {
                 if (collider == gameObject)
                     return;

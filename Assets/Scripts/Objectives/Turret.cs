@@ -21,7 +21,7 @@ public class Turret : ObjectiveAI
                 canAttack = true;
             if (e == AnimationEventSender.AnimationEvent.Special)
                 if(target != null)
-                    target.TakeDamage(stats.stats.damage.Value, Vector2.zero, stats);
+                    target?.TakeDamage(stats.stats.damage.Value, Vector2.zero, stats);
         };
     }
 

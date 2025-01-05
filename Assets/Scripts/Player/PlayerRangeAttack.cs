@@ -53,7 +53,7 @@ public class PlayerRangeAttack : PlayerAttack
         var obj = NetworkManager.Singleton.SpawnManager.SpawnedObjects[id];
         obj.gameObject.layer = layer;
         if (!IsLocalPlayer) return;
-        obj.GetComponent<CollisionSender>().onCollisionEnter += (collider) =>
+        obj.GetComponent<CollisionSender>().onCollisionEnter += (GameObject collider, ref bool _) =>
         {
             if (collider == gameObject)
                 return;
@@ -80,7 +80,8 @@ public class PlayerRangeAttack : PlayerAttack
     [ServerRpc(RequireOwnership = false)]
     protected void DestroyServerRPC(ulong id)
     {
-        Destroy(NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].gameObject);
+        if(NetworkManager.Singleton.SpawnManager.SpawnedObjects.ContainsKey(id))
+            Destroy(NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].gameObject);
     }
 
     protected virtual void OnAttackHit(NetworkObject obj, GameObject collider) { }

@@ -18,7 +18,7 @@ public class SelfHealHitSpecial : AbstractSpecial
         if (!IsLocalPlayer) return;
         hitbox.gameObject.layer = gameObject.layer;
         controller = GetComponent<PlayerController>();
-        hitbox.onCollisionEnter += (GameObject collider) =>
+        hitbox.onCollisionEnter += (GameObject collider, ref bool hit) =>
         {
             if (collider.gameObject.layer == gameObject.layer) return;
             if (collider.gameObject == gameObject) return;

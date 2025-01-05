@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Fireball : MonoBehaviour
 {
-    public System.Action<GameObject> onExplosionCollision;
+    public CollisionSender.OnCollosion onExplosionCollision;
     public System.Action<GameObject> onDirectHit;
     [SerializeField] private CollisionSender explosion;
 
@@ -15,7 +15,6 @@ public class Fireball : MonoBehaviour
     private Collider2D col;
 
     private List<int> hits = new List<int>();
-
     protected void Start()
     {
         explosion.onCollisionEnter += onExplosionCollision;

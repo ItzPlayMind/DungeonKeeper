@@ -18,6 +18,7 @@ public class Item
     public ItemFunction onUpdate;
     public ItemFunction onEquip;
     public ItemFunction onUnequip;
+    private System.Action<string> _UpdateText;
     public StatBlock stats;
     public Sprite icon;
     public string description;
@@ -28,6 +29,16 @@ public class Item
     [HideInInspector] public Dictionary<string, DescriptionCreator.Variable> variables = new Dictionary<string, DescriptionCreator.Variable>();
 
     private float timer;
+    private string _lastText = "";
+
+    public System.Action<string> OnUpdateText
+    {
+        set
+        {
+            _UpdateText = value;
+            UpdateText(_lastText);
+        }
+    }
 
     public float CurrentCooldownDelta
     {
@@ -65,7 +76,7 @@ public class Item
         this.timer = item.timer;
         this.multiple = item.multiple;
         this.sameItems = item.sameItems;
-        variables["Cooldown"] = new DescriptionCreator.Variable() { value=cooldown };
+        variables["Cooldown"] = new DescriptionCreator.Variable() { value = cooldown };
     }
 
     public Item(string name)
@@ -118,5 +129,11 @@ public class Item
         {
             timer -= Time.deltaTime;
         }
+    }
+
+    public void UpdateText(string text)
+    {
+        _UpdateText?.Invoke(text);
+        _lastText = text;
     }
 }

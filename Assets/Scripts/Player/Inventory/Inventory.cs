@@ -11,10 +11,12 @@ public class Inventory : NetworkBehaviour
 {
     public static int INVENTORY_SIZE = 6;
     [SerializeField] private NetworkVariable<int> cash = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    [SerializeField] private UIIconBar[] inventorySlots = new UIIconBar[INVENTORY_SIZE];
+    [SerializeField] private UITextIconBar[] inventorySlots = new UITextIconBar[INVENTORY_SIZE];
     [SerializeField] private UIIconBar[] teamInventorySlots = new UIIconBar[3];
     [SerializeField] private GameObject inventoryPanel;
     [SerializeField] private Sprite emptySlot;
+    [SerializeField] private Sprite normalItemSlot;
+    [SerializeField] private Sprite activeItemSlot;
 
     private PlayerItemShow playerItemShow;
     private Item[] items;
@@ -116,8 +118,13 @@ public class Inventory : NetworkBehaviour
         {
             playerItemShow?.SetItemInSlot(emptySlot, slot);
         }
-        if(!team)
+        if (!team)
+        {
+            item.UpdateText("");
+            item.OnUpdateText = null;
+            inventorySlots[slot].GetComponent<UnityEngine.UI.Image>().sprite = normalItemSlot;
             item?.OnUnequip(stats, slot);
+        }
     }
 
     public void AddItem(Item item, bool team = false)
@@ -148,7 +155,12 @@ public class Inventory : NetworkBehaviour
         else
             playerItemShow?.SetItemInSlot(item.icon, slot);
         if (!team)
+        {
             item?.OnEquip(stats, slot);
+            inventorySlots[slot].GetComponent<UnityEngine.UI.Image>().sprite = item.onUse != null ? activeItemSlot : normalItemSlot;
+            if (inventorySlots[slot] is UITextIconBar)
+                item.OnUpdateText = (string text) => { inventorySlots[slot].Text = text; };
+        }
     }
 
     private float goldTimer = 1f;
@@ -207,8 +219,21 @@ public class Inventory : NetworkBehaviour
         if (IsLocalPlayer)
         {
             inventorySlots[src].UpdateBar(0f);
+            inventorySlots[dest].UpdateBar(0f);
             inventorySlots[src].Icon = items[src] != null ? items[src].icon : emptySlot;
             inventorySlots[dest].Icon = items[dest] != null ? items[dest].icon : emptySlot;
+            if (inventorySlots[src] is UITextIconBar)
+                if (items[src] != null)
+                    items[src].OnUpdateText = (string text) => { (inventorySlots[src] as UITextIconBar).Text = text; };
+                else
+                    (inventorySlots[src] as UITextIconBar).Text = "";
+            if (inventorySlots[dest] is UITextIconBar && items[dest] != null)
+                if (items[dest] != null)
+                    items[dest].OnUpdateText = (string text) => { (inventorySlots[dest] as UITextIconBar).Text = text; };
+                else
+                    (inventorySlots[dest] as UITextIconBar).Text = "";
+            inventorySlots[src].GetComponent<UnityEngine.UI.Image>().sprite = items[src] != null && items[src].onUse != null ? activeItemSlot : normalItemSlot;
+            inventorySlots[dest].GetComponent<UnityEngine.UI.Image>().sprite = items[dest] != null && items[dest].onUse != null ? activeItemSlot : normalItemSlot;
         }
         else
         {

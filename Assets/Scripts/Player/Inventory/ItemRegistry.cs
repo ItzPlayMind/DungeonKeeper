@@ -42,9 +42,9 @@ public class ItemRegistry : Registry<Item>
         torch.multiple = true;
 
         List<Item> boots = new List<Item>();
-        var boot = AddItem("Knights Sandles", "boots_01", CharacterType.Damage, "", new StatBlock(20, 0, 0, 10, 0, 0), 500);
+        var boot = AddItem("Knights Sandles", "boots_01", CharacterType.Damage, "", new StatBlock(15, 0, 0, 10, 0, 0), 500);
         boots.Add(boot);
-        boot = AddItem("Magical Sandles", "boots_02", CharacterType.Damage, "", new StatBlock(0, 20, 0, 10, 0, 0), 500);
+        boot = AddItem("Magical Sandles", "boots_02", CharacterType.Damage, "", new StatBlock(0, 15, 0, 10, 0, 0), 500);
         boots.Add(boot);
         boot = AddItem("Giant Boots", "leather_boots_01", CharacterType.Tank, "", new StatBlock(0, 0, 0, 10, 50, 0), 500);
         boots.Add(boot);
@@ -86,13 +86,13 @@ public class ItemRegistry : Registry<Item>
                 item.variables["Timer"].value = (float)item.variables["Timer"].value - Time.deltaTime;
                 if ((float)item.variables["Timer"].value <= 0)
                 {
-                    stats.Heal((int)(stats.stats.health.Value * ((float)item.variables["HealAmount"].value/100f)));
+                    stats.Heal((int)(stats.stats.health.Value * ((float)item.variables["HealAmount"].value / 100f)));
                     item.variables["Timer"].value = item.variables["Time"].value;
                 }
             }
         });
 
-        var blood_blade = AddItemWithVariables("Bloodlords Blade", "sword_02", CharacterType.Damage, "Gain {LifeSteal}% Lifesteal", new StatBlock(40, 0, 0, 10, 50, 0), 1700, 0,
+        var blood_blade = AddItemWithVariables("Bloodlords Blade", "sword_02", CharacterType.Damage, "Gain {LifeSteal}% Lifesteal", new StatBlock(35, 0, 0, 10, 50, 0), 1700, 0,
             new Dictionary<string, Variable>() { { "LifeSteal", new Variable() { value = 15f, color = "red" } } }, (item, stats, _) =>
         {
             var controller = stats.GetComponent<PlayerAttack>();
@@ -102,7 +102,7 @@ public class ItemRegistry : Registry<Item>
             });
         });
 
-        var blood_spear = AddItemWithVariables("Bloodlords Spear", "spear_02", CharacterType.Damage, "Attacks deal an additional {CurrentHealthPerc}% current health damage. Heal for that amount. Only works on players", new StatBlock(35, 0, 10, 10, 50, 0), 1700, 0,
+        var blood_spear = AddItemWithVariables("Bloodlords Spear", "spear_02", CharacterType.Damage, "Attacks deal an additional {CurrentHealthPerc}% current health damage. Heal for that amount. Only works on players", new StatBlock(30, 0, 10, 10, 50, 0), 1700, 0,
             new Dictionary<string, Variable>() { { "CurrentHealthPerc", new Variable() { value = 5f, color = "green" } } }, (item, stats, _) =>
             {
                 var controller = stats.GetComponent<PlayerAttack>();
@@ -120,18 +120,21 @@ public class ItemRegistry : Registry<Item>
         blood_spear.sameItems.Add(blood_blade.ID);
 
         AddItemWithVariables("Last Stand", "arm_guard", CharacterType.Tank, "Convert {HealthPerc}% of damage taken into a charge\r\nOn use heal for the amount of charge built up\r\nCharges fall of after {FallOfTimer} seconds",
-            new StatBlock(5, 0, 0, 0, 300, 5), 2000, 0,
+            new StatBlock(5, 0, 0, 0, 300, 5), 2000, 30,
             new Dictionary<string, Variable>() { { "HealthPerc", new Variable() { value = 15f, color = "green" } }, { "FallOfTimer", new Variable() { value = 10f } }, { "DamageTaken", new Variable() { value = 0 } }, { "Timer", new Variable() { value = 0f } } }, (item, stats, _) =>
         {
             AddToAction(item, () => stats.OnClientTakeDamage, (value) => stats.OnClientTakeDamage = value, (ulong damager, int damage) =>
             {
                 item.variables["DamageTaken"].value = (int)((int)item.variables["DamageTaken"].value + damage * ((float)item.variables["HealthPerc"].value / 100f));
-                item.variables["Timer"] = item.variables["FallOfTimer"];
+                item.UpdateText(item.variables["DamageTaken"].value.ToString());
+                item.variables["Timer"].value = item.variables["FallOfTimer"].value;
             });
         }, (item, stats, _) =>
         {
+            if ((int)item.variables["DamageTaken"].value <= 0) return;
             stats.Heal((int)item.variables["DamageTaken"].value);
             item.variables["DamageTaken"].value = 0;
+            item.UpdateText("");
             item.variables["Timer"].value = 0f;
             item.StartCooldown();
         }, (item, stats, _) =>
@@ -142,6 +145,7 @@ public class ItemRegistry : Registry<Item>
                 if ((float)item.variables["Timer"].value <= 0)
                 {
                     item.variables["DamageTaken"].value = 0;
+                    item.UpdateText("");
                 }
             }
         });
@@ -158,7 +162,7 @@ public class ItemRegistry : Registry<Item>
             });
 
         AddItemWithVariables("Guillotine", "hoe", CharacterType.Damage, "Executes players below {ExecutePerc}% of their Maximum Health. Can only accure once every {Cooldown} seconds",
-            new StatBlock(50, 0, 20, 5, 50, 0), 2000, 10,
+            new StatBlock(25, 0, 15, 5, 50, 0), 2000, 10,
             new Dictionary<string, Variable>() { { "ExecutePerc", new Variable() { value = 5f, color = "green" } } }, (item, stats, _) =>
             {
                 var controller = stats.GetComponent<PlayerAttack>();
@@ -176,7 +180,7 @@ public class ItemRegistry : Registry<Item>
             });
 
         AddItemWithVariables("Bolstering Gloves", "glove_01", CharacterType.Damage, "Gain {DamageReductionPerc}% Damage Reduction and {AttackSpeed}% Attack Speed until the first hit. Can only accure once every {Cooldown} seconds",
-            new StatBlock(40, 0, 0, 5, 0, 0), 1600, 20,
+            new StatBlock(35, 0, 0, 5, 0, 0), 1600, 20,
             new Dictionary<string, Variable>() { { "DamageReductionPerc", new Variable() { value = 30, color = "grey" } }, { "AttackSpeed", new Variable() { value = 30, color = "yellow" } } }, (item, stats, _) =>
             {
                 AddToAction(item, () => stats.stats.damageReduction.ChangeValueAdd, (value) => stats.stats.damageReduction.ChangeValueAdd = value, (ref int value, int _) =>
@@ -240,7 +244,7 @@ public class ItemRegistry : Registry<Item>
                var controller = stats.GetComponent<PlayerController>();
                var targetStats = controller.HoveredStats;
                if (targetStats == null) return;
-               int amount = (int)(stats.Health * ((float)item.variables["Sacrifice"].value/100f));
+               int amount = (int)(stats.Health * ((float)item.variables["Sacrifice"].value / 100f));
                if (stats.stats.health.Value - amount <= 0) return;
                stats.TakeDamage(amount, Vector2.zero, stats);
                controller.Heal(targetStats, amount);
@@ -248,8 +252,8 @@ public class ItemRegistry : Registry<Item>
            });
 
         AddItemWithVariables("Magic Blade", "sword_01", CharacterType.Damage, "The next attack after a special deals extra {Damage} damage. Can only accure once every {Cooldown} seconds",
-           new StatBlock(30, 20, 0, 0, 0, 0), 1200, 2,
-           new Dictionary<string, Variable>() { { "Damage", new Variable() { value = 50, color = "red" } }, { "Triggered", new Variable() { value = false } } }, (item, stats, _) =>
+           new StatBlock(25, 20, 0, 0, 0, 0), 1200, 2,
+           new Dictionary<string, Variable>() { { "BaseDamage", new Variable() { value = 50 } }, { "Damage", new Variable() { value = 50, color = "red" } }, { "DamageScaling", new Variable() { value = 20f, color = "red" } }, { "Triggered", new Variable() { value = false } } }, (item, stats, _) =>
            {
                AbstractSpecial special = stats.GetComponent<AbstractSpecial>();
                PlayerAttack controller = stats.GetComponent<PlayerAttack>();
@@ -269,10 +273,18 @@ public class ItemRegistry : Registry<Item>
                        item.variables["Triggered"].value = false;
                    }
                });
+           }, null, (item, stats, _) =>
+           {
+               item.variables["Damage"].value = (int)((int)item.variables["BaseDamage"].value + stats.stats.damage.Value * ((float)item.variables["DamageScaling"].value / 100f));
            });
-        AddItemWithVariables("Undying Helmet", "headgear_01", CharacterType.Tank, "When falling below {Threshold}% HP regenerate {HP}% HP every {Time} seconds until at full health",
+        AddItemWithVariables("Undying Helmet", "headgear_01", CharacterType.Tank, "When falling below {Threshold}% HP regenerate {HP}% HP every {Time} seconds until at {HPThreshold}% health. Can only happen every {Cooldown} seconds.",
            new StatBlock(0, 0, 0, 0, 150, 10), 2000, 90,
-           new Dictionary<string, Variable>() { { "Timer", new Variable() { value = 0f } }, { "Time", new Variable() { value = 0.2f } }, { "Triggered", new Variable() { value = false } }, { "Threshold", new Variable() { value = 10f, color = "green" } }, { "HP", new Variable() { value = 10f, color = "green" } } }, null, null, (item, stats, _) =>
+           new Dictionary<string, Variable>() { { "Timer", new Variable() { value = 0f } },
+               { "Time", new Variable() { value = 0.2f } },
+               { "Triggered", new Variable() { value = false } },
+               { "Threshold", new Variable() { value = 10f, color = "green" } },
+               { "HP", new Variable() { value = 10f, color = "green" } },
+               { "HPThreshold", new Variable() { value = 70f, color = "green" } }}, null, null, (item, stats, _) =>
            {
                if ((bool)item.variables["Triggered"].value)
                {
@@ -282,7 +294,7 @@ public class ItemRegistry : Registry<Item>
                        if ((float)item.variables["Timer"].value <= 0)
                        {
                            stats.Heal((int)(stats.stats.health.Value * (float)item.variables["HP"].value / 100f));
-                           if (stats.Health < stats.stats.health.Value)
+                           if (stats.Health < stats.stats.health.Value * ((float)item.variables["HPThreshold"].value/100f))
                                item.variables["Timer"].value = (float)item.variables["Time"].value;
                            else
                                item.variables["Triggered"].value = false;
@@ -298,7 +310,7 @@ public class ItemRegistry : Registry<Item>
                }
            });
         AddItemWithVariables("First Strike Dagger", "stone_sword", CharacterType.Damage, "When not taking damage for {Cooldown} seconds, the next attack deals an additional {MaxHP}% Max HP damage",
-           new StatBlock(30, 0, 15, 0, 0, 0), 1600, 10,
+           new StatBlock(25, 0, 15, 0, 0, 0), 1600, 10,
            new Dictionary<string, Variable>() { { "MaxHP", new Variable() { value = 5f, color = "green" } } }, (item, stats, _) =>
            {
                PlayerAttack controller = stats.GetComponent<PlayerAttack>();
@@ -359,8 +371,8 @@ public class ItemRegistry : Registry<Item>
         ring.sameItems.Add(box.ID);
         box.sameItems.Add(ring.ID);
 
-        AddItemWithVariables("Bleeding Scythe", "hi_quality_scethe", CharacterType.Damage, "Applies Bleeding for {BleedTime} seconds on attack. The Bleed deals {Damage} every 1 second. Can only happen every {Cooldown} seconds.", new StatBlock(30, 0, 10, 5, 25, 0), 1400, 2,
-            new Dictionary<string, Variable>() { { "BleedTime", new Variable() { value = 5 } }, { "Damage", new Variable() { value = 5, color = "red" } } }, (item, stats, _) =>
+        AddItemWithVariables("Bleeding Scythe", "hi_quality_scethe", CharacterType.Damage, "Applies Bleeding for {BleedTime} seconds on attack. The Bleed deals {Damage} every 1 second. Can only happen every {Cooldown} seconds.", new StatBlock(25, 0, 10, 5, 25, 0), 1400, 2,
+            new Dictionary<string, Variable>() { { "BleedTime", new Variable() { value = 5 } }, { "BaseDamage", new Variable() { value = 5 } }, { "Damage", new Variable() { value = 5, color = "red" } }, { "DamageScaling", new Variable() { value = 10f, color = "red" } } }, (item, stats, _) =>
             {
                 PlayerAttack controller = stats.GetComponent<PlayerAttack>();
                 AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong _, ref int damage) =>
@@ -372,6 +384,9 @@ public class ItemRegistry : Registry<Item>
                         item.StartCooldown();
                     }
                 });
+            }, null, (item, stats, _) =>
+            {
+                item.variables["Damage"].value = (int)((int)item.variables["BaseDamage"].value + stats.stats.damage.Value * ((float)item.variables["DamageScaling"].value / 100f));
             });
 
         AddItemWithVariables("Cursed Shield", "shield_02", CharacterType.Tank, "On taking damage curse the target for {Duration} seconds, reducing healing by {Amount}%", new StatBlock(0, 0, 0, 0, 50, 5), 1600, 0,
@@ -387,7 +402,7 @@ public class ItemRegistry : Registry<Item>
                     }
                 });
             });
-        AddItemWithVariables("Cursed Cloth", "fablic_clothe", CharacterType.Damage, "On dealing damage curse the target for {Duration} seconds, reducing healing by {Amount}%", new StatBlock(25, 0, 10, 0, 50, 0), 1600, 0,
+        AddItemWithVariables("Cursed Cloth", "fablic_clothe", CharacterType.Damage, "On dealing damage curse the target for {Duration} seconds, reducing healing by {Amount}%", new StatBlock(20, 0, 10, 0, 50, 0), 1600, 0,
             new Dictionary<string, Variable>() { { "Duration", new Variable() { value = 3 } }, { "Amount", new Variable() { value = 30, color = "purple" } } }, (item, stats, _) =>
             {
                 PlayerAttack controller = stats.GetComponent<PlayerAttack>();
@@ -445,7 +460,7 @@ public class ItemRegistry : Registry<Item>
             }, (item, stats, _) =>
             {
                 if (!item.CanUse) return;
-                item.variables["CurrentAura"].value = (((int)item.variables["CurrentAura"].value)+1)%3;
+                item.variables["CurrentAura"].value = (((int)item.variables["CurrentAura"].value) + 1) % 3;
                 switch ((int)item.variables["CurrentAura"].value)
                 {
                     case 0:
@@ -471,8 +486,8 @@ public class ItemRegistry : Registry<Item>
                     resource += (int)(stats.stats.specialDamage.Value * ((int)item.variables["Amount"].value / 100f));
                 });
             });
-        AddItemWithVariables("Timewarp Necklace", "necklace_01", CharacterType.Damage, "On hit apply Timewarped to the target hit for {Duration} seconds, reducing Attack Speed and Speed by {Amount}, decaying over time. Can only happen every {Cooldown} seconds.", new StatBlock(25, 0, 15, 0, 50, 0), 1600, 5,
-            new Dictionary<string, Variable>() { { "Duration", new Variable() { value = 3 } }, { "Amount", new Variable() { value = 25, color="yellow" } } }, (item, stats, _) =>
+        AddItemWithVariables("Timewarp Necklace", "necklace_01", CharacterType.Damage, "On hit apply Timewarped to the target hit for {Duration} seconds, reducing Attack Speed and Speed by {Amount}, decaying over time. Can only happen every {Cooldown} seconds.", new StatBlock(20, 0, 15, 0, 50, 0), 1600, 5,
+            new Dictionary<string, Variable>() { { "Duration", new Variable() { value = 3 } }, { "Amount", new Variable() { value = 25, color = "yellow" } } }, (item, stats, _) =>
             {
                 PlayerAttack controller = stats.GetComponent<PlayerAttack>();
                 AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong _, ref int damage) =>
@@ -481,6 +496,59 @@ public class ItemRegistry : Registry<Item>
                     targetObject.GetComponent<EffectManager>()?.AddEffect("timewarped", (int)item.variables["Duration"].value, (int)item.variables["Amount"].value, stats);
                 });
             });
+        AddItemWithVariables("Absorption Shield", "shield_01", CharacterType.Tank, "On damaging a player gain {HPAmount} Maximum Health and heal for {HealAmount}% Maximum Health. Can only happen every {Cooldown} seconds.", new StatBlock(0, 0, 0, 0, 200, 5), 1600, 5,
+            new Dictionary<string, Variable>() { { "HPAmount", new Variable() { value = 3, color = "green" } }, { "HealAmount", new Variable() { value = 2, color = "green" } }, { "Stacks", new Variable() { value = 0 } } }, (item, stats, _) =>
+            {
+                PlayerAttack controller = stats.GetComponent<PlayerAttack>();
+                AddToAction(item, () => stats.stats.health.ChangeValueAdd, (value) => stats.stats.health.ChangeValueAdd = value, (ref int resource, int old) =>
+                {
+                    resource += (int)item.variables["Stacks"].value * (int)item.variables["HPAmount"].value;
+                });
+                AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong _, ref int damage) =>
+                {
+                    if (!item.CanUse) return;
+                    var targetObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target];
+                    var playerStats = targetObject?.GetComponent<CharacterStats>();
+                    if (playerStats != null)
+                    {
+                        item.variables["Stacks"].value = (int)item.variables["Stacks"].value + 1;
+                        stats.Heal((int)(stats.stats.health.Value * ((int)item.variables["HealAmount"].value / 100f)));
+                        item.UpdateText(item.variables["Stacks"].value.ToString());
+                        item.StartCooldown();
+                    }
+                });
+            });
+        AddItemWithVariables("Highmetal Anvil", "anvil", CharacterType.Tank, "On taking damage gain {DamageReduction}% Damage Reduction stacking up to {StackAmount} times. At maximum stacks each Stack instead adds {MaxDamageReduction}% Damage Reduction. Stacks fall of after {Cooldown} seconds of not taking damage.", new StatBlock(0, 0, 0, 0, 150, 5), 1700, 5,
+            new Dictionary<string, Variable>() { { "DamageReduction", new Variable() { value = 2, color = "grey" } }, { "MaxDamageReduction", new Variable() { value = 3, color = "grey" } }, { "StackAmount", new Variable() { value = 10 } }, { "Stacks", new Variable() { value = 0 } } }, (item, stats, _) =>
+            {
+                PlayerAttack controller = stats.GetComponent<PlayerAttack>();
+                AddToAction(item, () => stats.stats.damageReduction.ChangeValueAdd, (value) => stats.stats.damageReduction.ChangeValueAdd = value, (ref int value, int _) =>
+                {
+                    int drValue = 0;
+                    if ((int)item.variables["Stacks"].value == (int)item.variables["StackAmount"].value)
+                        drValue = (int)item.variables["MaxDamageReduction"].value;
+                    else
+                        drValue = (int)item.variables["DamageReduction"].value;
+                    value += (int)item.variables["Stacks"].value * drValue;
+                });
+                AddToAction(item, () => stats.OnClientTakeDamage, (value) => stats.OnClientTakeDamage = value, (ulong damager, int damage) =>
+                {
+                    if ((int)item.variables["Stacks"].value < (int)item.variables["StackAmount"].value)
+                    {
+                        item.variables["Stacks"].value = (int)item.variables["Stacks"].value + 1;
+                        item.UpdateText(item.variables["Stacks"].value.ToString());
+                    }
+                    item.StartCooldown();
+                });
+            }, null,
+             (item, stats, _) =>
+             {
+                 if (item.CanUse && (int)item.variables["Stacks"].value > 0)
+                 {
+                     item.variables["Stacks"].value = 0;
+                     item.UpdateText("");
+                 }
+             });
     }
 
     public override Item GetByID(string id)

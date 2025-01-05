@@ -71,7 +71,7 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHan
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        var item = inventory.GetItem(slot);
+        var item = inventory.GetItem(slot,team);
         if(item == null) return;
         ItemHoverOver.Show(item);
     }
@@ -80,4 +80,5 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHan
     {
         ItemHoverOver.Hide();
     }
+
 }

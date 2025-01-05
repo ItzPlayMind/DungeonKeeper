@@ -15,7 +15,7 @@ public class KnockBackSpecial : AbstractSpecial
     {
         if (!IsLocalPlayer) return;
         hitbox.gameObject.layer = gameObject.layer;
-        hitbox.onCollisionEnter += (GameObject collider) =>
+        hitbox.onCollisionEnter += (GameObject collider, ref bool hit) =>
         {
             if (collider == gameObject) return;
             if (collider.layer == gameObject.layer)

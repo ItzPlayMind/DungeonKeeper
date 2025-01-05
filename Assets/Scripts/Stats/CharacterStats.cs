@@ -178,6 +178,8 @@ public class CharacterStats : NetworkBehaviour
 
     public void Heal(int health)
     {
+        if (IsDead)
+            return;
         OnClientHeal?.Invoke(ref health);
         HealServerRPC(health);
     }
@@ -185,8 +187,6 @@ public class CharacterStats : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void HealServerRPC(int health)
     {
-        if (IsDead)
-            return;
         currentHealth.Value += health;
         currentHealth.Value = Mathf.Clamp(currentHealth.Value, 0, stats.health.Value);
         HealClientRPC(health);

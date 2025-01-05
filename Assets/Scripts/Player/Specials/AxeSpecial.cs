@@ -44,7 +44,7 @@ public class AxeSpecial : AbstractSpecial
         axe = axeNetwork.GetComponent<Rigidbody2D>();
         Vector2 dir = (mouseWorldPos - (Vector2)transform.position).normalized;
         var projectile = axe.GetComponent<Projectile>();
-        projectile.onCollisionEnter += (GameObject collider) =>
+        projectile.onCollisionEnter += (GameObject collider, ref bool _) =>
         {
             if (collider == gameObject)
                 return;

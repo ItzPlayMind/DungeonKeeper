@@ -89,11 +89,13 @@ public class ObjectiveSystem : NetworkBehaviour
             {
                 return;
             }
-            playerStats.OnServerTakeDamage += (ulong damager, int damage) => {
+            var setTarget = new CharacterStats.DamageDelegate((ulong damager, int damage) => {
                 var targetStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<PlayerStats>();
                 if (targetStats != null)
-                    ai.SetTarget(targetStats);
-            };
+                    ai?.SetTarget(targetStats);
+            });
+            playerStats.OnServerTakeDamage += setTarget;
+            ai.GetComponent<CharacterStats>().OnServerDeath += (_) => playerStats.OnServerTakeDamage -= setTarget;
         }
     }
 

@@ -74,7 +74,7 @@ public class FireballSpecial : AbstractSpecial
         fireball.transform.rotation = Quaternion.FromToRotation(fireball.transform.right, dir);
         fireball.AddForce(fireball.transform.right * fireballSpeed, ForceMode2D.Impulse);
         var fireballScript = fireball.GetComponent<Fireball>();
-        fireballScript.onExplosionCollision += (collider) =>
+        fireballScript.onExplosionCollision += (GameObject collider, ref bool hit) =>
         {
             if (collider == gameObject)
                 return;
@@ -82,6 +82,7 @@ public class FireballSpecial : AbstractSpecial
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
+                hit = true;
                 stats.TakeDamage(Damage+(int)((stacks - 1) * (Damage/5f)), Vector2.zero, characterStats);
             }
         };

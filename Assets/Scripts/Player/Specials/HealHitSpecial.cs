@@ -18,7 +18,7 @@ public class HealHitSpecial : AbstractSpecial
                 Resource++;
         };
         hitbox.gameObject.layer = gameObject.layer;
-        hitbox.onCollisionEnter += (GameObject collider) =>
+        hitbox.onCollisionEnter += (GameObject collider, ref bool hit) =>
         {
             var target = collider.GetComponent<CharacterStats>(); 
             if (target == null) return;

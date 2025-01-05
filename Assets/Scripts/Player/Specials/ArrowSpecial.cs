@@ -79,23 +79,25 @@ public class ArrowSpecial : AbstractSpecial
         arrow.transform.rotation = Quaternion.FromToRotation(arrow.transform.right,dir);
         arrow.AddForce(arrow.transform.right * arrowSpeed, ForceMode2D.Impulse);
         var proj = arrow.GetComponent<Projectile>();
-        proj.onCollisionEnter += (collider) =>
+        proj.onCollisionEnter += (GameObject collider, ref bool hit) =>
         {
             bool hasHitTarget = false;
             if (collider == gameObject)
                 return;
-            var stats = collider.GetComponent<CharacterStats>();
+            var stats = collider.GetComponentInParent<CharacterStats>();
             if (stats != null)
             {
+                if (stats.gameObject.layer == gameObject.layer) return;
                 stats.TakeDamage(DamageStacks, Vector2.zero, characterStats);
                 SetCooldown(0);
                 stacks = Mathf.Clamp(stacks+1,0,maxStackCount);
                 UpdateAmountText(stacks.ToString());
                 hasHitTarget = true;
             }
-            if (stats != null || collider.layer == LayerMask.NameToLayer("Default"))
+            if (collider.tag != "Special")
             {
                 DespawnArrowServerRPC(arrow.GetComponent<NetworkBehaviour>().NetworkObjectId);
+                hit = true;
                 if (!hasHitTarget)
                 {
                     stacks = 0;

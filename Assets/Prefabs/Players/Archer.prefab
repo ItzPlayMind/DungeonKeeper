@@ -634,7 +634,7 @@ MonoBehaviour:
     Change back to normal stance after {ActiveTime} or by using special
     again.'
   damage: 30
-  damageMultiplier: 1
+  damageMultiplier: 0.3
   MaxCooldown: 10
   activeTime: 10
   specialIcon: {fileID: 4617910281767162341}

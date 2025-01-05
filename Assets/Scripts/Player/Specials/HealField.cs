@@ -22,14 +22,14 @@ public class HealField : NetworkBehaviour
     {
         if(!IsServer) return;
         collisionSender = GetComponentInChildren<CollisionSender>();
-        collisionSender.onCollisionEnter += (GameObject col) =>
+        collisionSender.onCollisionEnter += (GameObject col, ref bool hit) =>
         {
             var target = col.GetComponent<CharacterStats>();
             if (target == null) return;
             if (target.gameObject.layer != gameObject.layer) return;
             healTargets.Add(target);
         };
-        collisionSender.onCollisionExit += (GameObject col) =>
+        collisionSender.onCollisionExit += (GameObject col, ref bool hit) =>
         {
             var target = col.GetComponent<CharacterStats>();
             if (target == null) return;
