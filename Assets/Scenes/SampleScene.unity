@@ -38761,8 +38761,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 27.499992, y: 61}
-  m_SizeDelta: {x: -545, y: 40}
+  m_AnchoredPosition: {x: -78.58837, y: 61}
+  m_SizeDelta: {x: -757.1766, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1604459202
 MonoBehaviour:
@@ -38781,7 +38781,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 5
+  m_ChildAlignment: 3
   m_Spacing: 5
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 1
@@ -50556,6 +50556,7 @@ GameObject:
   - component: {fileID: 1947100401}
   - component: {fileID: 1947100402}
   - component: {fileID: 1947100403}
+  - component: {fileID: 1947100405}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -50634,7 +50635,6 @@ MonoBehaviour:
   blueCameraLayer:
     serializedVersion: 2
     m_Bits: 2935
-  TORCH_PREFAB: {fileID: 1278160770414832271, guid: 713d3691a5445fa4b8a71eff4ec30029, type: 3}
   UNLIT_MATERIAL: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   LIT_MATERIAL: {fileID: 2100000, guid: d1c4176b383bbcd43a36877e408f29e4, type: 2}
   GOLD_FOR_KILL: 500
@@ -50733,6 +50733,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f0bc0fd682005d4fa5fe19dcab34793, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1947100405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947100396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07dce525e86f5f04698be6a82eb3898c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageNumberPrefab: {fileID: 4162335479124564733, guid: 44d1529fe5db3c448b5fdaa1508415ad, type: 3}
+  torchPrefab: {fileID: 1278160770414832271, guid: 713d3691a5445fa4b8a71eff4ec30029, type: 3}
 --- !u!1 &1966260831
 GameObject:
   m_ObjectHideFlags: 0
@@ -50769,7 +50783,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 612, y: -413}
+  m_AnchoredPosition: {x: 395, y: -413}
   m_SizeDelta: {x: 160, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1966260833

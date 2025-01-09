@@ -127,10 +127,14 @@ public class LobbyPanel : MonoBehaviour
         GameManager.instance.ChangeReadyState(characterSelectionIndex);
     }
 
-    public void ChangeLockStateByIndex(int index, bool value)
+    public void ChangeLockStateByIndex(int index, bool value, Color color)
     {
         characterPortraits[index].locked = value;
-        characterPortraits[index].characterPotrait.GetComponent<Button>().interactable=!value;
+        var button = characterPortraits[index].characterPotrait.GetComponent<Button>();
+        ColorBlock colorBlock = button.colors;
+        colorBlock.disabledColor = color;
+        button.colors = colorBlock;
+        button.interactable=!value;
         if(index == characterSelectionIndex && value)
         {
             var newIndex=(characterSelectionIndex+1)%characterPortraits.Count;

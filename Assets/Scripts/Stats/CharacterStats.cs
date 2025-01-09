@@ -1,3 +1,4 @@
+using Cinemachine.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -79,8 +80,10 @@ public class CharacterStats : NetworkBehaviour
     {
         if (IsDead)
             return;
-        if(damager.NetworkObjectId == PlayerController.LocalPlayer.NetworkObjectId)
+        if (damager.NetworkObjectId == PlayerController.LocalPlayer.NetworkObjectId)
+        {
             ShowHealtBar();
+        }
         TakeDamageServerRPC(damage, knockback, damager == null ? ulong.MaxValue : damager.NetworkObjectId);
     }
 
@@ -97,6 +100,8 @@ public class CharacterStats : NetworkBehaviour
     [ClientRpc]
     protected virtual void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID)
     {
+        if (damagerID == PlayerController.LocalPlayer.NetworkObjectId)
+            GameManager.instance.PrefabSystem.SpawnDamageNumber(transform.position,damage,Color.red);
         if (IsOwner)
         {
             if (rb != null)

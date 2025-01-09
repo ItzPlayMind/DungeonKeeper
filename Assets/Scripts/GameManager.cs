@@ -22,6 +22,7 @@ public class GameManager : NetworkBehaviour
         Chat = GetComponent<ChatSystem>();
         Objectives = GetComponent<ObjectiveSystem>();
         PlayerStatistics = GetComponent<PlayerStatisticsSystem>();
+        PrefabSystem = GetComponent<PrefabSystem>();
     }
 
     [SerializeField] private Transform redTeamSpawn;
@@ -39,7 +40,6 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private GameObject blueTeamWinUI;
     [SerializeField] private LayerMask redCameraLayer;
     [SerializeField] private LayerMask blueCameraLayer;
-    public NetworkObject TORCH_PREFAB;
     public Material UNLIT_MATERIAL;
     public Material LIT_MATERIAL;
     public int GOLD_FOR_KILL;
@@ -52,6 +52,7 @@ public class GameManager : NetworkBehaviour
     public ChatSystem Chat { get; private set; }
     public ObjectiveSystem Objectives { get; private set; }
     public PlayerStatisticsSystem PlayerStatistics { get; private set; }
+    public PrefabSystem PrefabSystem { get; private set; }
 
     private Dictionary<ulong, ulong> playerIDNetworkID = new Dictionary<ulong, ulong>();
 
@@ -65,6 +66,7 @@ public class GameManager : NetworkBehaviour
     private int clientSetupCount = 0;
 
     private List<Light2D> lights = new List<Light2D>();
+
 
     private void Start()
     {
@@ -86,10 +88,12 @@ public class GameManager : NetworkBehaviour
         SetTorchServerRpc(pos);
     }
 
+
+
     [ServerRpc(RequireOwnership = false)]
     private void SetTorchServerRpc(Vector2 pos)
     {
-        Instantiate(TORCH_PREFAB, pos, Quaternion.identity).Spawn();
+        PrefabSystem.SetTorch(pos);
     }
 
     public void SwitchToCharacterSelection()
@@ -170,7 +174,6 @@ public class GameManager : NetworkBehaviour
             SetupServerRpc();
         nextButton.gameObject.SetActive(IsHost);
         startButton.gameObject.SetActive(IsHost);
-        readyButton.gameObject.SetActive(!IsHost);
         readyButton.GetComponent<Image>().color = Color.red;
     }
 
@@ -220,12 +223,10 @@ public class GameManager : NetworkBehaviour
             blueTeam.Add(id);
         inRedTeam = !inRedTeam;
 
-        if (id != 0)
-        {
-            readyState.Add(id, false);
-            lobbyPanel.AddReadyState(id);
-            startButton.interactable = false;
-        }
+        readyState.Add(id, false);
+        lobbyPanel.AddReadyState(id);
+        startButton.interactable = false;
+
         UpdateTeamPanelClientRpc(redTeam.ToArray(), blueTeam.ToArray());
         playerCount++;
         UpdatePlayerCountServerRpc(playerCount);
@@ -254,7 +255,7 @@ public class GameManager : NetworkBehaviour
     {
         readyState[client] = !readyState[client];
         lobbyPanel.SetReadyState(client, readyState[client]);
-        ChangeLockStateClientRpc(characterIndex, readyState[client]);
+        ChangeLockStateClientRpc(characterIndex, readyState[client], redTeam.Contains(client));
         ChangeReadyStateClientRpc(readyState[client], new ClientRpcParams()
         {
             Send = new ClientRpcSendParams() { TargetClientIds = new ulong[] { client } }
@@ -278,9 +279,9 @@ public class GameManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void ChangeLockStateClientRpc(int characterIndex, bool value)
+    private void ChangeLockStateClientRpc(int characterIndex, bool value, bool isRed)
     {
-        lobbyPanel.ChangeLockStateByIndex(characterIndex, value);
+        lobbyPanel.ChangeLockStateByIndex(characterIndex, value, isRed ? Color.red : Color.blue);
     }
 
     [ServerRpc]

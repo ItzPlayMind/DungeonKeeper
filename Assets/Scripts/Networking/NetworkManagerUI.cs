@@ -31,14 +31,9 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void StartClient()
     {
-        loadingScreen.SetActive(true);
+        lobbyPanel.gameObject.SetActive(true);
         gameObject.SetActive(false);
-        if (networkManager.StartClient())
-        {
-            lobbyPanel.gameObject.SetActive(true);
-            loadingScreen.SetActive(false);
-        }
-        else
+        if (!networkManager.StartClient())
         {
             gameObject.SetActive(true);
             loadingScreen.SetActive(false);
@@ -46,14 +41,9 @@ public class NetworkManagerUI : MonoBehaviour
     }
     private void StartHost()
     {
-        loadingScreen.SetActive(true);
+        lobbyPanel.gameObject.SetActive(true);
         gameObject.SetActive(false);
-        if (networkManager.StartHost())
-        {
-            lobbyPanel.gameObject.SetActive(true);
-            loadingScreen.SetActive(false);
-        }
-        else
+        if (!networkManager.StartHost())
         {
             gameObject.SetActive(true);
             loadingScreen.SetActive(false);
