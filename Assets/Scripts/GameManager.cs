@@ -25,8 +25,8 @@ public class GameManager : NetworkBehaviour
         PrefabSystem = GetComponent<PrefabSystem>();
     }
 
-    [SerializeField] private Transform redTeamSpawn;
-    [SerializeField] private Transform blueTeamSpawn;
+    [SerializeField] private Transform[] redTeamSpawns;
+    [SerializeField] private Transform[] blueTeamSpawns;
     [SerializeField] private LobbyPanel lobbyPanel;
     [SerializeField] private Button startButton;
     [SerializeField] private Button readyButton;
@@ -314,16 +314,17 @@ public class GameManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SpawnCharacterServerRPC(int index, ulong id)
     {
-        var spawn = redTeamSpawn;
+        var spawnIndex = clientSetupCount / 2;
+        var spawn = redTeamSpawns[spawnIndex];
         var teamLayer = 0;
         if (redTeam.Contains(id))
         {
-            spawn = redTeamSpawn;
+            spawn = redTeamSpawns[spawnIndex];
             teamLayer = LayerMask.NameToLayer(redTeamlayer);
         }
         if (blueTeam.Contains(id))
         {
-            spawn = blueTeamSpawn;
+            spawn = blueTeamSpawns[spawnIndex];
             teamLayer = LayerMask.NameToLayer(blueTeamlayer);
         }
         var character = Instantiate(lobbyPanel.GetCharacterByIndex(index), spawn.transform.position, Quaternion.identity);
@@ -438,9 +439,9 @@ public class GameManager : NetworkBehaviour
 
     public Transform GetSpawnPoint(int layer)
     {
-        if (LayerMask.LayerToName(layer) == redTeamlayer) return redTeamSpawn;
-        if (LayerMask.LayerToName(layer) == blueTeamlayer) return blueTeamSpawn;
-        return redTeamSpawn;
+        if (LayerMask.LayerToName(layer) == redTeamlayer) return redTeamSpawns[0];
+        if (LayerMask.LayerToName(layer) == blueTeamlayer) return blueTeamSpawns[0];
+        return redTeamSpawns[0];
     }
 
     public void SwapItemsForTeamFromPlayer(ulong id, int src, int dest)

@@ -33,10 +33,10 @@ public class Projectile : CollisionSender
         {
             if (hit.transform.gameObject.layer != gameObject.layer)
             {
-                if (!ContainsHit(hit.transform.GetInstanceID()))
+                if (!ContainsHit(hit.transform.gameObject.GetInstanceID()))
                 {
                     onCollisionEnter?.Invoke(hit.transform.gameObject, ref hasHit);
-                    AddToHit(hit.transform.GetInstanceID());
+                    AddToHit(hit.transform.gameObject.GetInstanceID());
                 }
             }
         }

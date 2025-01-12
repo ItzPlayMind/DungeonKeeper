@@ -21,6 +21,7 @@ public class ItemHoverOver : HoverOver<Item>
     [SerializeField] private GameObject movementSpeedIcon;
     [SerializeField] private TMPro.TextMeshProUGUI attackSpeedText;
     [SerializeField] private GameObject attackSpeedIcon;
+    [SerializeField] private TMPro.TextMeshProUGUI cooldownText;
     [SerializeField] private TMPro.TextMeshProUGUI descriptionText;
     [SerializeField] private RectTransform description;
 
@@ -60,7 +61,8 @@ public class ItemHoverOver : HoverOver<Item>
         }
         var height = Mathf.Ceil(activeChildren / 2f) * 30;
         statBlock.sizeDelta = new Vector2(statBlock.sizeDelta.x,height);
-        descriptionText.text = item.Description;
+        descriptionText.text = item.Description; 
+        cooldownText.text = item.cooldown > 0 ? item.cooldown + " sec" : "";
         description.offsetMax = new Vector2(description.offsetMax.x, -(20+20+15+height));
         if (!string.IsNullOrEmpty(item.Description)) {
             height += 200;

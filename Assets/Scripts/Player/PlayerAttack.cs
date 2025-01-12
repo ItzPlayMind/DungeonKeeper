@@ -67,6 +67,7 @@ public abstract class PlayerAttack : NetworkBehaviour
 
     public void Attack()
     {
+        if (!enabled) return;
         if (isAttacking)
             return;
         animationSpeed.Value = 1 + (stats.stats.attackSpeed.Value/100f);

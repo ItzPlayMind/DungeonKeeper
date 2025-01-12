@@ -358,15 +358,24 @@ public class ItemRegistry : Registry<Item>
                item.StartCooldown();
            });
 
-        var ring = AddItemWithVariables("Miners Ring", "ring_02", CharacterType.Support, "Increase own light range by {LightMult}x", new StatBlock(0, 15, 0, 5, 50, 0), 1200, 0,
-            new Dictionary<string, Variable>() { { "LightMult", new Variable() { value = 2f } } }, (item, stats, _) =>
+        var ring = AddItemWithVariables("Miners Ring", "ring_02", CharacterType.Support, "Increase own light range by {LightMult}x. Hitting a target applies lit to them for {LitDuration} seconds.", new StatBlock(0, 15, 0, 5, 50, 0), 0 /*12000*/,5,
+            new Dictionary<string, Variable>() { { "LightMult", new Variable() { value = 2f } }, { "LitDuration", new Variable() { value = 5 } } }, (item, stats, _) =>
             {
+                PlayerAttack controller = stats.GetComponent<PlayerAttack>();
                 var light = stats.GetComponentInChildren<Light2D>();
                 light.pointLightOuterRadius *= (float)item.variables["LightMult"].value;
                 item.onUnequip += (_, _, _) =>
                 {
                     light.pointLightOuterRadius /= (float)item.variables["LightMult"].value;
                 };
+                AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong _, ref int damage) =>
+                {
+                    if (!item.CanUse) return;
+                    var targetObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target];
+                    if (targetObject.GetComponent<PlayerStats>() == null) return;
+                    targetObject.GetComponent<EffectManager>()?.AddEffect("lit", (int)item.variables["LitDuration"].value, 3, stats);
+                    item.StartCooldown();
+                });
             });
         ring.sameItems.Add(box.ID);
         box.sameItems.Add(ring.ID);
@@ -549,6 +558,16 @@ public class ItemRegistry : Registry<Item>
                      item.UpdateText("");
                  }
              });
+        AddItemWithVariables("Ethereal Ring", "ring_01", CharacterType.Damage, "On use change into ethereal form. While in this form no damage will be taken but movement and attacking are disabled. Change back to normal after {Duration} seconds.", new StatBlock(15, 15, 0, 0, 0, 5), 1700, 60,
+            new Dictionary<string, Variable>() { { "Duration", new Variable() { value = 3 } }}, null,
+            (item, stats, _) =>
+            {
+                if (item.CanUse)
+                {
+                    stats.GetComponent<EffectManager>().AddEffect("ethereal", (int)item.variables["Duration"].value, 1, stats);
+                    item.StartCooldown();
+                }
+            });
     }
 
     public override Item GetByID(string id)

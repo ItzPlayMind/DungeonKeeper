@@ -78,6 +78,7 @@ public class CharacterStats : NetworkBehaviour
 
     public void TakeDamage(int damage, Vector2 knockback, CharacterStats damager)
     {
+        if (!enabled) return;
         if (IsDead)
             return;
         if (damager.NetworkObjectId == PlayerController.LocalPlayer.NetworkObjectId)
@@ -183,6 +184,7 @@ public class CharacterStats : NetworkBehaviour
 
     public void Heal(int health)
     {
+        if (!enabled) return;
         if (IsDead)
             return;
         OnClientHeal?.Invoke(ref health);

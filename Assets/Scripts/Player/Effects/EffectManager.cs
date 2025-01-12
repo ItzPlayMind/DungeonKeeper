@@ -7,20 +7,18 @@ using UnityEngine;
 public class EffectManager : NetworkBehaviour
 {
     [SerializeField] private UIIconBar iconPrefab;
-    [SerializeField] private Transform effectBar;
+    [SerializeField] protected Transform effectBar;
     private Dictionary<string,Effect> activeEffects = new Dictionary<string,Effect>();
 
     private CharacterStats stats;
 
     public override void OnNetworkSpawn()
     {
-        if (!IsLocalPlayer) return;
         stats = GetComponent<CharacterStats>();
     }
 
     private void Update()
     {
-        if (!IsLocalPlayer) return;
         var keys = activeEffects.Keys.ToArray();
         for (int i = 0; i < keys.Length; i++)
         {
@@ -37,12 +35,16 @@ public class EffectManager : NetworkBehaviour
                 activeEffects[effect.ID].End(stats);
                 activeEffects.Remove(effect.ID);
             }
+            else return;
         }
         activeEffects.Add(effect.ID, effect);
         effect.onEnd += (_, _) => activeEffects.Remove(effect.ID);
-        var icon = Instantiate(iconPrefab, effectBar);
-        icon.Icon = effect.icon;
-        effect.activeIcon = icon;
+        if (effectBar != null && iconPrefab != null)
+        {
+            var icon = Instantiate(iconPrefab, effectBar);
+            icon.Icon = effect.icon;
+            effect.activeIcon = icon;
+        }
         effect.Start(stats);
     }
 
@@ -60,7 +62,7 @@ public class EffectManager : NetworkBehaviour
     [ClientRpc]
     private void AddEffectClientRPC(ulong applierID, string id, int duration, int amount)
     {
-        if(!IsLocalPlayer) return;
+        //if(!IsLocalPlayer) return;
         var applier = NetworkManager.Singleton.SpawnManager.SpawnedObjects[applierID].GetComponent<CharacterStats>();
         var effect = (EffectRegistry.Instance as EffectRegistry).CreateEffect(id, duration, amount);
         effect.applier = applier;

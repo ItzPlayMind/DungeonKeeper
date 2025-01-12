@@ -4,17 +4,14 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public abstract class HoverOver<T> : NetworkBehaviour
+public abstract class HoverOver<T> : MonoBehaviour
 {
     private static HoverOver<T> Instance;
 
-    public override void OnNetworkSpawn()
+    private void Awake()
     {
-        if (IsLocalPlayer)
-        {
-            Instance = this;
-            Hide();
-        }
+        Instance = this;
+        Hide();
     }
 
     public static void Show(T item)

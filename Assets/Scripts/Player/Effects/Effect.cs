@@ -45,7 +45,8 @@ public class Effect
 
     public void End(CharacterStats stats)
     {
-        GameObject.Destroy(activeIcon.gameObject);
+        if(activeIcon != null)
+            GameObject.Destroy(activeIcon.gameObject);
         onEnd?.Invoke(this, stats);
     }
 

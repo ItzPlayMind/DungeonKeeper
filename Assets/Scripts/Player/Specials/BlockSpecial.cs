@@ -10,7 +10,8 @@ public class BlockSpecial : AbstractSpecial
     protected override void _Start()
     {
         if (!IsLocalPlayer) return;
-        characterStats.OnServerTakeDamage += (ulong damager, int damage) =>
+        characterStats.stats.damageReduction.ConstraintValue += ChangeDamageReduction;
+        characterStats.OnClientTakeDamage += (ulong damager, int damage) =>
         {
             if (isBlocking)
             {
@@ -21,22 +22,19 @@ public class BlockSpecial : AbstractSpecial
     }
     protected override void _OnSpecialFinish(PlayerController controller)
     {
-        StartCooldown();
-        if (IsLocalPlayer)
-            characterStats.stats.damageReduction.ConstraintValue -= ChangeDamageReduction; 
         isBlocking = false;
+        StartCooldown();
     }
 
     protected override void _OnSpecialPress(PlayerController controller)
     {
-        Use();
-        if(IsLocalPlayer)
-            characterStats.stats.damageReduction.ConstraintValue += ChangeDamageReduction;
         isBlocking = true;
+        Use();
     }
 
     private void ChangeDamageReduction(ref int newValue, int value)
     {
-        newValue = 100;
+        if(isBlocking)
+            newValue = 100;
     }
 }

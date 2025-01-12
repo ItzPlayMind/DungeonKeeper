@@ -16,8 +16,7 @@ public class PlayerController : NetworkBehaviour
 
     [SerializeField] private SpriteRenderer gfx;
     [SerializeField] private ShopPanel shopPanel;
-    [SerializeField] private GameObject pausePanel; 
-    private Rigidbody2D rb;
+    [SerializeField] private GameObject pausePanel;
     private Animator animator;
     private Inventory inventory; 
     private AnimationEventSender animatorEvent;
@@ -28,12 +27,14 @@ public class PlayerController : NetworkBehaviour
     public ActionDelegate OnHeal;
 
     private PlayerAttack attack;
+    private PlayerMovement movement;
 
     public PlayerAttack Attack { get => attack; }
+    public PlayerMovement Movement { get => movement; }
 
     public CharacterStats HoveredStats { get; private set; }
+    public SpriteRenderer GFX { get => gfx; }
 
-    public bool canMove { get => !attack.isAttacking || (special != null && special.isUsing && special.CanMoveWhileUsing()); }
 
     public override void OnNetworkSpawn()
     {
@@ -42,7 +43,7 @@ public class PlayerController : NetworkBehaviour
             return;
         shopPanel.SetInstanceToThis();
         attack = GetComponent<PlayerAttack>();
-        rb = GetComponent<Rigidbody2D>();
+        movement = GetComponent<PlayerMovement>();
         animator = GetComponentInChildren<Animator>();
         stats = GetComponent<PlayerStats>();
         animatorEvent = animator.GetComponent<AnimationEventSender>();
@@ -95,6 +96,7 @@ public class PlayerController : NetworkBehaviour
             return;
         }
         attack.OnTeamAssigned();
+        movement.OnTeamAssigned();
     }
 
     private void AnimationEventCallaback(AnimationEventSender.AnimationEvent animationEvent)
@@ -153,8 +155,8 @@ public class PlayerController : NetworkBehaviour
         {
             if (special != null)
             {
-                if(special.canUse()) { 
-                    rb.velocity = Vector2.zero;
+                if(special.canUse()) {
+                    movement.Stop();
                     special.OnSpecialPress(this);
                     animator.SetTrigger("special");
                     attack.SetAttacking();
@@ -181,12 +183,6 @@ public class PlayerController : NetworkBehaviour
         input = input.normalized;
         if (animator != null)
             animator.SetBool("walking", input != Vector2.zero);
-        Move(input);
-    }
-
-    void Move(Vector2 input)
-    {
-        if (canMove)
-            rb.AddForce(input*new Vector2(stats.stats.speed.Value, Mathf.Max(stats.stats.speed.Value - 10,0)), ForceMode2D.Force);
+        movement.Move(input);
     }
 }

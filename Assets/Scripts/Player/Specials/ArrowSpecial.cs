@@ -36,11 +36,11 @@ public class ArrowSpecial : AbstractSpecial
     protected override void _OnSpecialPress(PlayerController controller)
     {
         Use();
-        mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
     }
 
     protected override void _OnSpecialFinish(PlayerController controller)
     {
+        mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
         SpawnArrowServerRPC(OwnerClientId,gameObject.layer);
     }
 

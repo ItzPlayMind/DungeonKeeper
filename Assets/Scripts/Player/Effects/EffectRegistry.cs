@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class EffectRegistry : Registry<Effect>
 {
@@ -12,13 +13,14 @@ public class EffectRegistry : Registry<Effect>
     {
         AddEffect("Slow", "slow", (Effect effect, CharacterStats stats) =>
         {
+            if (!stats.IsOwner) return;
             AddToAction(effect, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
                 {
                     speed = (int)(speed * (1-(effect.amount / 100f)));
                 });
         });
         AddEffect("Bleed", "bleed", new Dictionary<string, object>() { { "Timer", 1f } }, null, (Effect effect, CharacterStats stats) =>
-        {
+        {if (!stats.IsOwner) return;
             if ((float)effect.variables["Timer"] <= 0f)
             {
                 stats.TakeDamage((int)effect.amount, Vector2.zero, effect.applier);
@@ -29,6 +31,7 @@ public class EffectRegistry : Registry<Effect>
         });
         AddEffect("Curse", "curse", (Effect effect, CharacterStats stats) =>
         {
+            if (!stats.IsOwner) return;
             AddToAction(effect, () => stats.OnClientHeal, (value) => stats.OnClientHeal = value, (ref int heal) =>
             {
                 heal = (int)(heal * (1 - (float)effect.amount / 100f));
@@ -36,6 +39,7 @@ public class EffectRegistry : Registry<Effect>
         });
         AddEffect("Timewarped", "timewarped", (Effect effect, CharacterStats stats) =>
         {
+            if (!stats.IsOwner) return;
             effect.variables["DecayFactor"] = effect.amount / effect.duration;
             AddToAction(effect, () => stats.stats.speed.ChangeValueAdd, (value) => stats.stats.speed.ChangeValueAdd = value, (ref int speed, int old) =>
             {
@@ -47,7 +51,41 @@ public class EffectRegistry : Registry<Effect>
             });
         }, (Effect effect, CharacterStats stats) =>
         {
+            if (!stats.IsOwner) return;
             effect.amount -= (float)effect.variables["DecayFactor"] * Time.deltaTime;
+        });
+        AddEffect("Ethereal", "ethereal", (Effect effect, CharacterStats stats) =>
+        {
+            var movement = stats.GetComponent<PlayerMovement>();
+            var attack = stats.GetComponent<PlayerAttack>();
+            var controller = stats.GetComponent<PlayerController>();
+            var animator = controller.GFX.GetComponent<Animator>();
+            effect.onEnd += (Effect effect, CharacterStats stats) =>
+            {
+                movement.enabled = true;
+                attack.enabled = true;
+                stats.enabled = true;
+                controller.GFX.color = Color.white;
+                animator.enabled = true;
+            };
+            movement.enabled = false;
+            attack.enabled = false;
+            stats.enabled = false; 
+            controller.GFX.color = Color.grey;
+            animator.enabled = false;
+        }, null);
+        AddEffect("Lit", "lit", (Effect effect, CharacterStats stats) =>
+        {
+            var light = stats.GetComponentInChildren<Light2D>();
+            if (light.enabled) return;
+            float oldLight = light.pointLightOuterRadius;
+            light.enabled = true;
+            light.pointLightOuterRadius = effect.amount;
+            effect.onEnd += (Effect effect, CharacterStats stats) =>
+            {
+                light.pointLightOuterRadius = oldLight;
+                light.enabled = false;
+            };
         });
     }
 

@@ -1,5 +1,107 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8347277534586976455
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9193884285847987684}
+  - component: {fileID: 4357581329136077801}
+  - component: {fileID: 7295486042566111329}
+  m_Layer: 0
+  m_Name: Attack_1_Hitbox (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9193884285847987684
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8347277534586976455}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.139, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7874911657490118410}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!60 &4357581329136077801
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8347277534586976455}
+  m_Enabled: 0
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.81097615, y: 0.12586173}
+      - {x: 0.6219162, y: 0.31814438}
+      - {x: 0.5053508, y: 0.35714316}
+      - {x: 0.21485311, y: 0.23248188}
+      - {x: 0.15650515, y: 0.18261567}
+      - {x: 0.10680436, y: 0.06812315}
+      - {x: 0.09349397, y: 0.023798808}
+      - {x: 0.11783874, y: -0.055060986}
+      - {x: 0.14682305, y: -0.111614525}
+      - {x: 0.3942903, y: -0.13819182}
+      - {x: 0.6175555, y: -0.06040065}
+  m_UseDelaunayMesh: 0
+--- !u!114 &7295486042566111329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8347277534586976455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7466498d4913cca468a2a1a76d769b2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CanHitMultiple: 0
 --- !u!1001 &654218181251498174
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -202,7 +304,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2490300795773199028, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Name
-      value: GreatswordSkeleton
+      value: Greatsword Skeleton
       objectReference: {fileID: 0}
     - target: {fileID: 3107465351032906959, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: attackSettings.Array.data[1].damageMultiplier
@@ -655,7 +757,10 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 3328234273386232486, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 7232061464970721204, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 9193884285847987684}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2490300795773199028, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       insertIndex: 5
@@ -736,3 +841,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c56032a774e5474b89364bbb0c6abb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &7874911657490118410 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7232061464970721204, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 654218181251498174}
+  m_PrefabAsset: {fileID: 0}
