@@ -12,6 +12,6 @@ public class AbilityHoverOver : HoverOver<AbstractSpecial>
     {
         nameText.text = ability.Name;
         cooldownText.text = ability.Cooldown + " sec";
-        descriptionText.text = ability.Description;
+        descriptionText.text = ability.Description(InputManager.Instance.PlayerDetailsHold);
     }
 }

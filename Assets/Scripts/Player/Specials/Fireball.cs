@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Fireball : MonoBehaviour
 {
+    public System.Action onExplosion;
     public CollisionSender.OnCollosion onExplosionCollision;
     public System.Action<GameObject> onDirectHit;
     [SerializeField] private CollisionSender explosion;
@@ -40,6 +41,7 @@ public class Fireball : MonoBehaviour
 
     private void Explode()
     {
+        onExplosion?.Invoke();
         col.enabled = false;
         rb.velocity = Vector2.zero;
         animator.SetTrigger("hit");

@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 8509585613787666252}
   m_Layer: 0
   m_Name: IceBlast
-  m_TagString: Untagged
+  m_TagString: Special
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

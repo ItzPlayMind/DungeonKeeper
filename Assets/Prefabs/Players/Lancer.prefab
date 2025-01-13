@@ -823,8 +823,8 @@ MonoBehaviour:
   Name: Charge
   icon: {fileID: 21300000, guid: e0c5409178fda7c4b912a6b43614dae8, type: 3}
   hoverEvent: {fileID: 4996886619779994686}
-  description: Charge forward for 1.1 seconds, deal {Damage} to all enemies and push
-    them back.
+  description: Charge forward for 1.1 seconds, deal {ChargeDamage} to all enemies
+    and push them back.
   damage: 10
   damageMultiplier: 1
   MaxCooldown: 35

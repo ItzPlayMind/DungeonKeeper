@@ -98,8 +98,11 @@ public class FireballSpecial : AbstractSpecial
                 {
                     stats.TakeDamage(Damage + (int)((stacks - 1) * (Damage / 5f)), Vector2.zero, characterStats);
                 }
-                DespawnArrowServerRPC(fireball.GetComponent<NetworkBehaviour>().NetworkObjectId);
             }
+        };
+        fireballScript.onExplosion += () =>
+        {
+            DespawnArrowServerRPC(fireball.GetComponent<NetworkBehaviour>().NetworkObjectId);
         };
         mouseWorldPos = transform.position;
     }

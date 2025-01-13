@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,22 +11,26 @@ public class DescriptionCreator
 {
     public class DescriptionVariable : System.Attribute {
         public string color;
+        public string detail;
 
-        public DescriptionVariable(string color = "blue")
+        public DescriptionVariable(string color = "blue", string detail = "")
         {
             this.color = color;
+            this.detail = detail;
         }
     }
 
     public class Variable
     {
         public object value;
+        public string detail;
         public string color = "white";
     }
 
-    public static string Generate(string description, Dictionary<string, Variable> variables)
+    public static string Generate(string description, Dictionary<string, Variable> variables, bool detailed = false)
     {
-        var words = description.Split(" ");
+        var des = description;
+        var words = des.Split(" ");
         string text = "";
         foreach (var word in words)
         {
@@ -48,6 +53,34 @@ public class DescriptionCreator
         return text.Trim();
     }
 
+    private static string GetDescriptionWithDetails(string description, Dictionary<string, Variable> variables)
+    {
+        var words = description.Split(" ");
+        string newDescription = "";
+        foreach (var word in words)
+        {
+            if (word.IndexOf("{") < word.IndexOf("}"))
+            {
+                int indexOfBegin = word.IndexOf("{");
+                int indexOfEnd = word.IndexOf("}");
+                var variableName = word.Substring(indexOfBegin + 1, indexOfEnd - indexOfBegin - 1);
+                if (variables.ContainsKey(variableName))
+                {
+                    if (!String.IsNullOrEmpty(variables[variableName].detail))
+                        newDescription += variables[variableName].detail;
+                    else
+                        newDescription += word;
+                }
+                else
+                    newDescription += word;
+            }
+            else
+                newDescription += word;
+            newDescription += " ";
+        }
+        return newDescription;
+    }
+
     public static string FirstLetterToUpperCase(string s)
     {
         if (string.IsNullOrEmpty(s))
@@ -66,7 +99,7 @@ public class DescriptionCreator
         foreach (var variable in variables)
         {
             var attribute = variable.GetAttribute<DescriptionVariable>();
-            dic.Add(FirstLetterToUpperCase(variable.Name), new Variable() { value = variable.GetValue(obj), color = attribute.color });
+            dic.Add(FirstLetterToUpperCase(variable.Name), new Variable() { value = variable.GetValue(obj), color = attribute.color, detail = attribute.detail });
         }
     }
 
@@ -77,7 +110,7 @@ public class DescriptionCreator
         foreach (var variable in variables)
         {
             var attribute = variable.GetAttribute<DescriptionVariable>();
-            dic.Add(FirstLetterToUpperCase(variable.Name), new Variable() { value = variable.GetValue(obj), color = attribute.color });
+            dic.Add(FirstLetterToUpperCase(variable.Name), new Variable() { value = variable.GetValue(obj), color = attribute.color, detail = attribute.detail });
         }
     }
 }

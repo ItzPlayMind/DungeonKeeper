@@ -406,6 +406,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Details"",
+                    ""type"": ""Button"",
+                    ""id"": ""dd86172b-5e14-4cbf-9eda-74e809367538"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -496,6 +505,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Fullscreen"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""642c416b-04d2-46e3-9f86-58b40d9f73d4"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Details"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -530,6 +550,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_UI_ActiveItem4 = m_UI.FindAction("Active Item 4", throwIfNotFound: true);
         m_UI_ActiveItem5 = m_UI.FindAction("Active Item 5", throwIfNotFound: true);
         m_UI_ActiveItem6 = m_UI.FindAction("Active Item 6", throwIfNotFound: true);
+        m_UI_Details = m_UI.FindAction("Details", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -809,6 +830,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_ActiveItem4;
     private readonly InputAction m_UI_ActiveItem5;
     private readonly InputAction m_UI_ActiveItem6;
+    private readonly InputAction m_UI_Details;
     public struct UIActions
     {
         private @PlayerInput m_Wrapper;
@@ -821,6 +843,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @ActiveItem4 => m_Wrapper.m_UI_ActiveItem4;
         public InputAction @ActiveItem5 => m_Wrapper.m_UI_ActiveItem5;
         public InputAction @ActiveItem6 => m_Wrapper.m_UI_ActiveItem6;
+        public InputAction @Details => m_Wrapper.m_UI_Details;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -854,6 +877,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @ActiveItem6.started += instance.OnActiveItem6;
             @ActiveItem6.performed += instance.OnActiveItem6;
             @ActiveItem6.canceled += instance.OnActiveItem6;
+            @Details.started += instance.OnDetails;
+            @Details.performed += instance.OnDetails;
+            @Details.canceled += instance.OnDetails;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -882,6 +908,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @ActiveItem6.started -= instance.OnActiveItem6;
             @ActiveItem6.performed -= instance.OnActiveItem6;
             @ActiveItem6.canceled -= instance.OnActiveItem6;
+            @Details.started -= instance.OnDetails;
+            @Details.performed -= instance.OnDetails;
+            @Details.canceled -= instance.OnDetails;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -930,5 +959,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnActiveItem4(InputAction.CallbackContext context);
         void OnActiveItem5(InputAction.CallbackContext context);
         void OnActiveItem6(InputAction.CallbackContext context);
+        void OnDetails(InputAction.CallbackContext context);
     }
 }

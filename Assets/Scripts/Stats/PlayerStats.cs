@@ -181,14 +181,17 @@ public class PlayerStats : CharacterStats
                 if (assistTimers[keys[i]] > 0)
                     assistTimers[keys[i]] -= Time.deltaTime;
             }*/
-            if (healthTimer > 0f)
-                healthTimer -= Time.deltaTime;
-            else
+            if (!IsDead)
             {
-                if (currentHealth.Value < stats.health.Value)
+                if (healthTimer > 0f)
+                    healthTimer -= Time.deltaTime;
+                else
                 {
-                    currentHealth.Value++;
-                    healthTimer = 1 / healthPerSecond;
+                    if (currentHealth.Value < stats.health.Value)
+                    {
+                        currentHealth.Value++;
+                        healthTimer = 1 / healthPerSecond;
+                    }
                 }
             }
         }

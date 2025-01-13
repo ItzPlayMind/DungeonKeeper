@@ -102,9 +102,11 @@ public class InputManager : MonoBehaviour
 
     private bool playerInteractTrigger;
     private bool playerInteractHold;
+    private bool playerDetailsHold;
 
     public bool PlayerInteractTrigger { get => playerInteractTrigger && playerControls.Camera.Interact.triggered; }
     public bool PlayerInteractHold { get => playerInteractHold && playerControls.Camera.Interact.triggered; }
+    public bool PlayerDetailsHold { get => playerDetailsHold; }
     //public bool PlayerInventoryTrigger { get => playerControls.Additional.Inventory.triggered; }
     //public bool PlayerMenuTrigger { get => playerControls.Additional.Menu.triggered; }
 
@@ -123,6 +125,8 @@ public class InputManager : MonoBehaviour
 
         playerControls.Combat.Attack.started += (state) => PlayerAttackHold = true;
         playerControls.Combat.Attack.canceled += (state) => PlayerAttackHold = false;
+        playerControls.UI.Details.started += (state) => playerDetailsHold = true;
+        playerControls.UI.Details.canceled += (state) => playerDetailsHold = false;
         //playerControls.Combat.Scope.started += (state) => AimDownSightsHold = true;
         //playerControls.Combat.Scope.canceled += (state) => AimDownSightsHold = false;
         //playerControls.Combat.Reload.started += (state) => PlayerReloadHold = true;

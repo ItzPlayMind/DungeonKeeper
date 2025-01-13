@@ -88,7 +88,9 @@ public abstract class AbstractSpecial : NetworkBehaviour
         _Start();
     }
 
-    public string Description { get => DescriptionCreator.Generate(description, GetVariablesForDescription()); }
+    public string Description(bool detailed = false) {
+        return DescriptionCreator.Generate(description, GetVariablesForDescription(),detailed);
+    }
     protected virtual Dictionary<string, Variable> GetVariablesForDescription()
     {
         var dictionary = new Dictionary<string, Variable>();
