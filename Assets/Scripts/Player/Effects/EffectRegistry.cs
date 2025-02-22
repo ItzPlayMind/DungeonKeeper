@@ -87,6 +87,31 @@ public class EffectRegistry : Registry<Effect>
                 light.enabled = false;
             };
         });
+        AddEffect("Flames", "flames", new Dictionary<string, object>() { { "Timer", 1f } }, (Effect effect, CharacterStats stats) =>
+        {
+            
+        }, (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            if ((float)effect.variables["Timer"] <= 0f)
+            {
+                stats.TakeDamage((int)effect.amount, Vector2.zero, effect.applier);
+                effect.variables["Timer"] = 1f;
+            }
+            else
+                effect.variables["Timer"] = (float)effect.variables["Timer"] - Time.deltaTime;
+        });
+        AddEffect("Potion", "potion", new Dictionary<string, object>() { { "Timer", 1f } }, null, (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            if ((float)effect.variables["Timer"] <= 0f)
+            {
+                stats.Heal((int)effect.amount);
+                effect.variables["Timer"] = 1f;
+            }
+            else
+                effect.variables["Timer"] = (float)effect.variables["Timer"] - Time.deltaTime;
+        });
     }
 
     public Effect AddEffect(string name, string iconName, Effect.EffectFunction onStart = null, Effect.EffectFunction onUpdate = null)

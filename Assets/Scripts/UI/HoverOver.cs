@@ -7,22 +7,31 @@ using UnityEngine;
 public abstract class HoverOver<T> : MonoBehaviour
 {
     private static HoverOver<T> Instance;
+    private GameObject gfx;
 
     private void Awake()
     {
+        if(Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        gfx = transform.GetChild(0)?.gameObject;
         Instance = this;
+        DontDestroyOnLoad(gameObject);
         Hide();
     }
 
     public static void Show(T item)
     {
-        Instance.gameObject.SetActive(true);
+        Instance.gfx.SetActive(true);
+        Instance.gfx.transform.position = InputManager.Instance.MousePosition;
         Instance._Show(item);
     }
 
     public static void Hide()
     {
-        Instance.gameObject.SetActive(false);
+        Instance.gfx.SetActive(false);
     }
 
     protected abstract void _Show(T item);
@@ -30,13 +39,13 @@ public abstract class HoverOver<T> : MonoBehaviour
 
     private void Update()
     {
-        if (gameObject.activeSelf)
+        if (gfx.activeSelf)
         {
-            transform.position = InputManager.Instance.MousePosition;
-            if (transform.position.y > Screen.height / 2)
-                (transform as RectTransform).pivot = new Vector2(-0.02f, 1.03f);
+            gfx.transform.position = InputManager.Instance.MousePosition;
+            if (gfx.transform.position.y > Screen.height / 2)
+                (gfx.transform as RectTransform).pivot = new Vector2(-0.02f, 1.03f);
             else
-                (transform as RectTransform).pivot = new Vector2(-0.02f, 0.03f);
+                (gfx.transform as RectTransform).pivot = new Vector2(-0.02f, 0.03f);
         }
     }
 }

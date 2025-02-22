@@ -99,6 +99,8 @@ public class DescriptionCreator
         foreach (var variable in variables)
         {
             var attribute = variable.GetAttribute<DescriptionVariable>();
+            if (dic.ContainsKey(FirstLetterToUpperCase(variable.Name)))
+                continue;
             dic.Add(FirstLetterToUpperCase(variable.Name), new Variable() { value = variable.GetValue(obj), color = attribute.color, detail = attribute.detail });
         }
     }
@@ -110,6 +112,8 @@ public class DescriptionCreator
         foreach (var variable in variables)
         {
             var attribute = variable.GetAttribute<DescriptionVariable>();
+            if (dic.ContainsKey(FirstLetterToUpperCase(variable.Name)))
+                continue;
             dic.Add(FirstLetterToUpperCase(variable.Name), new Variable() { value = variable.GetValue(obj), color = attribute.color, detail = attribute.detail });
         }
     }

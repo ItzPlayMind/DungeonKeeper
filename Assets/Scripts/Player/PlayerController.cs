@@ -76,7 +76,7 @@ public class PlayerController : NetworkBehaviour
 
     public void ExitGame()
     {
-        GameManager.instance.Shutdown();
+        Lobby.Instance.Shutdown();
     }
 
     public override void OnNetworkDespawn()

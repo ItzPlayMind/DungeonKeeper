@@ -5,7 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public class Ghost : NetworkBehaviour
+public class Ghost : Objective
 {
     [SerializeField] private float followRange;
     [SerializeField] private float attackRange;
@@ -34,7 +34,8 @@ public class Ghost : NetworkBehaviour
         {
             OnDeathClientRPC(damager);
             GameManager.instance.AddCashToTeamFromPlayer(damager, gold);
-            isReturning = true;
+            Complete(damager);
+            transform.position = originalPos;
         };
         stats.OnServerTakeDamage += (ulong damager, int damage) =>
         {

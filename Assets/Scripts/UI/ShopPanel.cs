@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -26,9 +27,16 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public static ShopPanel Instance;
 
+    private bool canShop = false;
+
     public void SetInstanceToThis()
     {
         Instance = this;
+    }
+
+    public void SetAbleToShop(bool value)
+    {
+        canShop = value;
     }
 
     private void Start()
@@ -40,6 +48,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             cashText.text = "Cash: " + value;
         });
         var allItems = ItemRegistry.Instance.GetAll();
+        Debug.Log(allItems.Length);
         foreach (var item in allItems)
         {
             var iconButton = Instantiate(iconButtonPrefab, shopTransforms[(int)item.type]);
@@ -51,6 +60,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             var buttonListener = new Button.ButtonClickedEvent();
             buttonListener.AddListener(() =>
             {
+                if (!canShop) return;
                 if (inventory.Cash >= item.cost && inventory.CanAddItem())
                 {
                     inventory.RemoveCash(item.cost);
@@ -64,6 +74,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             var buttonRightListener = new Button.ButtonClickedEvent();
             buttonRightListener.AddListener(() =>
             {
+                if (!canShop) return;
                 if (inventory.Cash >= item.cost && inventory.CanAddItem(true))
                 {
                     inventory.RemoveCash(item.cost);
@@ -82,6 +93,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void SellItem(int slot)
     {
+        if (!canShop) return;
         var item = inventory.GetItem(slot);
         if (item == null) return;
         inventory.AddCash((int)(item.cost * 0.8f));
@@ -115,7 +127,6 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public PlayerItemShow CreatePlayerItemsShow(string name)
     {
-        Debug.Log(name + " CREATED SHOW");
         var itemShow = Instantiate(playerItemShowPrefab, playerItemShowParent);
         itemShow.SetName(name);
         return itemShow;

@@ -79,7 +79,7 @@ public class Inventory : NetworkBehaviour
     public void OnTeamAssigned()
     {
         if(!IsLocalPlayer)
-            playerItemShow = ShopPanel.Instance.CreatePlayerItemsShow(GameManager.instance.PlayerStatistics.GetNameByClientID(OwnerClientId));
+            playerItemShow = ShopPanel.Instance.CreatePlayerItemsShow(Lobby.Instance.PlayerStatistic.GetNameByClientID(OwnerClientId));
     }
 
     public bool CanAddItem(bool team = false)

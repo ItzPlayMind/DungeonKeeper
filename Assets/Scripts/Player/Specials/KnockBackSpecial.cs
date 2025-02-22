@@ -7,10 +7,11 @@ public class KnockBackSpecial : AbstractSpecial
 {
     [SerializeField] private float knockBackForce = 55;
     [SerializeField] CollisionSender hitbox;
+    [SerializeField] private string effectName = "slow";
     [DescriptionVariable]
-    [SerializeField] private int slowAmount = 50;
+    [SerializeField] protected int amount = 50;
     [DescriptionVariable]
-    [SerializeField] private int slowDuration = 3;
+    [SerializeField] protected int duration = 3;
     protected override void _Start()
     {
         if (!IsLocalPlayer) return;
@@ -24,7 +25,7 @@ public class KnockBackSpecial : AbstractSpecial
             if (stats != null)
             {
                 stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), characterStats);
-                stats.GetComponent<EffectManager>()?.AddEffect("slow", slowDuration, slowAmount,characterStats);
+                stats.GetComponent<EffectManager>()?.AddEffect(effectName, duration, amount, characterStats);
             }
         };
     }

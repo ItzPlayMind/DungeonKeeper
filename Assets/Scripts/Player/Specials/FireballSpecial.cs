@@ -7,7 +7,7 @@ public class FireballSpecial : AbstractSpecial
 {
     [SerializeField] private NetworkObject fireballPrefab;
     [SerializeField] private float fireballSpeed = 5f;
-    [SerializeField] private float fireballKnockback = 35f;
+    //[SerializeField] private float fireballKnockback = 35f;
 
     Vector2 mouseWorldPos;
     private int stacks = 0;

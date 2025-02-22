@@ -89,6 +89,8 @@ public abstract class AbstractSpecial : NetworkBehaviour
     }
 
     public string Description(bool detailed = false) {
+        if (characterStats == null)
+            characterStats = GetComponent<PlayerStats>();
         return DescriptionCreator.Generate(description, GetVariablesForDescription(),detailed);
     }
     protected virtual Dictionary<string, Variable> GetVariablesForDescription()
@@ -232,6 +234,4 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     protected abstract void _OnSpecialPress(PlayerController controller);
     protected abstract void _OnSpecialFinish(PlayerController controller);
-
-
 }

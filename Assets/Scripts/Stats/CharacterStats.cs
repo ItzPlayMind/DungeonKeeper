@@ -81,10 +81,11 @@ public class CharacterStats : NetworkBehaviour
         if (!enabled) return;
         if (IsDead)
             return;
-        if (damager.NetworkObjectId == PlayerController.LocalPlayer.NetworkObjectId)
-        {
-            ShowHealtBar();
-        }
+        if(damager != null)
+            if (damager.NetworkObjectId == PlayerController.LocalPlayer.NetworkObjectId)
+            {
+                ShowHealtBar();
+            }
         TakeDamageServerRPC(damage, knockback, damager == null ? ulong.MaxValue : damager.NetworkObjectId);
     }
 
@@ -114,7 +115,8 @@ public class CharacterStats : NetworkBehaviour
         }
         if (hitCoroutine != null)
             StopCoroutine(hitCoroutine);
-        hitCoroutine = StartCoroutine(hitColorChange());
+        if (gfx != null)
+            hitCoroutine = StartCoroutine(hitColorChange());
     }
 
     private IEnumerator hitColorChange()
@@ -168,7 +170,7 @@ public class CharacterStats : NetworkBehaviour
         }
     }
 
-    protected virtual void Respawn()
+    public virtual void Respawn()
     {
         OnServerRespawn?.Invoke();
         currentHealth.Value = stats.health.Value;
@@ -209,7 +211,8 @@ public class CharacterStats : NetworkBehaviour
     {
         if (healCoroutine != null)
             StopCoroutine(healCoroutine);
-        healCoroutine = StartCoroutine(healColorChange()); 
+        if (gfx != null)
+            healCoroutine = StartCoroutine(healColorChange()); 
     }
 
     public Vector2 GenerateKnockBack(Transform hit, Transform damager, float force)

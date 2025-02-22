@@ -110,12 +110,12 @@ public class ComboSpecial : AbstractSpecial
     {
         UpdateActive(1);
         mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
-        ChangeAnimatiorServerRPC(NetworkObjectId, currentComboIndex);
+        ChangeAnimatorServerRPC(NetworkObjectId, currentComboIndex);
         Use();
     }
 
     [ServerRpc]
-    private void ChangeAnimatiorServerRPC(ulong client, int comboIndex)
+    private void ChangeAnimatorServerRPC(ulong client, int comboIndex)
     {
         ChangeAnimatorClientRPC(client, comboIndex);
     }

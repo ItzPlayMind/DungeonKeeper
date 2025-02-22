@@ -390,7 +390,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.health.baseValue
-      value: 950
+      value: 850
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.resource.baseValue
@@ -546,7 +546,6 @@ MonoBehaviour:
   resourceBar: {fileID: 6555200651453524290}
   fireballPrefab: {fileID: 3740689326710820012, guid: f222e02973c1e05488afa94ceb05d015, type: 3}
   fireballSpeed: 5
-  fireballKnockback: 15
 --- !u!114 &1240188183539033022
 MonoBehaviour:
   m_ObjectHideFlags: 0

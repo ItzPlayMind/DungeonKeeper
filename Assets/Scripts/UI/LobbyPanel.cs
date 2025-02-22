@@ -1,20 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LobbyPanel : MonoBehaviour
 {
-    [System.Serializable]
-    private class CharacterPortrait
+    public static LobbyPanel Instance;
+
+    private void Awake()
     {
-        public GameObject character;
-        public CharacterType type;
-        public Sprite characterSprite;
-        [HideInInspector] public bool locked;
-        [HideInInspector] public Button characterPotrait;
-        [HideInInspector] public GameObject selectionObject;
+        Instance = this;
+        gameObject.SetActive(false);
     }
 
     private class ClientReadyState
@@ -22,15 +22,19 @@ public class LobbyPanel : MonoBehaviour
         public ulong clientID;
         public UICheckbox readyStateObject;
     }
-
+    [SerializeField] private Button startButton;
+    [SerializeField] private Button readyButton;
+    [SerializeField] private Button nextButton;
     [SerializeField] private GameObject teamPanel;
     [SerializeField] private GameObject characterSelectionPanel;
+    [SerializeField] private RectTransform characterSelectionContentPanel;
     [SerializeField] private Transform[] redTeamPlayerCards = new Transform[3];
     [SerializeField] private Transform[] blueTeamPlayerCards = new Transform[3];
     [SerializeField] private TMPro.TextMeshProUGUI playerText;
     [SerializeField] private GameObject characterPortraitPrefab;
-    [SerializeField] private Transform[] characterSelection = new Transform[3];
-    [SerializeField] private List<CharacterPortrait> characterPortraits = new List<CharacterPortrait>();
+    [SerializeField] private RectTransform[] characterCategory = new RectTransform[3];
+    [SerializeField] private RectTransform[] characterSelection = new RectTransform[3];
+
     [SerializeField] private UICheckbox readyStatePrefab;
     [SerializeField] private Transform readyStateTransform;
     private bool isLocalReady = false;
@@ -38,6 +42,10 @@ public class LobbyPanel : MonoBehaviour
     private List<ClientReadyState> clientReadyStates = new List<ClientReadyState>();
 
     private int characterSelectionIndex = 0;
+
+    public Button StartButton { get => startButton; }
+    public Button ReadyButton { get => readyButton; }
+    public Button NextButton { get => nextButton; }
 
     public void SwitchToCharacterSelection()
     {
@@ -60,13 +68,13 @@ public class LobbyPanel : MonoBehaviour
         for (int i = 0; i < redTeam.Length; i++)
         {
             redTeamPlayerCards[i].gameObject.SetActive(true);
-            var playerName = GameManager.instance.PlayerStatistics.GetNameByClientID(redTeam[i]);
+            var playerName = Lobby.Instance.PlayerStatistic.GetNameByClientID(redTeam[i]);
             redTeamPlayerCards[i].GetComponentInChildren<TMPro.TextMeshProUGUI>().text = playerName;
         }
         for (int i = 0; i < blueTeam.Length; i++)
         {
             blueTeamPlayerCards[i].gameObject.SetActive(true); 
-            var playerName = GameManager.instance.PlayerStatistics.GetNameByClientID(blueTeam[i]);
+            var playerName = Lobby.Instance.PlayerStatistic.GetNameByClientID(blueTeam[i]);
             blueTeamPlayerCards[i].GetComponentInChildren<TMPro.TextMeshProUGUI>().text = playerName;
         }
     }
@@ -84,7 +92,7 @@ public class LobbyPanel : MonoBehaviour
         isLocalReady = false;
         teamPanel.SetActive(true);
         characterSelectionPanel.SetActive(false);
-        foreach (var portraits in characterPortraits)
+        foreach (var portraits in Lobby.Instance.CharacterPortraits)
         {
             if(portraits.characterPotrait != null)
                 portraits.characterPotrait.interactable = true;   
@@ -94,57 +102,69 @@ public class LobbyPanel : MonoBehaviour
 
     private void Start()
     {
-        for (int i = 0; i < characterPortraits.Count; i++)
+        SetAndAddSizeForCategory(CharacterType.Tank);
+        SetAndAddSizeForCategory(CharacterType.Damage);
+        SetAndAddSizeForCategory(CharacterType.Support);
+        for (int i = 0; i < Lobby.Instance.CharacterPortraits.Count; i++)
         {
             SetupPotraitWithIndex(i);
         }
     }
+    private void SetAndAddSizeForCategory(CharacterType type)
+    {
+        Vector2 contentSize = characterSelectionContentPanel.sizeDelta;
+        int characterLinesForSection = (int)Mathf.Ceil((Lobby.Instance.CharacterPortraits.Count(x => x.type == type) * 200) / (1476-40))+1;
+        var category = characterCategory[(int)type];
+        Vector2 size = category.sizeDelta;
+        size.y = characterLinesForSection * 200+50;
+        category.sizeDelta = size;
+        contentSize.y += size.y-50;
+        characterSelectionContentPanel.sizeDelta = contentSize;
+    }
 
     private void SetupPotraitWithIndex(int index)
     {
-        var portrait = Instantiate(characterPortraitPrefab, characterSelection[(int)characterPortraits[index].type]);
-        characterPortraits[index].characterPotrait = portrait.GetComponent<Button>();
-        portrait.transform.Find("Character").GetComponent<Image>().sprite = characterPortraits[index].characterSprite;
-        characterPortraits[index].selectionObject = portrait.transform.Find("Selection").gameObject;
+        var portrait = Instantiate(characterPortraitPrefab, characterSelection[(int)Lobby.Instance.CharacterPortraits[index].type]);
+        Lobby.Instance.CharacterPortraits[index].characterPotrait = portrait.GetComponent<Button>();
+        portrait.transform.Find("Character").GetComponent<Image>().sprite = Lobby.Instance.CharacterPortraits[index].characterSprite;
+        var hoverEvent = portrait.GetComponent<HoverEvent>();
+        hoverEvent.onPointerEnter += () => AbilityHoverOver.Show(Lobby.Instance.CharacterPortraits[index].character.GetComponent<AbstractSpecial>());
+        hoverEvent.onPointerExit += AbilityHoverOver.Hide;
+        Lobby.Instance.CharacterPortraits[index].selectionObject = portrait.transform.Find("Selection").gameObject;
         if (index == characterSelectionIndex)
         {
-            characterPortraits[index].selectionObject.SetActive(true);
+            Lobby.Instance.CharacterPortraits[index].selectionObject.SetActive(true);
         }
         var buttonClick = new Button.ButtonClickedEvent();
         buttonClick.AddListener(() =>
         {
             if (isLocalReady) return;
-            characterPortraits[characterSelectionIndex].selectionObject.SetActive(false);
+            Lobby.Instance.CharacterPortraits[characterSelectionIndex].selectionObject.SetActive(false);
             characterSelectionIndex = index;
-            characterPortraits[characterSelectionIndex].selectionObject.SetActive(true);
+            Lobby.Instance.CharacterPortraits[characterSelectionIndex].selectionObject.SetActive(true);
         });
-        characterPortraits[index].characterPotrait.onClick = buttonClick;
+        Lobby.Instance.CharacterPortraits[index].characterPotrait.onClick = buttonClick;
     }
    
     public void ChangeReady()
     {
         isLocalReady = !isLocalReady;
-        GameManager.instance.ChangeReadyState(characterSelectionIndex);
+        Lobby.Instance.ChangeReadyState(characterSelectionIndex);
     }
 
     public void ChangeLockStateByIndex(int index, bool value, Color color)
     {
-        characterPortraits[index].locked = value;
-        var button = characterPortraits[index].characterPotrait.GetComponent<Button>();
+        Lobby.Instance.CharacterPortraits[index].locked = value;
+        var button = Lobby.Instance.CharacterPortraits[index].characterPotrait.GetComponent<Button>();
         ColorBlock colorBlock = button.colors;
         colorBlock.disabledColor = color;
         button.colors = colorBlock;
         button.interactable=!value;
         if(index == characterSelectionIndex && value)
         {
-            var newIndex=(characterSelectionIndex+1)%characterPortraits.Count;
-            characterPortraits[newIndex].characterPotrait.onClick?.Invoke();
+            var newIndex=(characterSelectionIndex+1)%Lobby.Instance.CharacterPortraits.Count;
+            Lobby.Instance.CharacterPortraits[newIndex].characterPotrait.onClick?.Invoke();
         }
-    }
-
-    public GameObject GetCharacterByIndex(int index)
-    {
-        return characterPortraits[index].character;
     }
 
     public int GetSelectedIndex() => characterSelectionIndex;
@@ -181,5 +201,15 @@ public class LobbyPanel : MonoBehaviour
             clientReadyStates.Remove(state);
             Destroy(state.readyStateObject.gameObject);
         }
+    }
+
+    public void StartGame()
+    {
+        Lobby.Instance.StartGame();
+    }
+
+    public void SwitchToCharacterSelectionPress()
+    {
+        Lobby.Instance.SwitchToCharacterSelection();
     }
 }

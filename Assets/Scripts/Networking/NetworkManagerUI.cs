@@ -9,7 +9,6 @@ public class NetworkManagerUI : MonoBehaviour
 {
     UnityTransport transport;
     NetworkManager networkManager;
-    [SerializeField] private LobbyPanel lobbyPanel;
     [SerializeField] private GameObject loadingScreen;
     [SerializeField] private Button playButton;
     [SerializeField] private TMPro.TMP_InputField nameInput;
@@ -18,7 +17,7 @@ public class NetworkManagerUI : MonoBehaviour
     {
         networkManager = GetComponentInParent<NetworkManager>();
         transport = networkManager.GetComponent<UnityTransport>();
-        nameInput.text = GameManager.instance.PlayerStatistics.Name;
+        nameInput.text = Lobby.Instance.PlayerStatistic.Name;
     }
 
     public void Play()
@@ -31,7 +30,7 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void StartClient()
     {
-        lobbyPanel.gameObject.SetActive(true);
+        LobbyPanel.Instance.gameObject.SetActive(true);
         gameObject.SetActive(false);
         if (!networkManager.StartClient())
         {
@@ -41,7 +40,7 @@ public class NetworkManagerUI : MonoBehaviour
     }
     private void StartHost()
     {
-        lobbyPanel.gameObject.SetActive(true);
+        LobbyPanel.Instance.gameObject.SetActive(true);
         gameObject.SetActive(false);
         if (!networkManager.StartHost())
         {
@@ -62,6 +61,11 @@ public class NetworkManagerUI : MonoBehaviour
 
     public void ChangeName(string name)
     {
-        GameManager.instance.PlayerStatistics.SetName(name);
+        Lobby.Instance.PlayerStatistic.SetName(name);
+    }
+
+    public void SetGameMode(int index)
+    {
+        Lobby.Instance.SetGameModeIndex(index);
     }
 }

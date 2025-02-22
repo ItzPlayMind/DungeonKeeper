@@ -30,7 +30,7 @@ public class EffectManager : NetworkBehaviour
     {
         if(activeEffects.ContainsKey(effect.ID))
         {
-            if (activeEffects[effect.ID].amount < effect.amount)
+            if (activeEffects[effect.ID].amount <= effect.amount)
             {
                 activeEffects[effect.ID].End(stats);
                 activeEffects.Remove(effect.ID);
@@ -67,5 +67,10 @@ public class EffectManager : NetworkBehaviour
         var effect = (EffectRegistry.Instance as EffectRegistry).CreateEffect(id, duration, amount);
         effect.applier = applier;
         AddEffect(effect);
+    }
+
+    public bool HasEffect(string id)
+    {
+        return activeEffects.ContainsKey(id);
     }
 }

@@ -539,7 +539,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 842f9ace83132384585bbb8bb558fe9b, type: 3}
   hoverEvent: {fileID: 321380862266279876}
   description: Slam the ground, deal {Damage} damage to all enemies hit and push
-    them back. Hit players are slowed by {SlowAmount}% for {SlowDuration}.
+    them back. Hit players are slowed by {Amount}% for {Duration} seconds.
   damage: 35
   damageMultiplier: 1
   MaxCooldown: 15
@@ -549,5 +549,6 @@ MonoBehaviour:
   resourceBar: {fileID: 1285768031754794871}
   knockBackForce: 55
   hitbox: {fileID: 7405058435747487577}
-  slowAmount: 50
-  slowDuration: 3
+  effectName: slow
+  amount: 50
+  duration: 3

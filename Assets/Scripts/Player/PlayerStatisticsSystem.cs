@@ -33,6 +33,11 @@ public class PlayerStatisticsSystem : NetworkBehaviour
         SendOwnNameServerRPC(NetworkManager.Singleton.LocalClientId, Name);
     }
 
+    public override void OnNetworkDespawn()
+    {
+        Clear();
+    }
+
     [ServerRpc(RequireOwnership = false)]
     private void RequestNamesServerRPC(ulong client)
     {

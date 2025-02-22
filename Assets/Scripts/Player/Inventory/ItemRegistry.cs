@@ -18,10 +18,9 @@ public class ItemRegistry : Registry<Item>
 
     private void Start()
     {
-        var potion = AddItemWithVariables("HP Potion", "hp_potion", CharacterType.None, "On use gain {HP} Health", null, 100, 0, new Dictionary<string, Variable>() { { "HP", new Variable() { value = 100 } } }, null, (Item item, CharacterStats stats, int slot) =>
+        var potion = AddItemWithVariables("HP Potion", "hp_potion", CharacterType.None, "On use heal {HP} Health every second for {Duration} seconds.", null, 100, 0, new Dictionary<string, Variable>() { { "HP", new Variable() { value = 20 } }, { "Duration", new Variable() { value = 10 } } }, null, (Item item, CharacterStats stats, int slot) =>
         {
-
-            stats.Heal((int)item.variables["HP"].value);
+            stats.GetComponent<EffectManager>()?.AddEffect("potion", (int)item.variables["Duration"].value, (int)item.variables["HP"].value, stats);
             stats.GetComponent<Inventory>().RemoveItem(slot);
         });
         potion.multiple = true;
@@ -72,7 +71,7 @@ public class ItemRegistry : Registry<Item>
             item.variables["Damage"].value = (int)item.variables["BaseDamage"].value + (int)(stats.stats.health.Value * ((int)item.variables["MaxHealthPerc"].value / 100f));
         });
 
-        AddItemWithVariables("Lifeline", "leather_armor", CharacterType.Tank, "After not beeing in combat for 10 seconds, start regenerating {HealAmount}% Max HP every {Time} seconds.", new StatBlock(0, 0, 0, 0, 200, 0), 1500, GameManager.instance.OUT_OF_COMBAT_TIME,
+        AddItemWithVariables("Lifeline", "leather_armor", CharacterType.Tank, "After not beeing in combat for 10 seconds, start regenerating {HealAmount}% Max HP every {Time} seconds.", new StatBlock(0, 0, 0, 0, 200, 0), 1500, GameManager.OUT_OF_COMBAT_TIME,
             new Dictionary<string, Variable>() { { "Timer", new Variable() { value = 1f } }, { "HealAmount", new Variable() { value = 2.5f, color = "green" } }, { "Time", new Variable() { value = 2f } } }, (item, stats, _) =>
         {
             AddToAction(item, () => stats.OnClientTakeDamage, (value) => stats.OnClientTakeDamage = value, (_, _) =>

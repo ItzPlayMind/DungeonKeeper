@@ -118,9 +118,13 @@ public class InputManager : MonoBehaviour
     {
         fullscreen = Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen;
         if (instance != null && instance != this)
+        {
             Destroy(gameObject);
+            return;
+        }
         else
             instance = this;
+        DontDestroyOnLoad(gameObject);
         playerControls = new PlayerInput();
 
         playerControls.Combat.Attack.started += (state) => PlayerAttackHold = true;

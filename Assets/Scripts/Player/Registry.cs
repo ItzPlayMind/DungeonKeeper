@@ -6,7 +6,6 @@ using UnityEngine;
 
 public abstract class Registry<T> : MonoBehaviour
 {
-
     public static Registry<T> Instance;
 
     private void Awake()
@@ -16,7 +15,6 @@ public abstract class Registry<T> : MonoBehaviour
     }
 
     public abstract T[] GetAll();
-
 
     public abstract T GetByID(string id);
 

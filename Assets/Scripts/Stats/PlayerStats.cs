@@ -82,7 +82,7 @@ public class PlayerStats : CharacterStats
     [ServerRpc(RequireOwnership = false)]
     protected override void TakeDamageServerRPC(int damage, Vector2 knockback, ulong damagerID)
     {
-        healthTimer = GameManager.instance.OUT_OF_COMBAT_TIME;
+        healthTimer = GameManager.OUT_OF_COMBAT_TIME;
         /*if (NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerID].GetComponent<PlayerStats>() != null)
             assistTimers[damagerID] = GameManager.instance.OUT_OF_COMBAT_TIME;*/
         base.TakeDamageServerRPC(damage, knockback, damagerID);
@@ -120,7 +120,7 @@ public class PlayerStats : CharacterStats
         }
     }
 
-    protected override void Respawn()
+    public override void Respawn()
     {
         base.Respawn();
     }
