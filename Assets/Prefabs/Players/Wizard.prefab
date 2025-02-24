@@ -534,9 +534,10 @@ MonoBehaviour:
   Name: Fireball
   icon: {fileID: 21300000, guid: 0b670b50a08fde342a9710e58a75ac65, type: 3}
   hoverEvent: {fileID: 5718147958205733361}
-  description: "Shoots out a fireball that deals {Damage} on hit and crates an explosion
+  description: "Shoots out a fireball that deals {Damage} on hit and creates an explosion
     that deals {Damage}. \nOn use gain a stack. Each stack increases the damage by
     20% but also increases the mana cost by 20%.\nMaximum of 5 stacks possible."
+  upgrades: []
   damage: 30
   damageMultiplier: 1
   MaxCooldown: 10

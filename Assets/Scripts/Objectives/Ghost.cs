@@ -24,6 +24,8 @@ public class Ghost : Objective
     {
         healthbar = GetComponentInChildren<UIBar>();
         stats = GetComponent<CharacterStats>();
+        if (IsServer && Lobby.Instance.CurrentGameMode.name == "MOBA")
+            stats.OnServerDeath += (ulong killer) => GameManager.instance.UnlockUpgradeForAllInTeamFromPlayer(killer, 2);
         spriteRenderer = GetComponent<SpriteRenderer>();
         ownLight = GetComponentInChildren<Light2D>();
         coll = GetComponent<Collider2D>();

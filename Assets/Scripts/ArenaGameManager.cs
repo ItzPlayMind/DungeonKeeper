@@ -85,8 +85,11 @@ public class ArenaGameManager : GameManager
         };
         round.OnValueChanged += (int old, int value) =>
         {
-            if ((value + 1) % 3 == 0)
+            if ((value+1) % 3 == 0)
                 cardSelection.gameObject.SetActive(true);
+            if (!IsServer) return;
+            if (value % 5 == 0)
+                UnlockUpgradeForAll(value/5);
         };
         if (IsServer)
         {

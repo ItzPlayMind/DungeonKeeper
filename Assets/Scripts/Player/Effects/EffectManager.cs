@@ -73,4 +73,16 @@ public class EffectManager : NetworkBehaviour
     {
         return activeEffects.ContainsKey(id);
     }
+
+    public void GetEffectStats(string id, out float duration, out float amount)
+    {
+        if (activeEffects.ContainsKey(id))
+        {
+            duration = activeEffects[id].duration;
+            amount = activeEffects[id].amount;
+            return;
+        }
+        duration = -1;
+        amount = -1;
+    }
 }

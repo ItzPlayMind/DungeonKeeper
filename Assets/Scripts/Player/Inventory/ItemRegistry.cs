@@ -357,7 +357,7 @@ public class ItemRegistry : Registry<Item>
                item.StartCooldown();
            });
 
-        var ring = AddItemWithVariables("Miners Ring", "ring_02", CharacterType.Support, "Increase own light range by {LightMult}x. Hitting a target applies lit to them for {LitDuration} seconds.", new StatBlock(0, 15, 0, 5, 50, 0), 0 /*12000*/,5,
+        var ring = AddItemWithVariables("Miners Ring", "ring_02", CharacterType.Support, "Increase own light range by {LightMult}x. Hitting a target applies lit to them for {LitDuration} seconds.", new StatBlock(0, 15, 0, 5, 50, 0), 1200,5,
             new Dictionary<string, Variable>() { { "LightMult", new Variable() { value = 2f } }, { "LitDuration", new Variable() { value = 5 } } }, (item, stats, _) =>
             {
                 PlayerAttack controller = stats.GetComponent<PlayerAttack>();

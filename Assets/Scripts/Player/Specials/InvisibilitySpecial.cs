@@ -6,17 +6,28 @@ using UnityEngine.Rendering.Universal;
 
 public class InvisibilitySpecial : AbstractSpecial
 {
-
-
+    [SerializeField]
+    [DescriptionCreator.DescriptionVariable("white")] private int speedIncrease = 20;
+    [SerializeField]
+    [DescriptionCreator.DescriptionVariable("white")] private int cripple = 80;
+    [SerializeField]
+    [DescriptionCreator.DescriptionVariable("white")] private int crippleTime = 1;
     public override bool CanMoveWhileUsing() => false;
 
     private SpriteRenderer gfx;
     private PlayerMeeleAttack controller;
+    private PlayerController playerController;
     protected override void _Start()
     {
         gfx = transform.Find("GFX").GetComponent<SpriteRenderer>();
         controller = GetComponent<PlayerMeeleAttack>();
         if (!IsLocalPlayer) return;
+        playerController = GetComponent<PlayerController>();
+        playerController.OnKill += () =>
+        {
+            if (HasUpgradeUnlocked(2))
+                SetCooldown(0);
+        };
         controller.OnAttackPress += () =>
         {
             if (IsActive)
@@ -27,19 +38,35 @@ public class InvisibilitySpecial : AbstractSpecial
             if (IsActive)
                 Visible();
         };
+        characterStats.stats.speed.ChangeValueAdd += InvisSpeed;
     }
     private int alpha = 255;
 
     protected override void _OnSpecialFinish(PlayerController controller)
     {
         this.controller.SetCurrentAttackIndex(1);
+        if(HasUpgradeUnlocked(1))
+            this.controller.OnAttack += CrippleTarget;
         if (!IsLocalPlayer) return;
-        characterStats.stats.speed.ChangeValueAdd += InvisSpeed;
         StartActive();
         InvisibleServerRPC(25, 0);
     }
 
-    private void InvisSpeed(ref int speed, int oldSpeed) => speed += 20;
+    private void CrippleTarget(ulong target, ulong damager, ref int amount)
+    {
+        var manager = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target]?.GetComponent<EffectManager>();
+        if (manager != null)
+            manager.AddEffect("slow", crippleTime, cripple, characterStats);
+        this.controller.OnAttack -= CrippleTarget;
+    }
+
+    private void InvisSpeed(ref int speed, int oldSpeed)
+    {
+        if (IsActive && HasUpgradeUnlocked(0))
+        {
+            speed += speedIncrease;
+        }
+    }
 
     protected override void OnActiveOver()
     {
@@ -51,7 +78,6 @@ public class InvisibilitySpecial : AbstractSpecial
     {
         StartCooldown();
         InvisibleServerRPC(255, 255);
-        characterStats.stats.speed.ChangeValueAdd -= InvisSpeed;
     }
 
     [ServerRpc]

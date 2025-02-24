@@ -11,16 +11,45 @@ using static DescriptionCreator;
 
 public abstract class AbstractSpecial : NetworkBehaviour
 {
+    [System.Serializable]
+    public class Upgrade
+    {
+        [SerializeField] private string name;
+        public string Name { get => name; }
+        [SerializeField] private string description;
 
+        [SerializeField] private HoverEvent hoverEvent;
+        public string Description { get => DescriptionCreator.Generate(description, special?.GetVariablesForDescription()); }
+        private AbstractSpecial special;
+        public void ApplyToSpecial(AbstractSpecial special)
+        {
+            this.special = special;
+            hoverEvent.gameObject.SetActive(true);
+            hoverEvent.onPointerEnter += () =>
+            {
+                UpgradeHoverOver.Show(this);
+            };
+            hoverEvent.onPointerExit += () => { 
+                UpgradeHoverOver.Hide();
+            };
+        }
+        public bool Unlocked { get; private set; } = false;
+        public void Unlock()
+        {
+            Unlocked = false;
+        }
+    }
+
+    [DescriptionVariable("white")]
     public string Name;
     [SerializeField] private Sprite icon;
     [SerializeField] private HoverEvent hoverEvent;
     [Multiline][SerializeField] private string description;
+    [SerializeField] private Upgrade[] upgrades = new Upgrade[0];
     [SerializeField] private int damage = 5;
     [DescriptionVariable]
     [SerializeField] private float damageMultiplier = 1;
     [SerializeField] private float MaxCooldown;
-    [DescriptionVariable("white")]
     [SerializeField] private float activeTime;
     [SerializeField] private UIBar specialIcon;
     [SerializeField] private UIBar specialInUseIcon;
@@ -32,13 +61,16 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     protected PlayerStats characterStats;
     [DescriptionVariable("white")]
-    public float Cooldown { get => MaxCooldown; }
+    public virtual float Cooldown { get => MaxCooldown; }
     [DescriptionVariable]
     public int Damage { get => (int)(damage + characterStats.stats.specialDamage.Value * damageMultiplier); }
 
     private bool used = false;
     private float cooldown;
     private int resource;
+
+    [DescriptionVariable("white")]
+    public virtual float ActiveTime { get => activeTime; }
 
     public bool IsActive { get => activeTimer > 0 && !OnCooldown; }
 
@@ -66,6 +98,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     private void Start()
     {
+        foreach (var item in upgrades) item.ApplyToSpecial(this);
         hoverEvent.onPointerEnter += () => AbilityHoverOver.Show(this);
         hoverEvent.onPointerExit += () => AbilityHoverOver.Hide();
         characterStats = GetComponent<PlayerStats>();
@@ -135,7 +168,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
     public void StartCooldown()
     {
         ResetActive();
-        cooldown = MaxCooldown;
+        cooldown = Cooldown;
         Finish();
     }
 
@@ -148,7 +181,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
         }
         ResetActive();
         if (specialIcon != null)
-            specialIcon.UpdateBar(cooldown / MaxCooldown);
+            specialIcon.UpdateBar(cooldown / Cooldown);
     }
 
     public void ReduceCooldown(int seconds)
@@ -159,7 +192,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
             FinishedCooldown();
         }
         if (specialIcon != null)
-            specialIcon.UpdateBar(cooldown / MaxCooldown);
+            specialIcon.UpdateBar(cooldown / Cooldown);
     }
 
     protected void UpdateActive(float value) => specialInUseIcon.UpdateBar(value);
@@ -187,13 +220,13 @@ public abstract class AbstractSpecial : NetworkBehaviour
                 FinishedCooldown();
             }
             if (specialIcon != null)
-                specialIcon.UpdateBar(cooldown / MaxCooldown);
+                specialIcon.UpdateBar(cooldown / Cooldown);
         }
         if (activeTimer > 0)
         {
             activeTimer -= Time.deltaTime;
             if (!OnCooldown)
-                UpdateActive(activeTimer / activeTime);
+                UpdateActive(activeTimer / ActiveTime);
             if (activeTimer <= 0 && !OnCooldown)
             {
                 OnActiveOver();
@@ -210,7 +243,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     protected void StartActive()
     {
-        activeTimer = activeTime;
+        activeTimer = ActiveTime;
     }
     protected virtual void _UpdateAll()
     {
@@ -234,4 +267,25 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     protected abstract void _OnSpecialPress(PlayerController controller);
     protected abstract void _OnSpecialFinish(PlayerController controller);
+
+    public void UnlockUpgrade(int index)
+    {
+        UnlockUpgradeServerRPC(index);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void UnlockUpgradeServerRPC(int index)
+    {
+        UnlockUpgradeClientRPC(index);
+    }
+
+    [ClientRpc]
+    private void UnlockUpgradeClientRPC(int index)
+    {
+        if(upgrades.Length > index)
+            if(!upgrades[index].Unlocked)
+                upgrades[index]?.Unlock();
+    }
+
+    protected bool HasUpgradeUnlocked(int index) => upgrades[index]?.Unlocked ?? false;
 }

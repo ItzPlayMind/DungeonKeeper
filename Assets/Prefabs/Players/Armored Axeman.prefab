@@ -938,6 +938,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &776158697575466991 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6496158546021709644, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 5828649671642132643}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1037178102058378400 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6811498739307238403, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 5828649671642132643}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1580187499164412917 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4976039802904779606, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
@@ -1006,6 +1028,16 @@ MonoBehaviour:
 
     If the target is belove {ExecuteThreshold}%
     HP execute the target and be able to use the special again for {ActiveTime} seconds.'
+  upgrades:
+  - name: 
+    description: 
+    hoverEvent: {fileID: 1037178102058378400}
+  - name: 
+    description: 
+    hoverEvent: {fileID: 8675578469244500983}
+  - name: 
+    description: 
+    hoverEvent: {fileID: 776158697575466991}
   damage: 70
   damageMultiplier: 1
   MaxCooldown: 25
@@ -1017,3 +1049,14 @@ MonoBehaviour:
   hitbox: {fileID: 2403472500223742887}
   baseBleedAmount: 5
   bleedDuration: 5
+--- !u!114 &8675578469244500983 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920124048420981588, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 5828649671642132643}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -97,7 +97,6 @@ public class GameManager : NetworkBehaviour
         }
         var virtualCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
         Transform followTarget = null;
-        Debug.Log(Lobby.Instance.CurrentTeam);
         if (Lobby.Instance.CurrentTeam == Lobby.Team.Red)
             followTarget = redTeamSpawns[0];
         if (Lobby.Instance.CurrentTeam == Lobby.Team.Blue)
@@ -300,5 +299,24 @@ public class GameManager : NetworkBehaviour
     public void Shutdown()
     {
         Lobby.Instance.Shutdown();
+    }
+
+    public void UnlockUpgradeForAllInTeamFromPlayer(ulong id, int index)
+    {
+        List<ulong> team = null;
+        if (checkIfIsInTeam(id, Lobby.Instance.RedTeam))
+            team = Lobby.Instance.RedTeam;
+        if (checkIfIsInTeam(id, Lobby.Instance.BlueTeam))
+            team = Lobby.Instance.BlueTeam;
+        if (team == null) return;
+        foreach (var player in team)
+            NetworkManager.Singleton.ConnectedClients[player].PlayerObject?.GetComponent<AbstractSpecial>()?.UnlockUpgrade(index);
+    }
+
+    public void UnlockUpgradeForAll(int index)
+    {
+        List<ulong> team = Lobby.Instance.RedTeam.Concat(Lobby.Instance.BlueTeam).ToList();
+        foreach (var player in team)
+            NetworkManager.Singleton.ConnectedClients[player].PlayerObject?.GetComponent<AbstractSpecial>()?.UnlockUpgrade(index);
     }
 }

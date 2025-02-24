@@ -8,6 +8,14 @@ public class ChargeSpecial : AbstractSpecial
     [SerializeField] private Vector2 movementSpeedMultiplier = new Vector2(0.1f,0.1f);
     [SerializeField] private float chargeSpeed = 25;
     [SerializeField] private float knockBackForce = 15;
+
+    [SerializeField][DescriptionCreator.DescriptionVariable("white")] private int cDReduce = 10;
+
+    [SerializeField][DescriptionCreator.DescriptionVariable("white")] private int dRIncrease = 10;
+
+    
+    [SerializeField][DescriptionCreator.DescriptionVariable("white")] private int healAmount = 5;
+
     [DescriptionCreator.DescriptionVariable("green")]
     public int BonusHPScaling { get => 5; }
     [DescriptionCreator.DescriptionVariable("green", "{Damage} + {BonusHPScaling}% Bonus HP")]
@@ -16,9 +24,16 @@ public class ChargeSpecial : AbstractSpecial
     bool isCharging = false;
     Rigidbody2D rb;
     CollisionSender sender;
+
+    public override float Cooldown => HasUpgradeUnlocked(0) ? base.Cooldown - cDReduce : base.Cooldown;
+
     protected override void _Start()
     {
         UseRotation = true;
+        characterStats.stats.damageReduction.ChangeValueAdd += (ref int amount, int old) =>
+        {
+            if (HasUpgradeUnlocked(1)) amount += (int)(characterStats.stats.speed.Value * (dRIncrease / 100f));
+        };
         rb = GetComponent<Rigidbody2D>();
         sender = GetComponent<CollisionSender>();
     }
@@ -58,6 +73,10 @@ public class ChargeSpecial : AbstractSpecial
         if(stats != null)
         {
             stats.TakeDamage(ChargeDamage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), characterStats);
+            if (HasUpgradeUnlocked(2))
+            {
+                characterStats.Heal((int)(characterStats.stats.health.Value * (healAmount / 100f)));
+            }
         }
     }
 }

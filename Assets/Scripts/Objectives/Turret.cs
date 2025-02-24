@@ -13,6 +13,8 @@ public class Turret : ObjectiveAI
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        if (IsServer)
+            stats.OnServerDeath += (ulong killer) => GameManager.instance.UnlockUpgradeForAllInTeamFromPlayer(killer, 1);
         animator = GetComponentInChildren<NetworkAnimator>();
         eventSender = GetComponentInChildren<AnimationEventSender>();
         eventSender.OnAnimationEvent += (e) =>

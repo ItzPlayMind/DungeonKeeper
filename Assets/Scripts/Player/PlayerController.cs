@@ -25,6 +25,7 @@ public class PlayerController : NetworkBehaviour
     private InputManager inputManager;
     private PlayerStats stats;
     public ActionDelegate OnHeal;
+    public System.Action OnKill;
 
     private PlayerAttack attack;
     private PlayerMovement movement;
@@ -56,7 +57,6 @@ public class PlayerController : NetworkBehaviour
         inputManager = InputManager.Instance;
         animatorEvent.OnAnimationEvent += AnimationEventCallaback;
     }
-
 
     public void Heal(CharacterStats stats, int amount)
     {

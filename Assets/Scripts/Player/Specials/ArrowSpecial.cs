@@ -38,10 +38,26 @@ public class ArrowSpecial : AbstractSpecial
         Use();
     }
 
+    protected override void _Start()
+    {
+        base._Start();
+        if (!IsLocalPlayer) return;
+        characterStats.stats.resource.ChangeValueAdd += (ref int value, int old) =>
+        {
+            if (HasUpgradeUnlocked(0)) value += 2;
+        };
+    }
+
     protected override void _OnSpecialFinish(PlayerController controller)
     {
-        mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
-        SpawnArrowServerRPC(OwnerClientId,gameObject.layer);
+        StartCoroutine(SpawnArrows());
+    }
+
+    private IEnumerator SpawnArrows()
+    {
+        SpawnArrowServerRPC(OwnerClientId, gameObject.layer);
+        yield return new WaitForSeconds(0.1f);
+        if(HasUpgradeUnlocked(2)) SpawnArrowServerRPC(OwnerClientId, gameObject.layer);
     }
 
     protected override void FinishedCooldown()
@@ -72,12 +88,13 @@ public class ArrowSpecial : AbstractSpecial
     {
         if (!IsLocalPlayer)
             return;
+        mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
         Vector2 dir = (mouseWorldPos - (Vector2)transform.position).normalized;
         var arrow = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId].GetComponent<Rigidbody2D>();
         arrow.gameObject.layer = layer;
         arrow.GetComponent<SpriteRenderer>().material = GameManager.instance.UNLIT_MATERIAL;
         arrow.transform.rotation = Quaternion.FromToRotation(arrow.transform.right,dir);
-        arrow.AddForce(arrow.transform.right * arrowSpeed, ForceMode2D.Impulse);
+        arrow.AddForce(arrow.transform.right * (arrowSpeed + (HasUpgradeUnlocked(1) ? 4 : 0)), ForceMode2D.Impulse);
         var proj = arrow.GetComponent<Projectile>();
         proj.onCollisionEnter += (GameObject collider, ref bool hit) =>
         {

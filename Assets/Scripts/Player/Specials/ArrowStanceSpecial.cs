@@ -12,6 +12,10 @@ public class ArrowStanceSpecial : AbstractSpecial
     [SerializeField] private int slowAmount = 25;
     [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int slowDuration = 1;
+    [DescriptionCreator.DescriptionVariable("white")]
+    [SerializeField] private int aSIncrease = 10;
+    [DescriptionCreator.DescriptionVariable("white")]
+    [SerializeField] private int durationIncrease = 5;
     private Animator animator;
     private PlayerController controller;
     private bool isInStance = false;
@@ -19,6 +23,8 @@ public class ArrowStanceSpecial : AbstractSpecial
     private PlayerProjectileAttack attack;
     private float normalArrowSpeed;
     private NetworkObject normalArrowPrefab;
+
+    public override float ActiveTime => HasUpgradeUnlocked(1) ? base.ActiveTime + durationIncrease : base.ActiveTime;
 
     public override void OnNetworkSpawn()
     {
@@ -28,6 +34,11 @@ public class ArrowStanceSpecial : AbstractSpecial
         attack = GetComponent<PlayerProjectileAttack>();
         normalArrowPrefab = attack.projectile;
         normalArrowSpeed = attack.projectileSpeed;
+        characterStats.stats.attackSpeed.ChangeValueAdd += (ref int amount, int old) =>
+        {
+            if (HasUpgradeUnlocked(0))
+                amount += aSIncrease;
+        };
     }
 
     protected override void _OnSpecialFinish(PlayerController controller)
@@ -36,7 +47,7 @@ public class ArrowStanceSpecial : AbstractSpecial
         {
             animator.SetInteger("attack", 1);
             attack.OnAttack += AddAdditionalDamage;
-            attack.SetPiercing(true);
+            attack.SetPiercing(HasUpgradeUnlocked(2));
             StartActive();
             isInStance = true;
             SetAttackOptionsServerRpc(true);

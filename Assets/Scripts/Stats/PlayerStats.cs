@@ -113,6 +113,8 @@ public class PlayerStats : CharacterStats
     [ClientRpc]
     protected override void DieClientRPC(ulong damagerID)
     {
+        if (damagerID == PlayerController.LocalPlayer.NetworkObjectId)
+            PlayerController.LocalPlayer.OnKill?.Invoke();
         if (IsLocalPlayer)
         {
             deathScreen.SetActive(true);

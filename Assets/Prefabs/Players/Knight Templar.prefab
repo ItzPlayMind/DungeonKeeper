@@ -571,8 +571,9 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 983ad55194574c74987287574d12731d, type: 3}
   hoverEvent: {fileID: 2425937914358424627}
   description: Switch into a Divine Stance. In Divine Stance nearby teammates regenerate
-    {Damage} every second. Uses {ResourceDrain} Resource per Player healed every
+    {Damage} HP every second. Uses {ResourceDrain} Resource per Player healed every
     second. Cannot attack during Divine Stance.
+  upgrades: []
   damage: 20
   damageMultiplier: 1
   MaxCooldown: 1

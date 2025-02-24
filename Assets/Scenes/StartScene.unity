@@ -5285,6 +5285,7 @@ GameObject:
   - component: {fileID: 1000036168}
   - component: {fileID: 1000036167}
   - component: {fileID: 1000036171}
+  - component: {fileID: 1000036172}
   m_Layer: 5
   m_Name: Ability Hover Over
   m_TagString: Untagged
@@ -5389,6 +5390,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 359974497}
   cooldownText: {fileID: 133721222}
+  descriptionText: {fileID: 1655035641}
+--- !u!114 &1000036172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000036166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1244116ea4385f4ab899f245946f00d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameText: {fileID: 359974497}
+  unlockedText: {fileID: 133721222}
   descriptionText: {fileID: 1655035641}
 --- !u!1 &1007709760
 GameObject:

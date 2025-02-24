@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using static DescriptionCreator;
 
@@ -8,9 +9,9 @@ public class KnockBackSpecial : AbstractSpecial
     [SerializeField] private float knockBackForce = 55;
     [SerializeField] CollisionSender hitbox;
     [SerializeField] private string effectName = "slow";
-    [DescriptionVariable]
+    [DescriptionVariable("white")]
     [SerializeField] protected int amount = 50;
-    [DescriptionVariable]
+    [DescriptionVariable("white")]
     [SerializeField] protected int duration = 3;
     protected override void _Start()
     {
@@ -24,10 +25,15 @@ public class KnockBackSpecial : AbstractSpecial
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
-                stats.TakeDamage(Damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), characterStats);
-                stats.GetComponent<EffectManager>()?.AddEffect(effectName, duration, amount, characterStats);
+                OnSpecialHit(stats);
             }
         };
+    }
+
+    protected virtual void OnSpecialHit(CharacterStats enemyStats)
+    {
+        enemyStats.TakeDamage(Damage, enemyStats.GenerateKnockBack(enemyStats.transform, transform, knockBackForce), characterStats);
+        enemyStats.GetComponent<EffectManager>()?.AddEffect(effectName, duration, amount, characterStats);
     }
 
     protected override void _OnSpecialFinish(PlayerController controller)

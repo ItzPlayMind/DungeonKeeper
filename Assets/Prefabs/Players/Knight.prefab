@@ -780,6 +780,16 @@ MonoBehaviour:
     hit and knocking them back. Applies Flames for {Duration} seconds. Flames deal
     {Amount} damage each second. Hitting a target with Flames resets the duration
     of Flames to {Duration} seconds.
+  upgrades:
+  - name: Fast Hands
+    description: Reduces the cooldown of {Name} by {CooldownReduce} seconds
+    hoverEvent: {fileID: 5534665732848989426}
+  - name: Inner Flame
+    description: Hitting a target with {Name} heals for {HealAmount}% of the damage
+    hoverEvent: {fileID: 4237331390303382437}
+  - name: High Heat
+    description: Hitting a target on Flames increases the damage of Flames by {DamageIncrease}
+    hoverEvent: {fileID: 5219292554078295997}
   damage: 50
   damageMultiplier: 1.5
   MaxCooldown: 15
@@ -792,14 +802,50 @@ MonoBehaviour:
   effectName: flames
   amount: 10
   duration: 5
+  damageIncrease: 5
+  healAmount: 20
+  cooldownReduce: 5
 --- !u!4 &3687907021687383090 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2406691104180667587, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
   m_PrefabInstance: {fileID: 1317403132397904113}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4237331390303382437 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920124048420981588, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 1317403132397904113}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4820008261824138004 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5813092486509865957, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 1317403132397904113}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5219292554078295997 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6496158546021709644, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 1317403132397904113}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5534665732848989426 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6811498739307238403, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
   m_PrefabInstance: {fileID: 1317403132397904113}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
