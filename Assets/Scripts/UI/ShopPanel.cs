@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,6 +12,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 {
     [SerializeField] private UIButton iconButtonPrefab;
     [SerializeField] private Transform[] shopTransforms;
+    [SerializeField] private UIFilter[] filters;
     [SerializeField] private TMPro.TextMeshProUGUI cashText;
     [SerializeField] private Transform otherPlayerItems;
     [SerializeField] private Button otherPlayerButton;
@@ -29,6 +30,45 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     private bool canShop = false;
 
+    private string search = "";
+
+    public void OnSearchChange(string search)
+    {
+        this.search = search;
+        UpdateFiltersAndSearch();
+    }
+
+    public void UpdateFiltersAndSearch()
+    {
+        bool isFilterActive = filters.Any(x => x.Value);
+        foreach (var key in itemButtons.Keys)
+        {
+            bool hasStat = true;
+            if (isFilterActive)
+            {
+                var item = ItemRegistry.Instance.GetByID(key);
+                if (item.stats != null)
+                {
+                    if (filters[0].Value && item.stats.damage.BaseValue <= 0)
+                        hasStat = false;
+                    if (filters[1].Value && item.stats.specialDamage.BaseValue <= 0)
+                        hasStat = false;
+                    if (filters[2].Value && item.stats.speed.BaseValue <= 0)
+                        hasStat = false;
+                    if (filters[3].Value && item.stats.attackSpeed.BaseValue <= 0)
+                        hasStat = false;
+                    if (filters[4].Value && item.stats.health.BaseValue <= 0)
+                        hasStat = false;
+                    if (filters[5].Value && item.stats.damageReduction.BaseValue <= 0)
+                        hasStat = false;
+                }
+                else
+                    hasStat = false;
+            }
+            itemButtons[key].gameObject.SetActive(key.Contains(search) && hasStat);
+        }
+    }
+
     public void SetInstanceToThis()
     {
         Instance = this;
@@ -42,6 +82,13 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     private void Start()
     {
         panel = transform.GetChild(0).gameObject;
+        foreach (var item in filters)
+        {
+            item.onValueChanged += (value) =>
+            {
+                UpdateFiltersAndSearch();
+            };
+        }
         inventory = GetComponentInParent<Inventory>();
         inventory.OnCashChange((value) =>
         {
@@ -119,6 +166,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void Toggle()
     {
+        if (!canShop && !panel.activeSelf) return;
         panel.SetActive(!panel.activeSelf);
         if (!panel.activeSelf)
             ItemHoverOver.Hide();

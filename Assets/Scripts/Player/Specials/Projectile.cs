@@ -9,6 +9,7 @@ public class Projectile : CollisionSender
     Vector2 lastPos = Vector2.zero;
     public System.Action OnMaxRangeReached;
     public float range = 3f;
+    [SerializeField] private bool useRaycast = true;
     [HideInInspector] public Vector2 startPos;
 
     private bool maxReached = false;
@@ -26,7 +27,7 @@ public class Projectile : CollisionSender
             maxReached = true;
         }
         if (maxReached) return;
-
+        if (!useRaycast) return;
         RaycastHit2D hit = Physics2D.Linecast(lastPos, transform.position);
 
         if (hit.transform != null)

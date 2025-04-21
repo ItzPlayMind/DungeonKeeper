@@ -14,6 +14,7 @@ public class ComboSpecial : AbstractSpecial
         public float damageMultiplier = 1;
         public float dashForce = 55;
         public CollisionSender hitbox;
+        [HideInInspector] public int index;
         public AnimationClip clip;
         public bool canMoveWhileUsing;
         public bool needHit;
@@ -34,7 +35,7 @@ public class ComboSpecial : AbstractSpecial
     {
         var variables = base.GetVariablesForDescription();
         for (int i = 0; i < hitboxes.Length; i++)
-            variables.Add("Damage" + (i + 1), new Variable() { value = (int)(Damage * hitboxes[i].damageMultiplier), color = "blue"});
+            variables.Add("damage" + (i + 1), new Variable() { value = (int)(Damage * hitboxes[i].damageMultiplier), color = "blue"});
         return variables;
     }
 
@@ -43,9 +44,11 @@ public class ComboSpecial : AbstractSpecial
         animator = GetComponentInChildren<Animator>();
         if (!IsLocalPlayer) return;
         rb = GetComponent<Rigidbody2D>();
+        int index = 0;
         foreach (var hitbox in hitboxes)
         {
             hitbox.hitbox.gameObject.layer = gameObject.layer;
+            hitbox.index = index;
             hitbox.hitbox.onCollisionEnter += (GameObject collider, ref bool hit) =>
             {
                 var target = collider.GetComponent<CharacterStats>();
@@ -53,34 +56,53 @@ public class ComboSpecial : AbstractSpecial
                 if (target.gameObject == gameObject) return;
                 if (target.gameObject.layer == gameObject.layer)
                     return;
-                hit = true;
-                target.TakeDamage((int)(Damage * hitbox.damageMultiplier), target.GenerateKnockBack(target.transform.transform, transform, hitbox.knockBackForce), characterStats);
+                this.hit = true;
+                int damage = (int)(Damage * hitbox.damageMultiplier);
+                target.TakeDamage(damage, target.GenerateKnockBack(target.transform.transform, transform, hitbox.knockBackForce), characterStats);
+                OnAttackHit(hitbox.index, damage,target);
             };
+            index++;
         }
+    }
+
+    protected virtual void OnAttackHit(int index, int damage, CharacterStats target)
+    {
+
+    }
+
+    protected virtual void OnAttackMiss(int index)
+    {
+
     }
 
     protected override void _OnSpecialFinish(PlayerController controller)
     {
         if (IsLocalPlayer)
         {
+            int oldIndex = currentComboIndex;
             rb.velocity = Vector2.zero;
             var dir = (mouseWorldPos - (Vector2)transform.position).normalized;
             dir.y = 0;
             rb.AddForce(dir * hitboxes[currentComboIndex].dashForce, ForceMode2D.Impulse);
             currentComboIndex = (currentComboIndex + 1) % hitboxes.Length;
-            if ((hitboxes[currentComboIndex].needHit && hit) || !hitboxes[currentComboIndex].needHit)
+            if (((hitboxes[currentComboIndex].needHit && hit) || !hitboxes[currentComboIndex].needHit) && currentComboIndex != 0)
+            {
                 StartActive();
+                Finish();
+            }
             else
             {
                 ResetComboIndex();
                 StartCooldown();
             }
+            if (!hit)
+                OnAttackMiss(oldIndex);
             hit = false;
         }
-        if (currentComboIndex == 0)
+        /*if (currentComboIndex == 0)
             StartCooldown();
         else
-            Finish();
+            Finish();*/
     }
 
     public void ResetComboIndex()

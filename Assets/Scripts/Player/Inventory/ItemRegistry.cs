@@ -331,7 +331,7 @@ public class ItemRegistry : Registry<Item>
                });
            });
 
-        AddItemWithVariables("Magic-Infused Glove", "glove_02", CharacterType.Damage, "Converts {Ratio}% of damage to special damage.",
+        AddItemWithVariables("Magic-Infused Glove", "glove_02", CharacterType.Damage, "Converts {Ratio}% of damage to special damage. Reduces damage by {Ratio}%",
            new StatBlock(0, 30, 0, 0, 0, 0), 1600, 0,
            new Dictionary<string, Variable>() { { "Ratio", new Variable() { value = 50f, color = "red" } } }, (item, stats, _) =>
            {
@@ -339,6 +339,10 @@ public class ItemRegistry : Registry<Item>
                AddToAction(item, () => stats.stats.specialDamage.ChangeValueAdd, (value) => stats.stats.specialDamage.ChangeValueAdd = value, (ref int damage, int old) =>
                {
                    damage += (int)(stats.stats.damage.Value * ((float)item.variables["Ratio"].value / 100f));
+               });
+               AddToAction(item, () => stats.stats.damage.ChangeValueMult, (value) => stats.stats.damage.ChangeValueMult = value, (ref int damage, int old) =>
+               {
+                   damage = (int)(damage * ((float)item.variables["Ratio"].value / 100f));
                });
            });
 
@@ -505,7 +509,7 @@ public class ItemRegistry : Registry<Item>
                 });
             });
         AddItemWithVariables("Absorption Shield", "shield_01", CharacterType.Tank, "On damaging a player gain {HPAmount} Maximum Health and heal for {HealAmount}% Maximum Health. Can only happen every {Cooldown} seconds.", new StatBlock(0, 0, 0, 0, 200, 5), 1600, 5,
-            new Dictionary<string, Variable>() { { "HPAmount", new Variable() { value = 3, color = "green" } }, { "HealAmount", new Variable() { value = 2, color = "green" } }, { "Stacks", new Variable() { value = 0 } } }, (item, stats, _) =>
+            new Dictionary<string, Variable>() { { "HPAmount", new Variable() { value = 10, color = "green" } }, { "HealAmount", new Variable() { value = 2, color = "green" } }, { "Stacks", new Variable() { value = 0 } } }, (item, stats, _) =>
             {
                 PlayerAttack controller = stats.GetComponent<PlayerAttack>();
                 AddToAction(item, () => stats.stats.health.ChangeValueAdd, (value) => stats.stats.health.ChangeValueAdd = value, (ref int resource, int old) =>

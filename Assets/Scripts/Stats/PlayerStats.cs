@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
+using static DebugConsole;
 
 public class PlayerStats : CharacterStats
 {
@@ -23,6 +25,9 @@ public class PlayerStats : CharacterStats
     [SerializeField] private GameObject deathScreen;
     [SerializeField] private TMPro.TextMeshProUGUI deathTimer;
 
+    [SerializeField] private CollisionSender reviveArea;
+    [SerializeField] private float reviveTime = 30f;
+
     public System.Action OnClientRespawn;
 
     //[SerializeField] private GameObject hitPrefab;
@@ -31,14 +36,32 @@ public class PlayerStats : CharacterStats
 
     private Dictionary<ulong, float> assistTimers = new Dictionary<ulong, float>();
 
+    private int reviveCounter = 0;
+    private NetworkVariable<float> reviveProgress = new NetworkVariable<float>(0);
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        if (IsServer)
+        {
+            reviveArea.onCollisionEnter += (GameObject gb, ref bool hit) =>
+            {
+                if (gb.layer != gameObject.layer) return;
+                if (gb == gameObject) return;
+                reviveCounter++;
+            };
+            reviveArea.onCollisionExit += (GameObject gb, ref bool hit) =>
+            {
+                if (gb.layer != gameObject.layer) return;
+                if (gb == gameObject) return;
+                reviveCounter--;
+            };
+        }
         if (IsLocalPlayer)
         {
-            respawnTimer.OnValueChanged += (float old, float value) =>
+            reviveProgress.OnValueChanged += (float old, float value) =>
             {
-                deathTimer.text = (Mathf.CeilToInt(value)).ToString();
+                deathTimer.text = "Progress: " + (Mathf.CeilToInt(value/reviveTime*100f)).ToString() + "%";
             };
         }
     }
@@ -70,6 +93,11 @@ public class PlayerStats : CharacterStats
                 playerHealthBar.UpdateBar(Health / (float)stats.health.Value);
                 (playerHealthBar as TextUIBar).Text = Health + "/" + stats.health.Value;
             };
+            DebugConsole.OnCommand((Command command) =>
+            {
+                if (command.args.Length != 1) return;
+                TakeDamage(1000000, Vector2.zero, this);
+            }, "player", "kill");
         }
         else
         {
@@ -104,6 +132,8 @@ public class PlayerStats : CharacterStats
                 NetworkManager.Singleton.SpawnManager.SpawnedObjects[key].GetComponent<Inventory>()?.AddCash(GameManager.instance.GOLD_FOR_KILL/4);
         }
         assistTimers.Clear();*/
+        reviveArea.gameObject.SetActive(true);
+        reviveProgress.Value = 0;
         GameManager.instance.AddCashToTeamFromPlayer(NetworkObjectId, GameManager.instance.GOLD_FOR_KILL / 4);
         respawnTime = GameManager.instance.RESPAWN_TIME.Value;
         base.Die(damagerID);
@@ -117,24 +147,28 @@ public class PlayerStats : CharacterStats
             PlayerController.LocalPlayer.OnKill?.Invoke();
         if (IsLocalPlayer)
         {
+            deathTimer.text = "Progress: 0%";
             deathScreen.SetActive(true);
             animator.SetBool("death", true);
         }
     }
 
-    public override void Respawn()
+    public override void Respawn(bool revived = false)
     {
-        base.Respawn();
+        reviveArea.gameObject.SetActive(false);
+        reviveCounter = 0;
+        base.Respawn(revived);
     }
 
     [ClientRpc]
-    protected override void RespawnClientRPC()
+    protected override void RespawnClientRPC(bool revived = false)
     {
         if (IsLocalPlayer)
         {
             OnClientRespawn?.Invoke();
             deathScreen.SetActive(false);
-            transform.position = GameManager.instance.GetSpawnPoint(gameObject.layer).position;
+            if(!revived)
+                transform.position = GameManager.instance.GetSpawnPoint(gameObject.layer).position;
             animator.SetBool("death", false);
             playerHealthBar.UpdateBar(1);
             (playerHealthBar as TextUIBar).Text = Health + "/" + stats.health.Value;
@@ -194,6 +228,23 @@ public class PlayerStats : CharacterStats
                         currentHealth.Value++;
                         healthTimer = 1 / healthPerSecond;
                     }
+                }
+            }
+            else
+            {
+                if(reviveCounter > 0)
+                {
+                    reviveProgress.Value += Time.deltaTime * reviveCounter;
+                    if(reviveProgress.Value >= reviveTime)
+                    {
+                        Respawn(true);
+                        reviveProgress.Value = 0;
+                    }
+                }
+                else
+                {
+                    if(reviveProgress.Value > 0)
+                        reviveProgress.Value -= Time.deltaTime / 4;
                 }
             }
         }

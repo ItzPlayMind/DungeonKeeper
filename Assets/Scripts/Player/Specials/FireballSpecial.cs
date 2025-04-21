@@ -6,7 +6,12 @@ using UnityEngine;
 public class FireballSpecial : AbstractSpecial
 {
     [SerializeField] private NetworkObject fireballPrefab;
+    [SerializeField] private NetworkObject combustionPrefab;
     [SerializeField] private float fireballSpeed = 5f;
+    [DescriptionCreator.DescriptionVariable][SerializeField] private int manaIncrease = 10;
+    [DescriptionCreator.DescriptionVariable][SerializeField] private int flamesDuration = 5;
+    [DescriptionCreator.DescriptionVariable][SerializeField] private int flamesAmount = 10;
+    [DescriptionCreator.DescriptionVariable][SerializeField] private int combustionDamage = 50;
     //[SerializeField] private float fireballKnockback = 35f;
 
     Vector2 mouseWorldPos;
@@ -31,7 +36,7 @@ public class FireballSpecial : AbstractSpecial
 
     protected override bool HasResource()
     {
-        return Resource > 20 + (4*stacks);
+        return Resource > (HasUpgradeUnlocked(0) ? manaIncrease : 20) + (4*stacks);
     }
 
     protected override void _OnSpecialPress(PlayerController controller)
@@ -52,6 +57,37 @@ public class FireballSpecial : AbstractSpecial
         stacks = 0;
         UpdateAmountText("");
         StartCooldown();
+    }
+
+    [ServerRpc]
+    private void SpawnCombustionServerRpc(ulong owner, Vector3 pos, int layer)
+    {
+        var networkObject = Instantiate(combustionPrefab, pos, Quaternion.identity);
+        networkObject.SpawnWithOwnership(owner);
+        SpawnCombustionClientRpc(networkObject.NetworkObjectId, layer);
+        Destroy(networkObject.gameObject, 3f);
+    }
+
+    [ClientRpc]
+    private void SpawnCombustionClientRpc(ulong networkObjectId, int layer)
+    {
+        if (!IsLocalPlayer)
+            return;
+        var combustion = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId].GetComponent<CollisionSender>();
+        combustion.gameObject.layer = layer;
+        combustion.GetComponent<SpriteRenderer>().material = GameManager.instance.UNLIT_MATERIAL;
+        combustion.onCollisionEnter += (GameObject collider, ref bool hit) =>
+        {
+            if (collider == gameObject)
+                return;
+            if (collider.layer == gameObject.layer) return;
+            var stats = collider.GetComponent<CharacterStats>();
+            if (stats != null)
+            {
+                hit = true;
+                stats.TakeDamage(combustionDamage, Vector2.zero, characterStats);
+            }
+        };
     }
 
     [ServerRpc]
@@ -84,6 +120,11 @@ public class FireballSpecial : AbstractSpecial
             {
                 hit = true;
                 stats.TakeDamage(Damage+(int)((stacks - 1) * (Damage/5f)), Vector2.zero, characterStats);
+                var effectManager = stats.GetComponent<EffectManager>();
+                if (HasUpgradeUnlocked(1))
+                    effectManager?.AddEffect("flames", flamesDuration, flamesAmount, characterStats);
+                if (HasUpgradeUnlocked(2) && (effectManager?.HasEffect("flames") ?? false))
+                    SpawnCombustionServerRpc(OwnerClientId, stats.transform.position, gameObject.layer);
             }
         };
         fireballScript.onDirectHit += (collider) =>
@@ -97,6 +138,11 @@ public class FireballSpecial : AbstractSpecial
                 if (stats != null)
                 {
                     stats.TakeDamage(Damage + (int)((stacks - 1) * (Damage / 5f)), Vector2.zero, characterStats);
+                    var effectManager = stats.GetComponent<EffectManager>();
+                    if (HasUpgradeUnlocked(1))
+                        effectManager?.AddEffect("flames", flamesDuration, flamesAmount, characterStats);
+                    if (HasUpgradeUnlocked(2) && (effectManager?.HasEffect("flames") ?? false))
+                        SpawnCombustionServerRpc(OwnerClientId, stats.transform.position, gameObject.layer);
                 }
             }
         };

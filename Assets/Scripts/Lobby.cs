@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Linq;
 using Unity.Netcode;
@@ -29,6 +31,7 @@ public class Lobby : NetworkBehaviour
     {
         public GameObject character;
         public CharacterType type;
+        public AnimatorOverrideController animations;
         public Sprite characterSprite;
         [HideInInspector] public bool locked;
         [HideInInspector] public Button characterPotrait;
@@ -41,6 +44,7 @@ public class Lobby : NetworkBehaviour
         if (Instance == null)
         {
             Instance = this;
+            ResetTeams();
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -56,25 +60,28 @@ public class Lobby : NetworkBehaviour
     private bool isStarted;
     private bool isShuttingDown;
     private int playerCount;
-    private int gameModeIndex = 0;
+    private int gameModeIndex = 1;
+    private Dictionary<ulong, int> selectedCharacters = new Dictionary<ulong, int>();
+    public System.Action OnGameStart;
 
     public GameMode CurrentGameMode { get => GameModes[gameModeIndex]; }
 
     public int PlayerCount { get => playerCount; }
     public int CharacterIndex { get; private set; }
 
-    List<ulong> redTeam = new List<ulong>();
-    public List<ulong> RedTeam { get => redTeam; }
-    List<ulong> blueTeam = new List<ulong>();
-    public List<ulong> BlueTeam { get => blueTeam; }
-    Dictionary<ulong, bool> readyState = new Dictionary<ulong, bool>();
-    bool inRedTeam;
-    public Team CurrentTeam { get; private set; }
+    Dictionary<Team, List<ulong>> teams = new Dictionary<Team, List<ulong>>();
 
-    private void Start()
+    public List<ulong> GetTeam(Team team)
     {
-        InputManager.Instance.PlayerControls.UI.Close.performed += ShutdownOnEscape;
+        return teams[team];
     }
+
+    Dictionary<ulong, bool> readyState = new Dictionary<ulong, bool>();
+
+    private Team teamAssign = Team.Blue;
+    private int TeamCount { get => Enum.GetValues(typeof(Team)).Length; }
+
+    public Team CurrentTeam { get; private set; }
 
     public void SetGameModeIndex(int index) => gameModeIndex = index;
 
@@ -83,38 +90,20 @@ public class Lobby : NetworkBehaviour
         Shutdown();
     }
 
-    public void SwitchToCharacterSelection()
+    private void ResetTeams()
     {
-        SwitchToCharacterSelectionServerRPC();
-    }
-
-    [ServerRpc]
-    private void SwitchToCharacterSelectionServerRPC()
-    {
-        isStarted = true;
-        SwitchToCharacterSelectionClientRpc();
-    }
-
-    [ClientRpc]
-    private void SwitchToCharacterSelectionClientRpc()
-    {
-        InputManager.Instance.PlayerControls.UI.Close.performed -= ShutdownOnEscape;
-        LobbyPanel.Instance.SwitchToCharacterSelection();
-    }
-
-    [ClientRpc]
-    private void UpdateTeamPanelClientRpc(ulong[] redTeam, ulong[] blueTeam)
-    {
-        LobbyPanel.Instance.UpdateTeamPanel(redTeam, blueTeam);
+        for (int i = 1; i < TeamCount; i++)
+            teams[(Team)i] = new List<ulong>();
     }
 
     private IEnumerator WaitForShutdown()
     {
         while (NetworkManager.Singleton.ShutdownInProgress)
             yield return new WaitForEndOfFrame();
-        redTeam = new List<ulong>();
-        blueTeam = new List<ulong>();
-        inRedTeam = false;
+        for (int i = 1; i < Enum.GetValues(typeof(Team)).Length; i++)
+            teams[(Team)i] = new List<ulong>();
+        ResetTeams();
+        teamAssign = Team.Blue;
         isStarted = false;
         playerCount = 0;
         readyState = new Dictionary<ulong, bool>();
@@ -123,14 +112,18 @@ public class Lobby : NetworkBehaviour
         NetworkUI.gameObject.SetActive(true);
         NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+        characterPortraits.ForEach(x => x.locked = false);
+        selectedCharacters.Clear();
         SceneManager.LoadScene(0);
     }
 
     public override void OnNetworkSpawn()
     {
+        InputManager.Instance.PlayerControls.UI.Close.performed += ShutdownOnEscape;
         if (IsServer)
         {
-            SetupServerRpc();
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
             GameManager.OnInstanceSet += () =>
             {
                 var network = GameManager.instance.GetComponent<NetworkObject>();
@@ -138,16 +131,8 @@ public class Lobby : NetworkBehaviour
                     network.Spawn();
             };
         }
-        LobbyPanel.Instance.NextButton.gameObject.SetActive(IsHost);
         LobbyPanel.Instance.StartButton.gameObject.SetActive(IsHost);
         LobbyPanel.Instance.ReadyButton.GetComponent<Image>().color = Color.red;
-    }
-
-    [ServerRpc]
-    private void SetupServerRpc()
-    {
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
     }
 
     public override void OnNetworkDespawn()
@@ -173,42 +158,105 @@ public class Lobby : NetworkBehaviour
             return;
         }
 
-        if (inRedTeam)
-            redTeam.Add(id);
-        else
-            blueTeam.Add(id);
-        SetClientDataClientRPC(inRedTeam, gameModeIndex, new ClientRpcParams() { Send = new ClientRpcSendParams() { TargetClientIds = new ulong[] { id } } });
-        inRedTeam = !inRedTeam;
+        teams[teamAssign].Add(id);
+        SetClientDataClientRPC(teamAssign, gameModeIndex, new ClientRpcParams() { Send = new ClientRpcSendParams() { TargetClientIds = new ulong[] { id } } });
+        Team[] team = new Team[playerCount];
+        int[] teamIndices = new int[playerCount];
+        int[] selectedCharacterIndices = new int[playerCount];
+        int i = 0;
+        foreach (var keyValuePair in selectedCharacters)
+        {
+            for (int j = 1; j < TeamCount; j++)
+            {
+                if (teams[(Team)j].Contains(keyValuePair.Key))
+                {
+                    var teamIndex = teams[(Team)j].IndexOf(keyValuePair.Key);
+                    team[i] = (Team)j;
+                    teamIndices[i] = teamIndex;
+                    selectedCharacterIndices[i] = keyValuePair.Value;
+                    i++;
+                    break;
+                }
+            }
+        }
+        List<int> lockedCharacters = new List<int>();
+        for (int j = 0; j < characterPortraits.Count; j++)
+        {
+            if (characterPortraits[j].locked)
+                lockedCharacters.Add(j);
+        }
+
+        UpdateCharacterSelectionForNewClientRPC(lockedCharacters.ToArray(),team, teamIndices, selectedCharacterIndices, new ClientRpcParams() { Send = new ClientRpcSendParams() { TargetClientIds = new ulong[] { id } } });
+        int newTeamIndex = (int)teamAssign % (TeamCount-1)+1;
+        teamAssign = (Team)newTeamIndex;
 
         readyState.Add(id, false);
         LobbyPanel.Instance.AddReadyState(id);
         LobbyPanel.Instance.StartButton.interactable = false;
-
-        UpdateTeamPanelClientRpc(redTeam.ToArray(), blueTeam.ToArray());
+        
         playerCount++;
         UpdatePlayerCountServerRpc(playerCount);
     }
 
     [ClientRpc]
-    private void SetClientDataClientRPC(bool isRedTeam, int gameModeIndex, ClientRpcParams param)
+    private void SetClientDataClientRPC(Team team, int gameModeIndex, ClientRpcParams param)
     {
-        if (isRedTeam) CurrentTeam = Team.Red;
-        else CurrentTeam = Team.Blue;
+        CurrentTeam = team;
         this.gameModeIndex = gameModeIndex;
+    }
+
+    [ClientRpc]
+    private void UpdateCharacterSelectionForNewClientRPC(int[] lockedCharacters,Team[] team, int[] teamIndices, int[] selectedCharacterIndices, ClientRpcParams param)
+    {
+        for (int i = 0; i < teamIndices.Length; i++)
+            LobbyPanel.Instance.SetCharacterForClientIndex(selectedCharacterIndices[i], team[i], teamIndices[i]);
+        foreach (var characterIndex in lockedCharacters)
+            LobbyPanel.Instance.ChangeLockStateByIndex(characterIndex, true);
     }
 
     private void OnClientDisconnected(ulong id)
     {
-        if (redTeam.Contains(id))
-            redTeam.Remove(id);
-        if (blueTeam.Contains(id))
-            blueTeam.Remove(id);
+        Debug.Log("CLIENT DISCONNECTED");
+        for (int j = 1; j < TeamCount; j++)
+        {
+            if (teams[(Team)j].Contains(id))
+            {
+                teams[(Team)j].Remove(id);
+                teamAssign = (Team)j;
+                break;
+            }
+        }
         readyState.Remove(id);
         LobbyPanel.Instance.RemoveReadyState(id);
-        inRedTeam = !inRedTeam;
-        UpdateTeamPanelClientRpc(redTeam.ToArray(), blueTeam.ToArray());
         playerCount--;
         UpdatePlayerCountServerRpc(playerCount);
+    }
+
+    public void ChangeDisplayedCharacter(int characterIndex)
+    {
+        ChangeDisplayedCharacterServerRpc(NetworkManager.Singleton.LocalClientId, characterIndex);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ChangeDisplayedCharacterServerRpc(ulong client, int characterIndex)
+    {
+        for (int j = 1; j < TeamCount; j++)
+        {
+            if (teams[(Team)j].Contains(client))
+            {
+                var teamIndex = teams[(Team)j].IndexOf(client);
+
+                selectedCharacters[client] = characterIndex;
+                ChangeDisplayedCharacterClientRpc(characterIndex, (Team)j, teamIndex);
+                break;
+            }
+        }
+    }
+
+    [ClientRpc]
+    private void ChangeDisplayedCharacterClientRpc(int characterIndex, Team team, int stanceIndex)
+    {
+        LobbyPanel.Instance.SetCharacterForClientIndex(characterIndex, team, stanceIndex);
     }
 
     public void ChangeReadyState(int characterIndex)
@@ -216,12 +264,21 @@ public class Lobby : NetworkBehaviour
         CharacterIndex = characterIndex;
         ChangeReadyStateServerRpc(NetworkManager.Singleton.LocalClientId, characterIndex);
     }
+
     [ServerRpc(RequireOwnership = false)]
     private void ChangeReadyStateServerRpc(ulong client, int characterIndex)
     {
         readyState[client] = !readyState[client];
         LobbyPanel.Instance.SetReadyState(client, readyState[client]);
-        ChangeLockStateClientRpc(characterIndex, readyState[client], redTeam.Contains(client));
+        Team team = Team.None;
+        foreach (var item in teams.Keys){
+            if (teams[item].Contains(client))
+            {
+                team = item;
+                break;
+            }
+        }
+        ChangeLockStateClientRpc(characterIndex, readyState[client]);
         ChangeReadyStateClientRpc(readyState[client], new ClientRpcParams()
         {
             Send = new ClientRpcSendParams() { TargetClientIds = new ulong[] { client } }
@@ -235,7 +292,6 @@ public class Lobby : NetworkBehaviour
             }
         }
         LobbyPanel.Instance.StartButton.interactable = true;
-
     }
 
     [ClientRpc]
@@ -245,9 +301,9 @@ public class Lobby : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void ChangeLockStateClientRpc(int characterIndex, bool value, bool isRed)
+    private void ChangeLockStateClientRpc(int characterIndex, bool value)
     {
-        LobbyPanel.Instance.ChangeLockStateByIndex(characterIndex, value, isRed ? Color.red : Color.blue);
+        LobbyPanel.Instance.ChangeLockStateByIndex(characterIndex, value);
     }
 
     [ServerRpc]
@@ -269,7 +325,28 @@ public class Lobby : NetworkBehaviour
 
     public void StartGame()
     {
+        isStarted = true;
+        OnGameStart?.Invoke();
+        StartCoroutine(WaitForEndOfAttackSequence());
+    }
+
+    IEnumerator WaitForEndOfAttackSequence()
+    {
+        StartStandsAttackServerRPC();
+        yield return new WaitForSeconds(1);
         StartGameServerRPC();
+    }
+
+    [ServerRpc]
+    private void StartStandsAttackServerRPC()
+    {
+        StartStandsAttackClientRPC();
+    }
+
+    [ClientRpc]
+    private void StartStandsAttackClientRPC()
+    {
+        LobbyPanel.Instance.StartStandsAttack();
     }
 
     [ServerRpc]
@@ -282,6 +359,7 @@ public class Lobby : NetworkBehaviour
     private void StartGameClientRPC()
     {
         SceneManager.LoadScene(CurrentGameMode.gameModeSceneIndex);
+        InputManager.Instance.PlayerControls.UI.Close.performed -= ShutdownOnEscape;
     }
 
     private void OnLevelWasLoaded(int level)

@@ -17,8 +17,40 @@ public class ExecuteSpecial : AbstractSpecial
     [SerializeField] private int bleedAmount { get => baseBleedAmount + (int)(characterStats.stats.health.Value * (5f / 1000f)); }
     [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int bleedDuration = 5;
+    [DescriptionCreator.DescriptionVariable("white")]
+    [SerializeField] private int dRIncrease = 10;
+    [SerializeField] private float scaleIncrease = 1.5f;
 
     private bool executed = false;
+    private PlayerAttack attack;
+
+    protected override void _Start()
+    {
+        base._Start();
+        characterStats.stats.damageReduction.ChangeValueAdd += (ref int current, int old) =>
+        {
+            if (HasUpgradeUnlocked(0))
+            {
+                current += dRIncrease;
+            }
+        };
+        if (!IsLocalPlayer) return;
+        attack = GetComponent<PlayerAttack>();
+        attack.OnAttack += (ulong target, ulong damager, ref int amount) =>
+        {
+            if (!HasUpgradeUnlocked(2)) return;
+            var targetObject = Unity.Netcode.NetworkManager.Singleton.SpawnManager.SpawnedObjects[target];
+            var effectManager = targetObject.GetComponent<EffectManager>();
+            var stats = targetObject.GetComponent<CharacterStats>();
+            if (effectManager != null && stats != null)
+            {
+                if (effectManager.HasEffect("bleed") && stats.Health <= stats.stats.health.Value * (executeThreshold / 100f))
+                {
+                    amount = 10000;
+                }
+            }
+        };
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -61,5 +93,15 @@ public class ExecuteSpecial : AbstractSpecial
     protected override void _OnSpecialPress(PlayerController controller)
     {
         executed = false;
+    }
+
+    protected override void OnUpgradeUnlocked(int index)
+    {
+        if (!IsLocalPlayer) return;
+        if(index == 1)
+        {
+            transform.localScale *= scaleIncrease;
+            GetComponent<Rigidbody2D>().mass *= scaleIncrease;
+        }
     }
 }

@@ -38,7 +38,7 @@ public class DescriptionCreator
             {
                 int indexOfBegin = word.IndexOf("{");
                 int indexOfEnd = word.IndexOf("}");
-                var variableName = word.Substring(indexOfBegin + 1, indexOfEnd - indexOfBegin - 1);
+                var variableName = word.Substring(indexOfBegin + 1, indexOfEnd - indexOfBegin - 1).ToLower();
                 if (variables.ContainsKey(variableName))
                 {
                     text += $"<color={variables[variableName].color}>" + variables[variableName].value + word.Substring(indexOfEnd + 1) + "</color>";
@@ -99,9 +99,9 @@ public class DescriptionCreator
         foreach (var variable in variables)
         {
             var attribute = variable.GetAttribute<DescriptionVariable>();
-            if (dic.ContainsKey(FirstLetterToUpperCase(variable.Name)))
+            if (dic.ContainsKey(variable.Name.ToLower()))
                 continue;
-            dic.Add(FirstLetterToUpperCase(variable.Name), new Variable() { value = variable.GetValue(obj), color = attribute.color, detail = attribute.detail });
+            dic.Add(variable.Name.ToLower(), new Variable() { value = variable.GetValue(obj), color = attribute.color, detail = attribute.detail });
         }
     }
 
@@ -112,9 +112,9 @@ public class DescriptionCreator
         foreach (var variable in variables)
         {
             var attribute = variable.GetAttribute<DescriptionVariable>();
-            if (dic.ContainsKey(FirstLetterToUpperCase(variable.Name)))
+            if (dic.ContainsKey(variable.Name.ToLower()))
                 continue;
-            dic.Add(FirstLetterToUpperCase(variable.Name), new Variable() { value = variable.GetValue(obj), color = attribute.color, detail = attribute.detail });
+            dic.Add(variable.Name.ToLower(), new Variable() { value = variable.GetValue(obj), color = attribute.color, detail = attribute.detail });
         }
     }
 }

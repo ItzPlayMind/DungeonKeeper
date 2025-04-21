@@ -55,6 +55,11 @@ public class PlayerRangeAttack : PlayerAttack
         if (!IsLocalPlayer) return;
         obj.GetComponent<CollisionSender>().onCollisionEnter += (GameObject collider, ref bool _) =>
         {
+            if(collider == null)
+            {
+                DestroyServerRPC(obj.NetworkObjectId);
+                return;
+            }    
             if (collider == gameObject)
                 return;
             if (collider.gameObject.layer == gameObject.layer) return;

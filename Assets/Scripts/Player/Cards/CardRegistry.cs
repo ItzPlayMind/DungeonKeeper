@@ -40,10 +40,10 @@ public class CardRegistry : Registry<Card>
             if (!stats.IsOwner) return;
             stats.stats.attackSpeed.ChangeValueAdd += (ref int value, int old) => value += (int)card.variables["Value"].value;
         });
-        AddCard("Heavy Brawler", "Gain {Value}% Health as Attack Damage", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 0.1f } } }, (Card card, CharacterStats stats) =>
+        AddCard("Heavy Brawler", "Gain {Value}% Health as Attack Damage", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 0.01f } } }, (Card card, CharacterStats stats) =>
         {
             if (!stats.IsOwner) return;
-            stats.stats.attackSpeed.ChangeValueAdd += (ref int value, int old) => value += (int)(stats.stats.health.Value* (float)card.variables["Value"].value);
+            stats.stats.damage.ChangeValueAdd += (ref int value, int old) => value += (int)(stats.stats.health.Value* (float)card.variables["Value"].value);
         });
         AddCard("On The Edge", "While below {HPThreshold}% health, heal for {Value}% damage dealt", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 10 } }, { "HPThreshold", new Variable() { value = 10 } } }, (Card card, CharacterStats stats) =>
         {

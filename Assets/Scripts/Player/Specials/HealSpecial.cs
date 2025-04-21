@@ -9,7 +9,27 @@ public class HealSpecial : AbstractSpecial
     [SerializeField] private float healRange;
     [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private float healDuration;
+    [DescriptionCreator.DescriptionVariable("white")]
+    [SerializeField] private int resourceDrain = 10;
+    [DescriptionCreator.DescriptionVariable("white")]
+    [SerializeField] private float ownHealAmount = 20;
     Vector2 mouseWorldPos;
+
+    protected override void _Start()
+    {
+        base._Start();
+        if (IsLocalPlayer)
+        {
+            var controller = GetComponent<PlayerController>();
+            controller.OnHeal += (ulong target, ulong user, ref int amount) =>
+            {
+                if (!HasUpgradeUnlocked(2)) return;
+                if (target == NetworkObjectId) return;
+                controller.Heal(characterStats, Mathf.Min((int)(amount*(ownHealAmount/100f)),1));
+            };
+        }
+    }
+
     protected override void _OnSpecialFinish(PlayerController controller)
     {
         SpawnHealFieldServerRPC(OwnerClientId);
@@ -18,12 +38,12 @@ public class HealSpecial : AbstractSpecial
 
     protected override bool HasResource()
     {
-        return Resource >= 30;
+        return Resource >= 30-(HasUpgradeUnlocked(0)? resourceDrain:0);
     }
 
     protected override void RemoveResource()
     {
-        Resource -= 30;
+        Resource -= 30 - (HasUpgradeUnlocked(0) ? resourceDrain : 0);
     }
 
     [ServerRpc]
@@ -35,6 +55,10 @@ public class HealSpecial : AbstractSpecial
         var heal = networkObject.GetComponent<HealField>();
         heal.SetHealAmount(Damage);
         heal.SetController(GetComponent<PlayerController>());
+        if (HasUpgradeUnlocked(1))
+        {
+            heal.transform.localScale *= 1.2f;
+        }
     }
 
     [ClientRpc]

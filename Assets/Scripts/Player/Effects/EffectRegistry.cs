@@ -112,6 +112,78 @@ public class EffectRegistry : Registry<Effect>
             else
                 effect.variables["Timer"] = (float)effect.variables["Timer"] - Time.deltaTime;
         });
+        AddEffect("Frenzy", "frenzy", (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            AddToAction(effect, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
+            {
+                speed = (int)(speed * (1 + (effect.amount / 100f)));
+            });
+            AddToAction(effect, () => stats.stats.attackSpeed.ChangeValueAdd, (value) => stats.stats.speed.ChangeValueAdd = value, (ref int speed, int oldSpeed) =>
+            {
+                speed += (int)effect.amount;
+            }); 
+        });
+        AddEffect("Windy", "windy", (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            AddToAction(effect, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
+            {
+                speed = (int)(speed * (1 + (effect.amount / 100f)));
+            });
+        });
+        AddEffect("Stunned", "stunned", (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            stats.GetComponent<PlayerMovement>().enabled = false;
+            stats.GetComponent<PlayerAttack>().enabled = false;
+            effect.onEnd += (Effect effect, CharacterStats stats2) =>
+            {
+                stats.GetComponent<PlayerAttack>().enabled = true;
+                stats2.GetComponent<PlayerMovement>().enabled = true;
+            };
+        });
+        AddEffect("Rallied", "rallied", (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            AddToAction(effect, () => stats.stats.attackSpeed.ChangeValueAdd, (value) => stats.stats.speed.ChangeValueAdd = value, (ref int speed, int oldSpeed) =>
+            {
+                speed += (int)effect.amount;
+            });
+            AddToAction(effect, () => stats.stats.damage.ChangeValueAdd, (value) => stats.stats.damage.ChangeValueAdd = value, (ref int speed, int oldSpeed) =>
+            {
+                speed += (int)effect.amount;
+            });
+            AddToAction(effect, () => stats.stats.specialDamage.ChangeValueAdd, (value) => stats.stats.specialDamage.ChangeValueAdd = value, (ref int speed, int oldSpeed) =>
+            {
+                speed += (int)effect.amount;
+            });
+        });
+        AddEffect("Blocking", "blocking", (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            effect.variables["DecayFactor"] = effect.amount / effect.duration;
+            AddToAction(effect, () => stats.stats.damageReduction.ChangeValueAdd, (value) => stats.stats.damageReduction.ChangeValueAdd = value, (ref int speed, int old) =>
+            {
+                speed += (int)effect.amount;
+            });
+        }, (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            effect.amount -= (float)effect.variables["DecayFactor"] * Time.deltaTime;
+        });
+        AddEffect("Slimy", "slimy", (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            AddToAction(effect, () => stats.stats.attackSpeed.ChangeValueAdd, (value) => stats.stats.attackSpeed.ChangeValueAdd = value, (ref int speed, int oldSpeed) =>
+            {
+                speed += (int)effect.amount;
+            });
+            AddToAction(effect, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
+            {
+                speed = (int)(speed * (1+effect.amount/100f));
+            });
+        });
     }
 
     public Effect AddEffect(string name, string iconName, Effect.EffectFunction onStart = null, Effect.EffectFunction onUpdate = null)

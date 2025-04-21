@@ -67,6 +67,8 @@ public class ChargeSpecial : AbstractSpecial
 
     private void Hit(GameObject collision, ref bool hit)
     {
+        if(collision == null)
+            return;
         if (collision == gameObject)
             return;
         var stats = collision.GetComponent<CharacterStats>();

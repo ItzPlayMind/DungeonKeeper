@@ -379,9 +379,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee50788519ad864882ca23d4a9c42b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3639540674841958161 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6496158546021709644, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 7540366297280258141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3901116947480867934 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6811498739307238403, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 7540366297280258141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4037622077478276024 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5813092486509865957, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 7540366297280258141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4621430353784138505 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920124048420981588, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
   m_PrefabInstance: {fileID: 7540366297280258141}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -415,6 +448,17 @@ MonoBehaviour:
 
     On return deal {ReturnDamage} damage
     to all enemies in the way.'
+  upgrades:
+  - name: Hard Swing
+    description: Gain {DamageIncrease} damage
+    hoverEvent: {fileID: 3901116947480867934}
+  - name: Hardened Axe
+    description: The axe no longer returns on the first target hit
+    hoverEvent: {fileID: 4621430353784138505}
+  - name: Maximum Effectivness
+    description: Reduce the Cooldown of {Name} by {CDReduce} seconds for every target
+      hit
+    hoverEvent: {fileID: 3639540674841958161}
   damage: 50
   damageMultiplier: 1
   MaxCooldown: 20
@@ -422,7 +466,7 @@ MonoBehaviour:
   specialIcon: {fileID: 325994319357208020}
   specialInUseIcon: {fileID: 7667477618547848654}
   resourceBar: {fileID: 3290639171310304011}
-  returnDamage: 5
+  returnDamage: 25
   returnDamageMultiplier: 0.5
   axePrefab: {fileID: 7681882757018740699, guid: 94fe09e140d0c4246b26e026a567c81d, type: 3}
   axeSpeed: 8

@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class CollisionSender : MonoBehaviour
+public class CollisionSender : NetworkBehaviour
 {
     public delegate void OnCollosion(GameObject gb, ref bool hit);
 

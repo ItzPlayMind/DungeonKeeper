@@ -455,7 +455,7 @@ GameObject:
   - component: {fileID: 5384897445514078576}
   m_Layer: 0
   m_Name: CaptureTheZone
-  m_TagString: Untagged
+  m_TagString: Special
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

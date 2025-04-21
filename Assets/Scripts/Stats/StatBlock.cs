@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
+using System.Numerics;
 
 [System.Serializable]
 public class StatBlock
@@ -55,6 +56,36 @@ public class StatBlock
                 return newValue;
             }
             set => this.baseValue = value;
+        }
+
+        public static void Add(Stat<int> stat, int value)
+        {
+            stat.ChangeValueAdd += (ref int current, int old) => { current += value; };
+        }
+
+        public static void Mult(Stat<int> stat, int value)
+        {
+            stat.ChangeValueMult += (ref int current, int old) => { current *= value; };
+        }
+
+        public static void Add(Stat<double> stat, double value)
+        {
+            stat.ChangeValueAdd += (ref double current, double old) => { current += value; };
+        }
+
+        public static void Mult(Stat<double> stat, double value)
+        {
+            stat.ChangeValueMult += (ref double current, double old) => { current *= value; };
+        }
+
+        public static void Add(Stat<float> stat, float value)
+        {
+            stat.ChangeValueAdd += (ref float current, float old) => { current += value; };
+        }
+
+        public static void Mult(Stat<float> stat, float value)
+        {
+            stat.ChangeValueMult += (ref float current, float old) => { current *= value; };
         }
     }
 

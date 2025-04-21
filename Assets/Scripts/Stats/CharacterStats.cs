@@ -9,7 +9,7 @@ public class CharacterStats : NetworkBehaviour
     [SerializeField] private bool alwayShowHealthbar = false;
     [SerializeField] private UIBar healthBar;
     [SerializeField] protected float respawnTime = 0;
-    [SerializeField] private bool CanRevive = true;
+    [SerializeField] protected bool CanRevive = true;
     [SerializeField] private SpriteRenderer gfx;
     [SerializeField] private Color hitColor = new Color(248 / 255f, 156 / 255f, 156 / 255f, 1f);
     [SerializeField] private Color healColor = new Color(134 / 255f, 255 / 255f, 119 / 255f, 1f);
@@ -19,12 +19,13 @@ public class CharacterStats : NetworkBehaviour
     protected NetworkVariable<int> currentHealth = new NetworkVariable<int>(0);
 
     public delegate void DamageDelegate(ulong damager, int damage);
+    public delegate void ServerDamageDelegate(ulong damager, ref int damage);
     public delegate void HealDelegate(ref int amount);
     public delegate void DeathDelegate(ulong killer);
 
     public int Health { get => currentHealth.Value; }
     public System.Action<int, int> OnHealthChange;
-    public DamageDelegate OnServerTakeDamage;
+    public ServerDamageDelegate OnServerTakeDamage;
     public DamageDelegate OnClientTakeDamage;
     public DeathDelegate OnServerDeath; 
     public HealDelegate OnClientHeal;
@@ -72,7 +73,9 @@ public class CharacterStats : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (IsServer)
+        {
             currentHealth.Value = stats.health.Value;
+        }
         currentHealth.OnValueChanged += (int oldValue, int newValue) => OnHealthChange?.Invoke(oldValue, newValue);
     }
 
@@ -92,8 +95,8 @@ public class CharacterStats : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     protected virtual void TakeDamageServerRPC(int damage, Vector2 knockback, ulong damagerID)
     {
+        OnServerTakeDamage?.Invoke(damagerID, ref damage);
         currentHealth.Value -= Mathf.Max((int)(damage * (1 - (stats.damageReduction.Value / 100f))), 0);
-        OnServerTakeDamage?.Invoke(damagerID, damage);
         TakeDamageClientRPC(damage, knockback, damagerID);
         if (currentHealth.Value <= 0)
             Die(damagerID);
@@ -128,10 +131,10 @@ public class CharacterStats : NetworkBehaviour
 
     protected virtual void Die(ulong damagerID)
     {
-        DieClientRPC(damagerID);
-        OnServerDeath?.Invoke(damagerID);
         dead.Value = true;
         respawnTimer.Value = respawnTime;
+        DieClientRPC(damagerID);
+        OnServerDeath?.Invoke(damagerID);
     }
 
     [ClientRpc]
@@ -170,16 +173,17 @@ public class CharacterStats : NetworkBehaviour
         }
     }
 
-    public virtual void Respawn()
+    public virtual void Respawn(bool revived = false)
     {
         OnServerRespawn?.Invoke();
         currentHealth.Value = stats.health.Value;
         dead.Value = false;
-        RespawnClientRPC();
+        respawnTimer.Value = 0;
+        RespawnClientRPC(revived);
     }
 
     [ClientRpc]
-    protected virtual void RespawnClientRPC()
+    protected virtual void RespawnClientRPC(bool revived = false)
     {
         healthBar?.UpdateBar(1f);
     }

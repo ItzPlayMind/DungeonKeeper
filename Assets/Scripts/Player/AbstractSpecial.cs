@@ -36,7 +36,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
         public bool Unlocked { get; private set; } = false;
         public void Unlock()
         {
-            Unlocked = false;
+            Unlocked = true;
         }
     }
 
@@ -63,11 +63,11 @@ public abstract class AbstractSpecial : NetworkBehaviour
     [DescriptionVariable("white")]
     public virtual float Cooldown { get => MaxCooldown; }
     [DescriptionVariable]
-    public int Damage { get => (int)(damage + characterStats.stats.specialDamage.Value * damageMultiplier); }
+    public virtual int Damage { get => (int)(damage + characterStats.stats.specialDamage.Value * damageMultiplier); }
 
     private bool used = false;
     private float cooldown;
-    private int resource;
+    private NetworkVariable<int> resource = new NetworkVariable<int>(0,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Owner);
 
     [DescriptionVariable("white")]
     public virtual float ActiveTime { get => activeTime; }
@@ -82,13 +82,16 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     public int Resource
     {
-        get => Mathf.Clamp(resource,0, characterStats.stats.resource.Value); set => resource = Mathf.Clamp(value, 0, characterStats.stats.resource.Value);
+        get => Mathf.Clamp(resource.Value,0, characterStats.stats.resource.Value); set
+        {
+            resource.Value = Mathf.Clamp(value, 0, characterStats.stats.resource.Value);
+        }
     }
 
     protected void UpdateResourceBar()
     {
         resourceBar.UpdateBar(Resource / (float)characterStats.stats.resource.Value);
-        if (resource == 0 && characterStats.stats.resource.Value == 0) return;
+        if (resource.Value == 0 && characterStats.stats.resource.Value == 0) return;
         resourceBar.Text = Resource + "/" + characterStats.stats.resource.Value;
     }
 
@@ -104,7 +107,25 @@ public abstract class AbstractSpecial : NetworkBehaviour
         characterStats = GetComponent<PlayerStats>();
         if (IsLocalPlayer)
         {
-            resource = characterStats.stats.resource.Value;
+            DebugConsole.OnCommand((_) =>
+            {
+                SetCooldown(0);
+                Debug.Log("Special reset");
+            }, "special", "reset");
+            DebugConsole.OnCommand((command) =>
+            {
+                if (command.args[1] == "all")
+                {
+
+                    UnlockUpgrade(0);
+                    UnlockUpgrade(1);
+                    UnlockUpgrade(2);
+                }
+                else
+                    UnlockUpgrade(int.Parse(command.args[1]));
+                Debug.Log("Special upgrade unlocked: " + command.args[1]);
+            }, "special", "upgrade");
+            resource.Value = characterStats.stats.resource.Value;
             UpdateResourceBar();
             characterStats.OnClientRespawn += () =>
             {
@@ -165,10 +186,10 @@ public abstract class AbstractSpecial : NetworkBehaviour
         used = false;
     }
 
-    public void StartCooldown()
+    public void StartCooldown(int cd = -1)
     {
         ResetActive();
-        cooldown = Cooldown;
+        cooldown = (cd <= 0) ? Cooldown : cd;
         Finish();
     }
 
@@ -282,10 +303,15 @@ public abstract class AbstractSpecial : NetworkBehaviour
     [ClientRpc]
     private void UnlockUpgradeClientRPC(int index)
     {
-        if(upgrades.Length > index)
-            if(!upgrades[index].Unlocked)
+        if (upgrades.Length > index)
+            if (!upgrades[index].Unlocked)
+            {
                 upgrades[index]?.Unlock();
+                OnUpgradeUnlocked(index);
+            }
     }
 
     protected bool HasUpgradeUnlocked(int index) => upgrades[index]?.Unlocked ?? false;
+
+    protected virtual void OnUpgradeUnlocked(int index) { }
 }

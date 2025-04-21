@@ -34,6 +34,13 @@ public class ArrowStanceSpecial : AbstractSpecial
         attack = GetComponent<PlayerProjectileAttack>();
         normalArrowPrefab = attack.projectile;
         normalArrowSpeed = attack.projectileSpeed;
+        
+    }
+
+    protected override void _Start()
+    {
+        base._Start();
+        if (!IsLocalPlayer) return;
         characterStats.stats.attackSpeed.ChangeValueAdd += (ref int amount, int old) =>
         {
             if (HasUpgradeUnlocked(0))

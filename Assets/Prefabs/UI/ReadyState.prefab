@@ -90,3 +90,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   checkedSprite: {fileID: 21300000, guid: d22cbcdadb8afb54396809cc13a92e5d, type: 3}
   uncheckedSprite: {fileID: 21300000, guid: 7c32ab96b9e78a246ae0fb559b4c2c69, type: 3}
+  spriteRenderer: {fileID: 1734613470274384119}

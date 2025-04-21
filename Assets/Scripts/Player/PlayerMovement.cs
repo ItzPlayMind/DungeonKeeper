@@ -32,7 +32,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!enabled) return;
         if (canMove)
-            rb.AddForce(input * new Vector2(stats.stats.speed.Value, Mathf.Max(stats.stats.speed.Value - 10, 0)), ForceMode2D.Force);
+            rb.AddForce(input * new Vector2(stats.stats.speed.Value, Mathf.Max(stats.stats.speed.Value - 10, 0)) * rb.mass, ForceMode2D.Force);
     }
 
     public void Stop()

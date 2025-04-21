@@ -39,7 +39,7 @@ public class Ghost : Objective
             Complete(damager);
             transform.position = originalPos;
         };
-        stats.OnServerTakeDamage += (ulong damager, int damage) =>
+        stats.OnServerTakeDamage += (ulong damager, ref int damage) =>
         {
             target = NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<CharacterStats>();
         };

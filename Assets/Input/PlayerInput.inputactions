@@ -323,6 +323,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Submit",
+                    "type": "Button",
+                    "id": "c3008082-eb76-40c9-8164-fdfd245ba2d7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Fullscreen",
                     "type": "Button",
                     "id": "384753db-1c57-4838-bf5e-3daa697bafa8",
@@ -389,6 +398,15 @@
                     "name": "Details",
                     "type": "Button",
                     "id": "dd86172b-5e14-4cbf-9eda-74e809367538",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Debug Console",
+                    "type": "Button",
+                    "id": "a95205fd-a823-475b-b525-208d02e92f67",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -492,6 +510,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Details",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7cdb5dc0-3466-46d6-b84d-33d4b2cae831",
+                    "path": "<Keyboard>/f11",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Debug Console",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a730cc16-fd80-41dc-8587-492e76c1e08b",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

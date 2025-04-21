@@ -26571,6 +26571,7 @@ MonoBehaviour:
   nextButton: {fileID: 0}
   teamPanel: {fileID: 1221917981}
   characterSelectionPanel: {fileID: 48946014}
+  characterSelectionContentPanel: {fileID: 0}
   redTeamPlayerCards:
   - {fileID: 134497290}
   - {fileID: 1647178608}
@@ -26581,6 +26582,10 @@ MonoBehaviour:
   - {fileID: 233936071}
   playerText: {fileID: 1903595382}
   characterPortraitPrefab: {fileID: 8812857334731470584, guid: f6f6a77bbc9fa424da5460a6c7b9501d, type: 3}
+  characterCategory:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   characterSelection:
   - {fileID: 499640167}
   - {fileID: 1315003842}

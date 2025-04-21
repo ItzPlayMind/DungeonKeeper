@@ -48,4 +48,9 @@ public abstract class HoverOver<T> : MonoBehaviour
                 (gfx.transform as RectTransform).pivot = new Vector2(-0.02f, 0.03f);
         }
     }
+
+    private void OnLevelWasLoaded(int level)
+    {
+        Instance.gfx?.SetActive(false);
+    }
 }

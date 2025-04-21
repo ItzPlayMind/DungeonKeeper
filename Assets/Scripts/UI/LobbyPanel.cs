@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -24,16 +23,14 @@ public class LobbyPanel : MonoBehaviour
     }
     [SerializeField] private Button startButton;
     [SerializeField] private Button readyButton;
-    [SerializeField] private Button nextButton;
-    [SerializeField] private GameObject teamPanel;
     [SerializeField] private GameObject characterSelectionPanel;
     [SerializeField] private RectTransform characterSelectionContentPanel;
-    [SerializeField] private Transform[] redTeamPlayerCards = new Transform[3];
-    [SerializeField] private Transform[] blueTeamPlayerCards = new Transform[3];
     [SerializeField] private TMPro.TextMeshProUGUI playerText;
     [SerializeField] private GameObject characterPortraitPrefab;
     [SerializeField] private RectTransform[] characterCategory = new RectTransform[3];
     [SerializeField] private RectTransform[] characterSelection = new RectTransform[3];
+    [SerializeField] private Animator[] redTeamStands = new Animator[3];
+    [SerializeField] private Animator[] blueTeamStands = new Animator[3];
 
     [SerializeField] private UICheckbox readyStatePrefab;
     [SerializeField] private Transform readyStateTransform;
@@ -41,42 +38,14 @@ public class LobbyPanel : MonoBehaviour
 
     private List<ClientReadyState> clientReadyStates = new List<ClientReadyState>();
 
-    private int characterSelectionIndex = 0;
+    private int characterSelectionIndex = -1;
 
     public Button StartButton { get => startButton; }
     public Button ReadyButton { get => readyButton; }
-    public Button NextButton { get => nextButton; }
-
-    public void SwitchToCharacterSelection()
-    {
-        characterSelectionPanel.SetActive(true);
-        teamPanel.SetActive(false);
-    }
 
     public void ResetOnDisconnect()
     {
         clientReadyStates = new List<ClientReadyState>();
-    }
-
-    public void UpdateTeamPanel(ulong[] redTeam, ulong[] blueTeam)
-    {
-        foreach (var item in redTeamPlayerCards)
-            item.gameObject.SetActive(false);
-        foreach (var item in blueTeamPlayerCards)
-            item.gameObject.SetActive(false);
-
-        for (int i = 0; i < redTeam.Length; i++)
-        {
-            redTeamPlayerCards[i].gameObject.SetActive(true);
-            var playerName = Lobby.Instance.PlayerStatistic.GetNameByClientID(redTeam[i]);
-            redTeamPlayerCards[i].GetComponentInChildren<TMPro.TextMeshProUGUI>().text = playerName;
-        }
-        for (int i = 0; i < blueTeam.Length; i++)
-        {
-            blueTeamPlayerCards[i].gameObject.SetActive(true); 
-            var playerName = Lobby.Instance.PlayerStatistic.GetNameByClientID(blueTeam[i]);
-            blueTeamPlayerCards[i].GetComponentInChildren<TMPro.TextMeshProUGUI>().text = playerName;
-        }
     }
 
     public void ClearClientReadyStates()
@@ -90,13 +59,16 @@ public class LobbyPanel : MonoBehaviour
     private void OnEnable()
     {
         isLocalReady = false;
-        teamPanel.SetActive(true);
-        characterSelectionPanel.SetActive(false);
+        characterSelectionPanel.SetActive(true);
         foreach (var portraits in Lobby.Instance.CharacterPortraits)
         {
             if(portraits.characterPotrait != null)
                 portraits.characterPotrait.interactable = true;   
         }
+    }
+
+    private void OnDisable()
+    {
         ClearClientReadyStates();
     }
 
@@ -139,8 +111,14 @@ public class LobbyPanel : MonoBehaviour
         buttonClick.AddListener(() =>
         {
             if (isLocalReady) return;
-            Lobby.Instance.CharacterPortraits[characterSelectionIndex].selectionObject.SetActive(false);
+            /*ColorBlock colorBlock = readyButton.colors;
+            colorBlock.disabledColor = Color.green;
+            readyButton.colors = colorBlock;*/
+            readyButton.interactable = true;
+            if (characterSelectionIndex >= 0)
+                Lobby.Instance.CharacterPortraits[characterSelectionIndex].selectionObject.SetActive(false);
             characterSelectionIndex = index;
+            Lobby.Instance.ChangeDisplayedCharacter(characterSelectionIndex);
             Lobby.Instance.CharacterPortraits[characterSelectionIndex].selectionObject.SetActive(true);
         });
         Lobby.Instance.CharacterPortraits[index].characterPotrait.onClick = buttonClick;
@@ -152,19 +130,34 @@ public class LobbyPanel : MonoBehaviour
         Lobby.Instance.ChangeReadyState(characterSelectionIndex);
     }
 
-    public void ChangeLockStateByIndex(int index, bool value, Color color)
+    public void ChangeLockStateByIndex(int index, bool value)
     {
         Lobby.Instance.CharacterPortraits[index].locked = value;
         var button = Lobby.Instance.CharacterPortraits[index].characterPotrait.GetComponent<Button>();
         ColorBlock colorBlock = button.colors;
-        colorBlock.disabledColor = color;
+        colorBlock.disabledColor = Color.gray;
         button.colors = colorBlock;
-        button.interactable=!value;
+        button.interactable= value;
         if(index == characterSelectionIndex && value)
         {
             var newIndex=(characterSelectionIndex+1)%Lobby.Instance.CharacterPortraits.Count;
             Lobby.Instance.CharacterPortraits[newIndex].characterPotrait.onClick?.Invoke();
         }
+    }
+
+    public void SetCharacterForClientIndex(int index, Lobby.Team team, int stanceIndex)
+    {
+        Animator animator = null;
+        switch (team) {
+            case Lobby.Team.Red:
+                animator = redTeamStands[stanceIndex];
+                break;
+            case Lobby.Team.Blue:
+                animator = blueTeamStands[stanceIndex];
+                break;
+        }
+        if (animator != null)
+            animator.runtimeAnimatorController = Lobby.Instance.CharacterPortraits[index].animations;
     }
 
     public int GetSelectedIndex() => characterSelectionIndex;
@@ -182,6 +175,7 @@ public class LobbyPanel : MonoBehaviour
             clientID = client,
             readyStateObject = newReadyState
         });
+        Debug.Log(clientReadyStates.Count);
     }
 
     public void SetReadyState(ulong client, bool value)
@@ -189,7 +183,7 @@ public class LobbyPanel : MonoBehaviour
         var state = clientReadyStates.Find(x => x.clientID == client);
         if(state != null)
         {
-            state.readyStateObject.SetChecked(value);
+            state.readyStateObject?.SetChecked(value);
         }
     }
 
@@ -208,8 +202,19 @@ public class LobbyPanel : MonoBehaviour
         Lobby.Instance.StartGame();
     }
 
-    public void SwitchToCharacterSelectionPress()
+    public void StartStandsAttack()
     {
-        Lobby.Instance.SwitchToCharacterSelection();
+        readyButton.interactable = false;
+        startButton.interactable = false;
+        foreach (var item in redTeamStands)
+        {
+            if (item != null)
+                item.SetTrigger("attacking");
+        }
+        foreach (var item in blueTeamStands)
+        {
+            if (item != null)
+                item.SetTrigger("attacking");
+        }
     }
 }

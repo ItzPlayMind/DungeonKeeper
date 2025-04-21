@@ -9,12 +9,7 @@ public class UICheckbox : MonoBehaviour
     [SerializeField] private Sprite uncheckedSprite;
 
     private bool currentValue;
-    private Image spriteRenderer;
-    private void Start()
-    {
-        spriteRenderer = GetComponent<Image>();
-    }
-
+    [SerializeField] private Image spriteRenderer;
     public void SetChecked(bool value)
     {
         currentValue = value;

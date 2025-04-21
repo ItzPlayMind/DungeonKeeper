@@ -13,16 +13,34 @@ public class AxeSpecial : AbstractSpecial
     [SerializeField] private float axeSpeed = 5;
     [SerializeField] private float axeReturnSpeed = 50;
     [SerializeField] private float axeDistance = 5;
+    [DescriptionCreator.DescriptionVariable("white")]
+    [SerializeField] private int damageIncrease = 10;
+    [DescriptionCreator.DescriptionVariable("white")]
+    [SerializeField] private int cDReduce = 2;
     Vector2 mouseWorldPos;
     Vector2 originalPos;
     [SerializeField] Rigidbody2D axe;
     bool returning = false;
+    private int targetsHit = 0;
 
     private int ReturnDamage { get => returnDamage + (int)(characterStats.stats.specialDamage.Value * returnDamageMultiplier); }
 
     protected override void _OnSpecialFinish(PlayerController controller)
     {
         SpawnAxeServerRPC(OwnerClientId, gameObject.layer);
+    }
+
+    protected override void _Start()
+    {
+        base._Start();
+        if (!IsLocalPlayer) return;
+        characterStats.stats.damage.ChangeValueAdd += (ref int value, int old) =>
+        {
+            if (HasUpgradeUnlocked(0))
+            {
+                value += damageIncrease;
+            }
+        };
     }
 
     [ServerRpc]
@@ -48,6 +66,8 @@ public class AxeSpecial : AbstractSpecial
         {
             if (collider == gameObject)
                 return;
+            if (collider.layer == gameObject.layer) return;
+            if (collider.tag == "Special") return;
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
@@ -55,13 +75,18 @@ public class AxeSpecial : AbstractSpecial
                     stats.TakeDamage(Damage, axe.velocity.normalized*10, characterStats);
                 else
                     stats.TakeDamage(ReturnDamage, axe.velocity.normalized * 3, characterStats);
+                targetsHit++;
+                if (!HasUpgradeUnlocked(1))
+                {
+                    if (!returning)
+                        axe.velocity = Vector2.zero;
+                    returning = true;
+                }
             }
             else
             {
                 if (!returning)
-                {
                     axe.velocity = Vector2.zero;
-                }
                 returning = true;
             }
         };
@@ -86,6 +111,12 @@ public class AxeSpecial : AbstractSpecial
             if (Vector2.Distance(axe.transform.position, transform.position) <= 0.2)
             {
                 StartCooldown();
+                if (HasUpgradeUnlocked(2))
+                {
+                    Debug.Log(targetsHit * cDReduce);
+                    ReduceCooldown(targetsHit * cDReduce);
+                }
+                targetsHit = 0;
                 DespawnAxeServerRPC(axe.GetComponent<NetworkObject>().NetworkObjectId);
             }
         }

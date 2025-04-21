@@ -345,6 +345,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Submit"",
+                    ""type"": ""Button"",
+                    ""id"": ""c3008082-eb76-40c9-8164-fdfd245ba2d7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Fullscreen"",
                     ""type"": ""Button"",
                     ""id"": ""384753db-1c57-4838-bf5e-3daa697bafa8"",
@@ -411,6 +420,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""name"": ""Details"",
                     ""type"": ""Button"",
                     ""id"": ""dd86172b-5e14-4cbf-9eda-74e809367538"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Debug Console"",
+                    ""type"": ""Button"",
+                    ""id"": ""a95205fd-a823-475b-b525-208d02e92f67"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -516,6 +534,28 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Details"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7cdb5dc0-3466-46d6-b84d-33d4b2cae831"",
+                    ""path"": ""<Keyboard>/f11"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Debug Console"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a730cc16-fd80-41dc-8587-492e76c1e08b"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -543,6 +583,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Close = m_UI.FindAction("Close", throwIfNotFound: true);
+        m_UI_Submit = m_UI.FindAction("Submit", throwIfNotFound: true);
         m_UI_Fullscreen = m_UI.FindAction("Fullscreen", throwIfNotFound: true);
         m_UI_ActiveItem1 = m_UI.FindAction("Active Item 1", throwIfNotFound: true);
         m_UI_ActiveItem2 = m_UI.FindAction("Active Item 2", throwIfNotFound: true);
@@ -551,6 +592,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_UI_ActiveItem5 = m_UI.FindAction("Active Item 5", throwIfNotFound: true);
         m_UI_ActiveItem6 = m_UI.FindAction("Active Item 6", throwIfNotFound: true);
         m_UI_Details = m_UI.FindAction("Details", throwIfNotFound: true);
+        m_UI_DebugConsole = m_UI.FindAction("Debug Console", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -823,6 +865,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
     private readonly InputAction m_UI_Close;
+    private readonly InputAction m_UI_Submit;
     private readonly InputAction m_UI_Fullscreen;
     private readonly InputAction m_UI_ActiveItem1;
     private readonly InputAction m_UI_ActiveItem2;
@@ -831,11 +874,13 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_ActiveItem5;
     private readonly InputAction m_UI_ActiveItem6;
     private readonly InputAction m_UI_Details;
+    private readonly InputAction m_UI_DebugConsole;
     public struct UIActions
     {
         private @PlayerInput m_Wrapper;
         public UIActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Close => m_Wrapper.m_UI_Close;
+        public InputAction @Submit => m_Wrapper.m_UI_Submit;
         public InputAction @Fullscreen => m_Wrapper.m_UI_Fullscreen;
         public InputAction @ActiveItem1 => m_Wrapper.m_UI_ActiveItem1;
         public InputAction @ActiveItem2 => m_Wrapper.m_UI_ActiveItem2;
@@ -844,6 +889,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @ActiveItem5 => m_Wrapper.m_UI_ActiveItem5;
         public InputAction @ActiveItem6 => m_Wrapper.m_UI_ActiveItem6;
         public InputAction @Details => m_Wrapper.m_UI_Details;
+        public InputAction @DebugConsole => m_Wrapper.m_UI_DebugConsole;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -856,6 +902,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Close.started += instance.OnClose;
             @Close.performed += instance.OnClose;
             @Close.canceled += instance.OnClose;
+            @Submit.started += instance.OnSubmit;
+            @Submit.performed += instance.OnSubmit;
+            @Submit.canceled += instance.OnSubmit;
             @Fullscreen.started += instance.OnFullscreen;
             @Fullscreen.performed += instance.OnFullscreen;
             @Fullscreen.canceled += instance.OnFullscreen;
@@ -880,6 +929,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Details.started += instance.OnDetails;
             @Details.performed += instance.OnDetails;
             @Details.canceled += instance.OnDetails;
+            @DebugConsole.started += instance.OnDebugConsole;
+            @DebugConsole.performed += instance.OnDebugConsole;
+            @DebugConsole.canceled += instance.OnDebugConsole;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -887,6 +939,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Close.started -= instance.OnClose;
             @Close.performed -= instance.OnClose;
             @Close.canceled -= instance.OnClose;
+            @Submit.started -= instance.OnSubmit;
+            @Submit.performed -= instance.OnSubmit;
+            @Submit.canceled -= instance.OnSubmit;
             @Fullscreen.started -= instance.OnFullscreen;
             @Fullscreen.performed -= instance.OnFullscreen;
             @Fullscreen.canceled -= instance.OnFullscreen;
@@ -911,6 +966,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Details.started -= instance.OnDetails;
             @Details.performed -= instance.OnDetails;
             @Details.canceled -= instance.OnDetails;
+            @DebugConsole.started -= instance.OnDebugConsole;
+            @DebugConsole.performed -= instance.OnDebugConsole;
+            @DebugConsole.canceled -= instance.OnDebugConsole;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -952,6 +1010,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     public interface IUIActions
     {
         void OnClose(InputAction.CallbackContext context);
+        void OnSubmit(InputAction.CallbackContext context);
         void OnFullscreen(InputAction.CallbackContext context);
         void OnActiveItem1(InputAction.CallbackContext context);
         void OnActiveItem2(InputAction.CallbackContext context);
@@ -960,5 +1019,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnActiveItem5(InputAction.CallbackContext context);
         void OnActiveItem6(InputAction.CallbackContext context);
         void OnDetails(InputAction.CallbackContext context);
+        void OnDebugConsole(InputAction.CallbackContext context);
     }
 }

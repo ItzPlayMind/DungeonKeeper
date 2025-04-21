@@ -126,12 +126,12 @@ public class GameManager : NetworkBehaviour
         var spawnIndex = clientSetupCount / 2;
         var spawn = redTeamSpawns[spawnIndex];
         var teamLayer = 0;
-        if (Lobby.Instance.RedTeam.Contains(id))
+        if (Lobby.Instance.GetTeam(Lobby.Team.Red).Contains(id))
         {
             spawn = redTeamSpawns[spawnIndex];
             teamLayer = LayerMask.NameToLayer(redTeamlayer);
         }
-        if (Lobby.Instance.BlueTeam.Contains(id))
+        if (Lobby.Instance.GetTeam(Lobby.Team.Blue).Contains(id))
         {
             spawn = blueTeamSpawns[spawnIndex];
             teamLayer = LayerMask.NameToLayer(blueTeamlayer);
@@ -154,7 +154,7 @@ public class GameManager : NetworkBehaviour
                 ids.Add(clients[item].PlayerObject.NetworkObjectId);
             }
             AllClientsSetupClientRPC(ids.ToArray());
-            Objectives?.SpawnObjectives(Lobby.Instance.RedTeam.ToArray(), Lobby.Instance.BlueTeam.ToArray());
+            Objectives?.SpawnObjectives(Lobby.Instance.GetTeam(Lobby.Team.Red).ToArray(), Lobby.Instance.GetTeam(Lobby.Team.Blue).ToArray());
             lights.AddRange(FindObjectsOfType<Light2D>());
         }
     }
@@ -227,10 +227,10 @@ public class GameManager : NetworkBehaviour
     public void AddCashToTeamFromPlayer(ulong id, int cash)
     {
         List<ulong> team = null;
-        if (checkIfIsInTeam(id,Lobby.Instance.RedTeam))
-            team = Lobby.Instance.RedTeam;
-        if (checkIfIsInTeam(id, Lobby.Instance.BlueTeam))
-            team = Lobby.Instance.BlueTeam;
+        if (checkIfIsInTeam(id,Lobby.Team.Red))
+            team = Lobby.Instance.GetTeam(Lobby.Team.Red);
+        if (checkIfIsInTeam(id, Lobby.Team.Blue))
+            team = Lobby.Instance.GetTeam(Lobby.Team.Blue);
         if (team == null) return;
         foreach (var player in team)
             NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.AddCash(cash);
@@ -239,18 +239,19 @@ public class GameManager : NetworkBehaviour
     public void AddItemToTeamFromPlayer(ulong id, Item item)
     {
         List<ulong> team = null;
-        if (checkIfIsInTeam(id, Lobby.Instance.RedTeam))
-            team = Lobby.Instance.RedTeam;
-        if (checkIfIsInTeam(id, Lobby.Instance.BlueTeam))
-            team = Lobby.Instance.BlueTeam;
+        if (checkIfIsInTeam(id, Lobby.Team.Red))
+            team = Lobby.Instance.GetTeam(Lobby.Team.Red);
+        if (checkIfIsInTeam(id, Lobby.Team.Blue))
+            team = Lobby.Instance.GetTeam(Lobby.Team.Blue);
         if (team == null) return;
         foreach (var player in team)
             NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.AddItem(item, true);
     }
 
-    private bool checkIfIsInTeam(ulong id, List<ulong> team)
+    private bool checkIfIsInTeam(ulong id, Lobby.Team team)
     {
-        foreach (var item in team)
+        var teamIds = Lobby.Instance.GetTeam(team);
+        foreach (var item in teamIds)
             if (NetworkManager.Singleton.ConnectedClients[item].PlayerObject.NetworkObjectId == id) return true;
         return false;
     }
@@ -265,10 +266,10 @@ public class GameManager : NetworkBehaviour
     public void SwapItemsForTeamFromPlayer(ulong id, int src, int dest)
     {
         List<ulong> team = null;
-        if (checkIfIsInTeam(id, Lobby.Instance.RedTeam))
-            team = Lobby.Instance.RedTeam;
-        if (checkIfIsInTeam(id, Lobby.Instance.BlueTeam))
-            team = Lobby.Instance.BlueTeam;
+        if (checkIfIsInTeam(id, Lobby.Team.Red))
+            team = Lobby.Instance.GetTeam(Lobby.Team.Red);
+        if (checkIfIsInTeam(id, Lobby.Team.Blue))
+            team = Lobby.Instance.GetTeam(Lobby.Team.Blue);
         if (team == null) return;
         foreach (var player in team)
             NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.SwapItems(src,dest,true);
@@ -277,10 +278,10 @@ public class GameManager : NetworkBehaviour
     public void RemoveItemToTeamFromPlayer(ulong id, int slot)
     {
         List<ulong> team = null;
-        if (checkIfIsInTeam(id, Lobby.Instance.RedTeam))
-            team = Lobby.Instance.RedTeam;
-        if (checkIfIsInTeam(id, Lobby.Instance.BlueTeam))
-            team = Lobby.Instance.BlueTeam;
+        if (checkIfIsInTeam(id, Lobby.Team.Red))
+            team = Lobby.Instance.GetTeam(Lobby.Team.Red);
+        if (checkIfIsInTeam(id, Lobby.Team.Blue))
+            team = Lobby.Instance.GetTeam(Lobby.Team.Blue);
         if (team == null) return;
         foreach (var player in team)
             NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.RemoveItem(slot, true);
@@ -304,10 +305,10 @@ public class GameManager : NetworkBehaviour
     public void UnlockUpgradeForAllInTeamFromPlayer(ulong id, int index)
     {
         List<ulong> team = null;
-        if (checkIfIsInTeam(id, Lobby.Instance.RedTeam))
-            team = Lobby.Instance.RedTeam;
-        if (checkIfIsInTeam(id, Lobby.Instance.BlueTeam))
-            team = Lobby.Instance.BlueTeam;
+        if (checkIfIsInTeam(id, Lobby.Team.Red))
+            team = Lobby.Instance.GetTeam(Lobby.Team.Red);
+        if (checkIfIsInTeam(id, Lobby.Team.Blue))
+            team = Lobby.Instance.GetTeam(Lobby.Team.Blue);
         if (team == null) return;
         foreach (var player in team)
             NetworkManager.Singleton.ConnectedClients[player].PlayerObject?.GetComponent<AbstractSpecial>()?.UnlockUpgrade(index);
@@ -315,7 +316,7 @@ public class GameManager : NetworkBehaviour
 
     public void UnlockUpgradeForAll(int index)
     {
-        List<ulong> team = Lobby.Instance.RedTeam.Concat(Lobby.Instance.BlueTeam).ToList();
+        List<ulong> team = Lobby.Instance.GetTeam(Lobby.Team.Red).Concat(Lobby.Instance.GetTeam(Lobby.Team.Blue)).ToList();
         foreach (var player in team)
             NetworkManager.Singleton.ConnectedClients[player].PlayerObject?.GetComponent<AbstractSpecial>()?.UnlockUpgrade(index);
     }

@@ -6,6 +6,7 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static DebugConsole;
 
 public class Inventory : NetworkBehaviour
 {
@@ -67,10 +68,12 @@ public class Inventory : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-#if UNITY_EDITOR
-        if(IsServer)
-            cash.Value += 20000;
-#endif
+        DebugConsole.OnCommand((Command command) =>
+        {
+            if (command.args.Length != 2) return;
+            AddCash(int.Parse(command.args[1]));
+            Debug.Log("Cash added");
+        }, "cash", "add");
         items = new Item[INVENTORY_SIZE];
         teamItems = new Item[3];
         stats = GetComponent<CharacterStats>();

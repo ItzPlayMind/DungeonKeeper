@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
 public class AbsorbStanceSpecial : AbstractSpecial
@@ -8,12 +9,28 @@ public class AbsorbStanceSpecial : AbstractSpecial
     private bool isInStance = false;
 
     [DescriptionCreator.DescriptionVariable]
-    [SerializeField] private int ResourceDrain = 2;
+    [SerializeField] private int ResourceDrain = 5;
     [SerializeField] private AnimatorOverrideController originalAnimator;
     [SerializeField] private AnimationClip walkAnimation;
     [SerializeField] private AnimationClip walkBlockAnimation;
     [SerializeField] private AnimationClip idleAnimation;
     [SerializeField] private AnimationClip idleBlockAnimation;
+
+    [SerializeField]
+    [DescriptionCreator.DescriptionVariable("white")]
+    private int valueIncrease = 10;
+
+    [SerializeField]
+    [DescriptionCreator.DescriptionVariable("white")]
+    private int rallyAmount = 10;
+
+    [SerializeField]
+    [DescriptionCreator.DescriptionVariable("white")]
+    private int rallyDuration = 3;
+
+    [SerializeField]
+    [DescriptionCreator.DescriptionVariable("white")]
+    private int healthThreshold = 10;
 
 
     private Animator animator;
@@ -23,10 +40,37 @@ public class AbsorbStanceSpecial : AbstractSpecial
     {
         animator = GetComponentInChildren<Animator>();
         attack = GetComponent<PlayerAttack>();
-        attack.OnAttack += (ulong target, ulong user, ref int amount) =>
+        characterStats.stats.specialDamage.ChangeValueAdd += (ref int current, int old) =>
         {
-            Resource += 10;
+            if (HasUpgradeUnlocked(0) && isInStance)
+            {
+                current += valueIncrease;
+            }
         };
+        characterStats.stats.damage.ChangeValueAdd += (ref int current, int old) =>
+        {
+            if (HasUpgradeUnlocked(0) && !isInStance)
+            {
+                current += valueIncrease;
+            }
+        };
+        characterStats.OnServerTakeDamage += (ulong damagerID, ref int damage) =>
+        {
+            if (HasUpgradeUnlocked(2) && isInStance)
+            {
+                if(characterStats.Health-damage < characterStats.stats.health.Value * (healthThreshold / 100f))
+                {
+                    damage = Mathf.Min((int)(characterStats.stats.health.Value * (healthThreshold / 100f)) - characterStats.Health,0);
+                }
+            }
+        };
+        if (IsLocalPlayer)
+        {
+            attack.OnAttack += (ulong target, ulong user, ref int amount) =>
+            {
+                Resource += 10;
+            };
+        }
         base._Start();
     }
 
@@ -62,19 +106,22 @@ public class AbsorbStanceSpecial : AbstractSpecial
                 foreach (var collider in colliders)
                 {
                     var stats = collider.GetComponent<PlayerStats>();
-                    if (ids.Contains(stats.GetInstanceID()))
+                    var effectManager = collider.GetComponent<EffectManager>();
+                    if (ids.Contains(collider.gameObject.GetInstanceID()))
                         continue;
                     if (stats != null)
                     {
                         ids.Add(stats.GetInstanceID());
                         stats.Heal(Damage);
+                        if(effectManager != null && HasUpgradeUnlocked(1))
+                            effectManager.AddEffect("rallied", rallyDuration, rallyAmount, characterStats);
                         Resource -= ResourceDrain;
                     }
                 }
                 if (Resource <= 0)
                     ChangeStance();
             }
-            timer = 1f;
+            timer = 1;
         }
     }
 

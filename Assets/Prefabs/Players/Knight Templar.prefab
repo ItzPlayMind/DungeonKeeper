@@ -539,6 +539,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3107506527094192282 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6496158546021709644, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 8144453709168234454}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3423201346704645077 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6811498739307238403, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 8144453709168234454}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3749414543429588096 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4976039802904779606, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
@@ -573,7 +595,18 @@ MonoBehaviour:
   description: Switch into a Divine Stance. In Divine Stance nearby teammates regenerate
     {Damage} HP every second. Uses {ResourceDrain} Resource per Player healed every
     second. Cannot attack during Divine Stance.
-  upgrades: []
+  upgrades:
+  - name: Enhanced Fighting
+    description: Gain {ValueIncrease} Damage while not in Divine Stance and {ValueIncrease}
+      Special Damage while in Divine Stance
+    hoverEvent: {fileID: 3423201346704645077}
+  - name: Rally
+    description: Healing a target with {Name} also applies Rallied to them, giving
+      the target {RallyAmount}% Attack Speed, {RallyAmount} Damage and Special Damage
+    hoverEvent: {fileID: 6449352745699804290}
+  - name: Divine Will
+    description: While in Divine Stance cant fall below {HealthThreshold}% HP
+    hoverEvent: {fileID: 3107506527094192282}
   damage: 20
   damageMultiplier: 1
   MaxCooldown: 1
@@ -587,6 +620,21 @@ MonoBehaviour:
   walkBlockAnimation: {fileID: 7400000, guid: 56d28d88bc32ae94baf1b6a59a789b29, type: 2}
   idleAnimation: {fileID: 7400000, guid: 4880b5370e53c674a84fd3fb00fec914, type: 2}
   idleBlockAnimation: {fileID: 7400000, guid: 13504f16f44c6c144960e59694dcf7f2, type: 2}
+  valueIncrease: 10
+  rallyAmount: 10
+  rallyDuration: 3
+  healthThreshold: 10
+--- !u!114 &6449352745699804290 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920124048420981588, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+  m_PrefabInstance: {fileID: 8144453709168234454}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802d85b607cd81949a5e9e0a454fc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8343604439620196933 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 201704820803556755, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}

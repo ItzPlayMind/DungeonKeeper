@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.Netcode;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static DebugConsole;
 using static Lobby;
 
 public class ArenaGameManager : GameManager
 {
-    private NetworkVariable<float> phaseTimer = new NetworkVariable<float>(20f);
+    private NetworkVariable<float> phaseTimer = new NetworkVariable<float>(10);
     private NetworkVariable<Phase> phase = new NetworkVariable<Phase>(Phase.Prepare);
     private NetworkVariable<int> bonusObjectiveIndex = new NetworkVariable<int>(-1);
     private NetworkVariable<int> round = new NetworkVariable<int>(1);
@@ -48,6 +48,7 @@ public class ArenaGameManager : GameManager
     [SerializeField] private Transform blueTeamArenaSpawn;
     [SerializeField] private CharacterStats redTeamHealth;
     [SerializeField] private CharacterStats blueTeamHealth;
+    [SerializeField] private Animator uiAnimator;
 
     private Objective currentBonusObjective;
 
@@ -57,21 +58,34 @@ public class ArenaGameManager : GameManager
         ChangePhaseText("Prepare", Color.blue);
         phaseTimer.OnValueChanged += (float old, float newValue) =>
         {
+            if (phase.Value == Phase.Prepare)
+            {
+                if (newValue <= 2)
+                    uiAnimator.ResetTrigger("Countdown");
+                if (Mathf.CeilToInt(newValue) == 3)
+                    uiAnimator.SetTrigger("Countdown");
+            }
             UpdatePhaseTimer();
         };
         phase.OnValueChanged += (Phase oldValue, Phase newValue) =>
         {
+            if (cardSelection.gameObject.activeSelf)
+                cardSelection.PickRandom();
             switch (newValue)
             {
                 case Phase.Prepare:
                     ChangePhaseText("Prepare", Color.blue);
+                    GOLD_PER_SECOND = 0;
                     break;
                 case Phase.Battle:
+                    GOLD_PER_SECOND = 5;
+                    if (ShopPanel.Instance.IsActive)
+                        ShopPanel.Instance.Toggle();
                     ChangePhaseText("Battle", Color.red);
                     break;
             }
         };
-        bonusObjectiveIndex.OnValueChanged += (int old, int newValue) =>
+        /*bonusObjectiveIndex.OnValueChanged += (int old, int newValue) =>
         {
             if (bonusObjectiveIndex.Value == -1)
             {
@@ -82,11 +96,11 @@ public class ArenaGameManager : GameManager
             {
                 bonusObjectiveText.text = bonusObjectives[bonusObjectiveIndex.Value].description;
             }
-        };
+        };*/
         round.OnValueChanged += (int old, int value) =>
         {
-            if ((value+1) % 3 == 0)
-                cardSelection.gameObject.SetActive(true);
+            /*if ((value+1) % 3 == 0)
+                cardSelection.gameObject.SetActive(true);*/
             if (!IsServer) return;
             if (value % 5 == 0)
                 UnlockUpgradeForAll(value/5);
@@ -94,7 +108,19 @@ public class ArenaGameManager : GameManager
         if (IsServer)
         {
             SetupWinConditionForTeams();
+            DebugConsole.OnCommand((_) =>
+            {
+                phaseTimer.Value = 0;
+            }, "end", "round");
         }
+        DebugConsole.OnCommand((Command command) =>
+        {
+            if (command.args.Length != 2) return;
+            Card card = CardRegistry.Instance.GetByID(command.args[1]);
+            if (card == null) return;
+            AddCardToPlayer(card);
+            Debug.Log("Card added");
+        }, "card", "add");
     }
 
     private void SetupWinConditionForTeams()
@@ -116,8 +142,6 @@ public class ArenaGameManager : GameManager
         if (!IsServer) return;
         if (phaseTimer.Value <= 0 && phase.Value != Phase.GameOver)
         {
-            if (cardSelection.gameObject.activeSelf)
-                cardSelection.PickRandom();
             ChangePhase();
         }
         else
@@ -141,11 +165,11 @@ public class ArenaGameManager : GameManager
                     currentBonusObjective.OnObjectiveComplete += (ulong completer) =>
                     {
                         var playerID = NetworkManager.Singleton.SpawnManager.SpawnedObjects[completer].OwnerClientId;
-                        if (Lobby.Instance.RedTeam.Contains(playerID))
+                        if (Lobby.Instance.GetTeam(Team.Red).Contains(playerID))
                         {
                             bluePlayersDead = 4;
                         }
-                        if (Lobby.Instance.BlueTeam.Contains(playerID))
+                        if (Lobby.Instance.GetTeam(Team.Blue).Contains(playerID))
                         {
                             redPlayersDead = 4;
                         }
@@ -162,11 +186,11 @@ public class ArenaGameManager : GameManager
                     if (redPlayersDead <= bluePlayersDead)
                         blueTeamHealth.TakeDamage(DAMAGE_PER_ROUND * round.Value, Vector2.zero, null);
                 }
-                if (currentBonusObjective != null)
+                /*if (currentBonusObjective != null)
                     Destroy(currentBonusObjective.gameObject);
                 currentBonusObjective = null;
                 int index = UnityEngine.Random.Range(0, bonusObjectives.Length + 1) - 1;
-                bonusObjectiveIndex.Value = index;
+                bonusObjectiveIndex.Value = index;*/
                 phase.Value = Phase.Prepare;
                 redPlayersDead = 0;
                 bluePlayersDead = 0;
@@ -186,40 +210,48 @@ public class ArenaGameManager : GameManager
 
     private void UpdatePhaseTimer()
     {
-        int minutes = (int)phaseTimer.Value / 60;
-        int seconds = (int)phaseTimer.Value % 60;
+        int minutes = Mathf.CeilToInt(phaseTimer.Value) / 60;
+        int seconds = Mathf.CeilToInt(phaseTimer.Value) % 60;
         timerText.text = $"{minutes:d2}:{seconds:d2}";
     }
 
     protected override void OnPlayerSpawned(NetworkObject player)
     {
         var stats = player.GetComponent<PlayerStats>();
-        if (Lobby.Instance.RedTeam.Contains(player.OwnerClientId))
+        if (Lobby.Instance.GetTeam(Team.Red).Contains(player.OwnerClientId))
         {
             stats.OnServerDeath += (_) =>
             {
                 redPlayersDead++;
                 CheckForEndOfRound();
             };
+            stats.OnServerRespawn += () =>
+            {
+                redPlayersDead=Mathf.Max(0,redPlayersDead-1);
+            };
         }
-        if (Lobby.Instance.BlueTeam.Contains(player.OwnerClientId))
+        if (Lobby.Instance.GetTeam(Team.Blue).Contains(player.OwnerClientId))
         {
             stats.OnServerDeath += (_) =>
             {
                 bluePlayersDead++;
                 CheckForEndOfRound();
             };
+            stats.OnServerRespawn += () =>
+            {
+                bluePlayersDead= Mathf.Max(0, bluePlayersDead - 1);
+            };
         }
     }
 
     private void CheckForEndOfRound()
     {
-        if (redPlayersDead == Lobby.Instance.RedTeam.Count)
+        if (redPlayersDead == Lobby.Instance.GetTeam(Team.Red).Count)
         {
             redTeamHealth.TakeDamage(DAMAGE_PER_ROUND * round.Value, Vector2.zero, null);
             ChangePhase();
         }
-        if (bluePlayersDead == Lobby.Instance.BlueTeam.Count)
+        if (bluePlayersDead == Lobby.Instance.GetTeam(Team.Blue).Count)
         {
             blueTeamHealth.TakeDamage(DAMAGE_PER_ROUND * round.Value, Vector2.zero, null);
             ChangePhase();
@@ -228,16 +260,16 @@ public class ArenaGameManager : GameManager
 
     private void AddCashToAllPlayers(int cash)
     {
-        foreach (var player in Lobby.Instance.RedTeam)
+        foreach (var player in Lobby.Instance.GetTeam(Team.Red))
             NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.AddCash(cash);
-        foreach (var player in Lobby.Instance.BlueTeam)
+        foreach (var player in Lobby.Instance.GetTeam(Team.Blue))
             NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.AddCash(cash);
     }
 
     private void SpawnAllPlayersInArena()
     {
-        SpawnPlayersFromTeamAtPointClientRpc(redTeamArenaSpawn.position, new ClientRpcParams() { Send = new ClientRpcSendParams() { TargetClientIds = Lobby.Instance.RedTeam.ToArray() } });
-        SpawnPlayersFromTeamAtPointClientRpc(blueTeamArenaSpawn.position, new ClientRpcParams() { Send = new ClientRpcSendParams() { TargetClientIds = Lobby.Instance.BlueTeam.ToArray() } });
+        SpawnPlayersFromTeamAtPointClientRpc(redTeamArenaSpawn.position, new ClientRpcParams() { Send = new ClientRpcSendParams() { TargetClientIds = Lobby.Instance.GetTeam(Lobby.Team.Red).ToArray() } });
+        SpawnPlayersFromTeamAtPointClientRpc(blueTeamArenaSpawn.position, new ClientRpcParams() { Send = new ClientRpcSendParams() { TargetClientIds = Lobby.Instance.GetTeam(Lobby.Team.Blue).ToArray() } });
     }
 
     [ClientRpc]
@@ -249,19 +281,21 @@ public class ArenaGameManager : GameManager
 
     private void SetAllPlayersToSpawn()
     {
-        HealPlayerFromTeamClientRPC(new ClientRpcParams() { Send=new ClientRpcSendParams() { TargetClientIds= Lobby.Instance.RedTeam.ToArray()} });
-        SpawnPlayersFromTeamAtPointClientRpc(redTeamSpawns[0].position, new ClientRpcParams() { Send=new ClientRpcSendParams() { TargetClientIds= Lobby.Instance.RedTeam.ToArray()} });
-        HealPlayerFromTeamClientRPC(new ClientRpcParams() { Send=new ClientRpcSendParams() { TargetClientIds= Lobby.Instance.BlueTeam.ToArray()} });
-        SpawnPlayersFromTeamAtPointClientRpc(blueTeamSpawns[0].position, new ClientRpcParams() { Send=new ClientRpcSendParams() { TargetClientIds= Lobby.Instance.BlueTeam.ToArray()} });
+        SpawnPlayersFromTeamAtPointClientRpc(redTeamSpawns[0].position, new ClientRpcParams() { Send=new ClientRpcSendParams() { TargetClientIds= Lobby.Instance.GetTeam(Lobby.Team.Red).ToArray()} });
+        SpawnPlayersFromTeamAtPointClientRpc(blueTeamSpawns[0].position, new ClientRpcParams() { Send=new ClientRpcSendParams() { TargetClientIds= Lobby.Instance.GetTeam(Lobby.Team.Blue).ToArray()} });
+        HealAllPlayers();
     }
 
-    [ClientRpc]
-    private void HealPlayerFromTeamClientRPC(ClientRpcParams param)
+    private void HealAllPlayers()
     {
-        var player = NetworkManager.Singleton.LocalClient.PlayerObject;
-        var stats = player.GetComponent<PlayerStats>();
-        stats.Respawn();
-        stats.Heal(100000);
+        var players = Lobby.Instance.GetTeam(Team.Red).Concat(Lobby.Instance.GetTeam(Team.Blue)).ToArray();
+        foreach (var id in players)
+        {
+            var player = NetworkManager.Singleton.ConnectedClients[id].PlayerObject;
+            var stats = player.GetComponent<PlayerStats>();
+            stats.Respawn();
+            stats.Heal(100000);
+        }
     }
 
     public void AddCardToPlayer(Card card)

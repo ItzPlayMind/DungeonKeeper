@@ -31,14 +31,14 @@ public class CaptureTheZoneObjective : Objective
         var playerStats = collision.GetComponent<PlayerStats>();
         if(playerStats != null)
         {
-            if (Lobby.Instance.RedTeam.Contains(playerStats.OwnerClientId))
-            {
-                redPlayers++;
-            }
-            if (Lobby.Instance.BlueTeam.Contains(playerStats.OwnerClientId))
-            {
-                bluePlayers++;
-            }
+            //if (Lobby.Instance.RedTeam.Contains(playerStats.OwnerClientId))
+            //{
+            //    redPlayers++;
+            //}
+            //if (Lobby.Instance.BlueTeam.Contains(playerStats.OwnerClientId))
+            //{
+            //    bluePlayers++;
+            //}
         }
     }
 
@@ -48,14 +48,14 @@ public class CaptureTheZoneObjective : Objective
         var playerStats = collision.GetComponent<PlayerStats>();
         if (playerStats != null)
         {
-            if (Lobby.Instance.RedTeam.Contains(playerStats.OwnerClientId))
-            {
-                redPlayers--;
-            }
-            if (Lobby.Instance.BlueTeam.Contains(playerStats.OwnerClientId))
-            {
-                bluePlayers--;
-            }
+            //if (Lobby.Instance.RedTeam.Contains(playerStats.OwnerClientId))
+            //{
+            //    redPlayers--;
+            //}
+            //if (Lobby.Instance.BlueTeam.Contains(playerStats.OwnerClientId))
+            //{
+            //    bluePlayers--;
+            //}
         }
     }
 
@@ -72,7 +72,7 @@ public class CaptureTheZoneObjective : Objective
                 blueTeamProgress.Value++;
                 if(blueTeamProgress.Value >= maxValue)
                 {
-                    Complete(NetworkManager.Singleton.ConnectedClients[Lobby.Instance.BlueTeam[0]].PlayerObject.NetworkObjectId);
+                    //Complete(NetworkManager.Singleton.ConnectedClients[Lobby.Instance.BlueTeam[0]].PlayerObject.NetworkObjectId);
                 }
             }
             if (redPlayers > 0 && bluePlayers == 0)
@@ -80,7 +80,7 @@ public class CaptureTheZoneObjective : Objective
                 redTeamProgress.Value++;
                 if (redTeamProgress.Value >= maxValue)
                 {
-                    Complete(NetworkManager.Singleton.ConnectedClients[Lobby.Instance.RedTeam[0]].PlayerObject.NetworkObjectId);
+                    //Complete(NetworkManager.Singleton.ConnectedClients[Lobby.Instance.RedTeam[0]].PlayerObject.NetworkObjectId);
                 }
             }
             timer = 1f;
