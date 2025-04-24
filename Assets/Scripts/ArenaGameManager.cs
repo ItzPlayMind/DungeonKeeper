@@ -46,6 +46,8 @@ public class ArenaGameManager : GameManager
     [SerializeField] private BonusObjectives[] bonusObjectives;
     [SerializeField] private Transform redTeamArenaSpawn;
     [SerializeField] private Transform blueTeamArenaSpawn;
+    [SerializeField] private Transform[] flaskPoints;
+    [SerializeField] private NetworkObject flaskObject;
     [SerializeField] private CharacterStats redTeamHealth;
     [SerializeField] private CharacterStats blueTeamHealth;
     [SerializeField] private Animator uiAnimator;
@@ -65,6 +67,20 @@ public class ArenaGameManager : GameManager
                 if (Mathf.CeilToInt(newValue) == 3)
                     uiAnimator.SetTrigger("Countdown");
             }
+            /*if (IsServer)
+            {
+                if(Mathf.CeilToInt(phaseTimer.Value) % 60 == 0)
+                {
+                    foreach (var point in flaskPoints)
+                    {
+                        if(point.childCount == 0)
+                        {
+                            var flask = Instantiate(flaskObject);
+                            flask.Spawn();
+                        }
+                    }
+                }
+            }*/
             UpdatePhaseTimer();
         };
         phase.OnValueChanged += (Phase oldValue, Phase newValue) =>

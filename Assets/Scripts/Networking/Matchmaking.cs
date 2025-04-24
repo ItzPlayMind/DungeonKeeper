@@ -22,6 +22,7 @@ public class Matchmaking
     {
         public string address;
         public ushort port;
+        public string id;
     }
 
     public Matchmaking()
@@ -30,9 +31,11 @@ public class Matchmaking
         client.BaseAddress = new System.Uri(Config.MATCHMAKING_SERVER_IP);
     }
 
-    public async Task<Match> GetMatch()
+    public async Task<Match> GetMatch(string id)
     {
-        var response = await client.GetAsync(Config.MATCHMAKING_LOBBY_ROUTES);
+        var query = HttpUtility.ParseQueryString(client.BaseAddress.Query);
+        query["id"] = id;
+        var response = await client.GetAsync(Config.MATCHMAKING_LOBBY_ROUTES + (string.IsNullOrEmpty(id) ? "" : "?"+query.ToString()));
         if (response.StatusCode == HttpStatusCode.NotFound)
             throw new MatchmakingException("No Match found");
         response.EnsureSuccessStatusCode();
@@ -63,7 +66,8 @@ public class Matchmaking
         if (response.StatusCode == HttpStatusCode.BadRequest)
             throw new MatchmakingException("Bad Match Create Request");
         response.EnsureSuccessStatusCode();
-        return response.Content.ToString();
+        var text = await response.Content.ReadAsStringAsync();
+        return text;
     }
 
     public static async Task<IPAddress?> GetExternalIpAddress()

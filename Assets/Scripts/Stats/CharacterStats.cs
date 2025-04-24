@@ -222,7 +222,7 @@ public class CharacterStats : NetworkBehaviour
     public Vector2 GenerateKnockBack(Transform hit, Transform damager, float force)
     {
         var dir = (hit.position - damager.position).normalized;
-        return dir * force;
+        return dir * force * 2;
     }
 
     private IEnumerator healColorChange()

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -26,6 +27,7 @@ public class LobbyPanel : MonoBehaviour
     [SerializeField] private GameObject characterSelectionPanel;
     [SerializeField] private RectTransform characterSelectionContentPanel;
     [SerializeField] private TMPro.TextMeshProUGUI playerText;
+    [SerializeField] private TMPro.TextMeshProUGUI lobbyCodeText;
     [SerializeField] private GameObject characterPortraitPrefab;
     [SerializeField] private RectTransform[] characterCategory = new RectTransform[3];
     [SerializeField] private RectTransform[] characterSelection = new RectTransform[3];
@@ -60,6 +62,7 @@ public class LobbyPanel : MonoBehaviour
     {
         isLocalReady = false;
         characterSelectionPanel.SetActive(true);
+        lobbyCodeText.text = Lobby.Instance.LobbyCode;
         foreach (var portraits in Lobby.Instance.CharacterPortraits)
         {
             if(portraits.characterPotrait != null)
@@ -216,5 +219,10 @@ public class LobbyPanel : MonoBehaviour
             if (item != null)
                 item.SetTrigger("attacking");
         }
+    }
+
+    public void CopyLobbyCode()
+    {
+        GUIUtility.systemCopyBuffer = Lobby.Instance.LobbyCode;
     }
 }

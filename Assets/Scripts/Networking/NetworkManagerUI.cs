@@ -14,15 +14,23 @@ public class NetworkManagerUI : MonoBehaviour
     NetworkManager networkManager;
     [SerializeField] private GameObject loadingScreen;
     [SerializeField] private Button playButton;
+    [SerializeField] private GameObject matchmakingUI;
+    [SerializeField] private GameObject userUI;
     [SerializeField] private TMPro.TMP_InputField nameInput;
     [SerializeField] private TMPro.TextMeshProUGUI statusText;
 
-    private string id;
     private Matchmaking matchmaking;
+    private bool isFetching = false;
+    private string namePreview;
 
     // Start is called before the first frame update
     void Start()
     {
+        if (!string.IsNullOrEmpty(Lobby.Instance.PlayerStatistic.Name))
+        {
+            matchmakingUI.SetActive(true);
+            userUI.SetActive(false);
+        }
         networkManager = GetComponentInParent<NetworkManager>();
         transport = networkManager.GetComponent<UnityTransport>();
         nameInput.text = Lobby.Instance.PlayerStatistic.Name;
@@ -31,6 +39,8 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void OnClientConnected(ulong clientId)
     {
+        if (clientId != networkManager.LocalClientId) return;
+        isFetching = false;
         LobbyPanel.Instance.gameObject.SetActive(true);
         gameObject.SetActive(false);
         statusText.text = "";
@@ -41,6 +51,8 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void OnClientDisconnected(ulong clientId)
     {
+        if (clientId != networkManager.LocalClientId) return;
+        isFetching = false;
         networkManager.Shutdown();
         statusText.text = "Connection Failed";
         StopCoroutine(coroutine);
@@ -63,12 +75,16 @@ public class NetworkManagerUI : MonoBehaviour
     Coroutine coroutine;
     public async void StartClient()
     {
+        if (isFetching) return;
+        isFetching = true;
         coroutine = StartCoroutine(RotatingText("Matching"));
         try
         {
-            var match = await matchmaking.GetMatch();
+            var match = await matchmaking.GetMatch(Lobby.Instance.LobbyCode);
             transport.ConnectionData.Address = match.address;
             transport.ConnectionData.Port = match.port;
+            Lobby.Instance.SetLobbyCode(match.id);
+            Debug.Log("Found Match: " + match.address + ":" + match.port);
             StopCoroutine(coroutine);
             coroutine = StartCoroutine(RotatingText("Connecting"));
             networkManager.OnClientConnectedCallback += OnClientConnected;
@@ -78,29 +94,37 @@ public class NetworkManagerUI : MonoBehaviour
         {
             StopCoroutine(coroutine);
             statusText.text = e.Message;
+            isFetching = false;
         }
         catch (Exception e)
         {
             StopCoroutine(coroutine);
             statusText.text = "An error occured";
+            isFetching = false;
         }
     }
     public async void StartHost()
     {
-        id = await matchmaking.CreateMatch();
+        if (isFetching) return;
+        isFetching = true;
+        Lobby.Instance.SetLobbyCode(await matchmaking.CreateMatch());
         if (networkManager.StartHost())
         {
+            isFetching = false;
             Lobby.Instance.OnGameStart = StartGame;
             gameObject.SetActive(false);
             LobbyPanel.Instance.gameObject.SetActive(true);
         }
         else
-            matchmaking.RemoveMatch(id);
+        {
+            isFetching = false;
+            matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
+        }
     }
 
     public void StartGame()
     {
-        matchmaking.RemoveMatch(id);
+        matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
     }
 
     public void ChangeIP(string ip)
@@ -115,7 +139,19 @@ public class NetworkManagerUI : MonoBehaviour
 
     public void ChangeName(string name)
     {
-        Lobby.Instance.PlayerStatistic.SetName(name);
+        namePreview = name;
+    }
+
+    public void SaveName()
+    {
+        Lobby.Instance.PlayerStatistic.SetName(namePreview);
+        matchmakingUI.SetActive(true);
+        userUI.SetActive(false);
+    }
+
+    public void ChangeCode(string code)
+    {
+        Lobby.Instance.SetLobbyCode(code);
     }
 
     public void SetGameMode(int index)

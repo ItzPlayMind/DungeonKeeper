@@ -22,6 +22,13 @@ public class DebugConsole : MonoBehaviour
 
     private List<string> logMessages = new List<string>();
     private static System.Action<Command> onCommand;
+    private static bool HasInstance;
+
+    private void Awake()
+    {
+        if (HasInstance) Destroy(gameObject);
+        HasInstance = true;
+    }
 
     private void Start()
     {

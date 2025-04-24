@@ -61,8 +61,14 @@ public class Lobby : NetworkBehaviour
     private bool isShuttingDown;
     private int playerCount;
     private int gameModeIndex = 1;
+    public string LobbyCode { get; private set; }
     private Dictionary<ulong, int> selectedCharacters = new Dictionary<ulong, int>();
     public System.Action OnGameStart;
+
+    public void SetLobbyCode(string lobbyCode)
+    {
+        this.LobbyCode = lobbyCode;
+    }
 
     public GameMode CurrentGameMode { get => GameModes[gameModeIndex]; }
 
@@ -152,9 +158,11 @@ public class Lobby : NetworkBehaviour
 
     private void OnClientConnected(ulong id)
     {
+        Debug.Log("CLIENT CONNECTED");
         if (playerCount == 6 || isStarted)
         {
             NetworkManager.Singleton.DisconnectClient(id);
+            Debug.Log("DISCONNECT CLIENT BECAUSE STARTED OR PLAYERCOUNT REACHED");
             return;
         }
 
