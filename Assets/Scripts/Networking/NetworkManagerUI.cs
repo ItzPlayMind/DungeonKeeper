@@ -37,14 +37,24 @@ public class NetworkManagerUI : MonoBehaviour
         matchmaking = new Matchmaking();
     }
 
+    private void OnEnable()
+    {
+        statusText.text = "";
+        if (Lobby.Instance == null) return;
+        if (!string.IsNullOrEmpty(Lobby.Instance.LobbyCode) && Lobby.Instance.IsHost)
+        {
+            matchmaking?.RemoveMatch(Lobby.Instance.LobbyCode);
+            Lobby.Instance.SetLobbyCode("");
+        }
+    }
+
     private void OnClientConnected(ulong clientId)
     {
         if (clientId != networkManager.LocalClientId) return;
         isFetching = false;
         LobbyPanel.Instance.gameObject.SetActive(true);
         gameObject.SetActive(false);
-        statusText.text = "";
-        StopCoroutine(coroutine);
+        StopRotatingText();
         networkManager.OnClientConnectedCallback -= OnClientConnected;
         networkManager.OnClientDisconnectCallback -= OnClientDisconnected;
     }
@@ -54,14 +64,19 @@ public class NetworkManagerUI : MonoBehaviour
         if (clientId != networkManager.LocalClientId) return;
         isFetching = false;
         networkManager.Shutdown();
+        StopRotatingText();
         statusText.text = "Connection Failed";
-        StopCoroutine(coroutine);
         networkManager.OnClientConnectedCallback -= OnClientConnected;
         networkManager.OnClientDisconnectCallback -= OnClientDisconnected;
     }
 
+    private void StartRotatingText(string text)
+    {
+        coroutine = StartCoroutine(RotatingText(text));
+    }
     private IEnumerator RotatingText(string text)
     {
+        if(coroutine != null) StopRotatingText();
         while (true)
         {
             statusText.text = text+".";
@@ -72,12 +87,16 @@ public class NetworkManagerUI : MonoBehaviour
             yield return new WaitForSeconds(0.25f);
         }
     }
+    private void StopRotatingText()
+    {
+        StopCoroutine(coroutine);
+    }
     Coroutine coroutine;
     public async void StartClient()
     {
         if (isFetching) return;
         isFetching = true;
-        coroutine = StartCoroutine(RotatingText("Matching"));
+        StartRotatingText("Matching");
         try
         {
             var match = await matchmaking.GetMatch(Lobby.Instance.LobbyCode);
@@ -85,8 +104,7 @@ public class NetworkManagerUI : MonoBehaviour
             transport.ConnectionData.Port = match.port;
             Lobby.Instance.SetLobbyCode(match.id);
             Debug.Log("Found Match: " + match.address + ":" + match.port);
-            StopCoroutine(coroutine);
-            coroutine = StartCoroutine(RotatingText("Connecting"));
+            StartRotatingText("Connecting");
             networkManager.OnClientConnectedCallback += OnClientConnected;
             networkManager.OnClientDisconnectCallback += OnClientDisconnected;
             networkManager.StartClient();
@@ -106,25 +124,46 @@ public class NetworkManagerUI : MonoBehaviour
     public async void StartHost()
     {
         if (isFetching) return;
+        StartRotatingText("Creating");
         isFetching = true;
-        Lobby.Instance.SetLobbyCode(await matchmaking.CreateMatch());
-        if (networkManager.StartHost())
+        try
         {
-            isFetching = false;
-            Lobby.Instance.OnGameStart = StartGame;
-            gameObject.SetActive(false);
-            LobbyPanel.Instance.gameObject.SetActive(true);
-        }
-        else
+            Lobby.Instance.SetLobbyCode(await matchmaking.CreateMatch());
+            if (networkManager.StartHost())
+            {
+                isFetching = false;
+                Lobby.Instance.OnGameStart = StartGame;
+                gameObject.SetActive(false);
+                LobbyPanel.Instance.gameObject.SetActive(true);
+            }
+            else
+            {
+                isFetching = false;
+                matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
+                Lobby.Instance.SetLobbyCode("");
+            }
+            StopRotatingText();
+        }catch(Matchmaking.MatchmakingException e)
         {
+            StopCoroutine(coroutine);
+            statusText.text = e.Message;
             isFetching = false;
-            matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
         }
     }
 
     public void StartGame()
     {
         matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
+        Lobby.Instance.SetLobbyCode("");
+    }
+
+    private void OnApplicationQuit()
+    {
+        if (!string.IsNullOrEmpty(Lobby.Instance.LobbyCode) && Lobby.Instance.IsHost)
+        {
+            matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
+            Lobby.Instance.SetLobbyCode("");
+        }
     }
 
     public void ChangeIP(string ip)
