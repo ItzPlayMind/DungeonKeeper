@@ -38,7 +38,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1645281821379304774}
@@ -142,11 +142,15 @@ MonoBehaviour:
       baseValue: 100
     specialDamage:
       baseValue: 0
+    attackSpeed:
+      baseValue: 0
     speed:
       baseValue: 70
     health:
       baseValue: 3500
     damageReduction:
+      baseValue: 0
+    resource:
       baseValue: 0
   showDeathInChat: 1
 --- !u!114 &2277672720237215890
@@ -242,8 +246,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c747d49254b654f40a8e65e73ed71001, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followRange: 3.5
-  attackRange: 1
+  followRange: 4.5
+  attackRange: 1.5
   gold: 500
 --- !u!50 &5198513790235787882
 Rigidbody2D:
@@ -326,6 +330,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaa7002119ff70d4c8ac3509f06d73b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  iconPrefab: {fileID: 0}
+  effectBar: {fileID: 0}
 --- !u!1 &4006802882354677435
 GameObject:
   m_ObjectHideFlags: 0

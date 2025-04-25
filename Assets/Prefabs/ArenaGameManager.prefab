@@ -1091,37 +1091,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &1374528617748883850
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1066759446653114101}
-  m_Layer: 0
-  m_Name: 1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1066759446653114101
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1374528617748883850}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2619998016743969559}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1445247142391134236
 GameObject:
   m_ObjectHideFlags: 0
@@ -3941,7 +3910,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1066759446653114101}
   - {fileID: 852938467809864245}
   - {fileID: 5309932241987822396}
   m_Father: {fileID: 7124114445792117221}
@@ -5070,16 +5038,18 @@ MonoBehaviour:
   - name: Ghost
     description: The first team to kill the ghost wins the round.
     objective: {fileID: 7279530120181344131, guid: e1bb3a001afd3ad4cb667482b2fd56cb, type: 3}
+    active: 1
   - name: Keep Moving
     description: Take damage when standing still.
     objective: {fileID: 5942229306677603318, guid: bcafd7cfe8d83dd4a8a88c4b67554939, type: 3}
+    active: 0
   - name: Capture the Zone
     description: Capture the zone by standing near the crystal.
     objective: {fileID: 5959658183887683804, guid: f9dcf948fb9afe94aaa7ce429de7c51e, type: 3}
+    active: 0
   redTeamArenaSpawn: {fileID: 7385558926922389872}
   blueTeamArenaSpawn: {fileID: 4248579537891546531}
   flaskPoints:
-  - {fileID: 1066759446653114101}
   - {fileID: 852938467809864245}
   - {fileID: 5309932241987822396}
   flaskObject: {fileID: 4614186668340890074, guid: adfeb60a8809a0c4d9d66463f3db287f, type: 3}

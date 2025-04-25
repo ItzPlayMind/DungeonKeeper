@@ -132,7 +132,6 @@ public class NetworkManagerUI : MonoBehaviour
             if (networkManager.StartHost())
             {
                 isFetching = false;
-                Lobby.Instance.OnGameStart = StartGame;
                 gameObject.SetActive(false);
                 LobbyPanel.Instance.gameObject.SetActive(true);
             }
@@ -151,12 +150,6 @@ public class NetworkManagerUI : MonoBehaviour
         }
     }
 
-    public void StartGame()
-    {
-        matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
-        Lobby.Instance.SetLobbyCode("");
-    }
-
     private void OnApplicationQuit()
     {
         if (!string.IsNullOrEmpty(Lobby.Instance.LobbyCode) && Lobby.Instance.IsHost)
@@ -164,11 +157,6 @@ public class NetworkManagerUI : MonoBehaviour
             matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
             Lobby.Instance.SetLobbyCode("");
         }
-    }
-
-    public void ChangeIP(string ip)
-    {
-        transport.ConnectionData.Address = ip;
     }
 
     private void Update()
@@ -191,6 +179,7 @@ public class NetworkManagerUI : MonoBehaviour
     public void ChangeCode(string code)
     {
         Lobby.Instance.SetLobbyCode(code);
+        playButton.interactable = !string.IsNullOrEmpty(code);
     }
 
     public void SetGameMode(int index)

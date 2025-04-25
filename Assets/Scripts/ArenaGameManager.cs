@@ -30,11 +30,12 @@ public class ArenaGameManager : GameManager
     }
 
     [System.Serializable]
-    private class BonusObjectives
+    private class BonusObjective
     {
         public string name;
         public string description;
         public Objective objective;
+        public bool active = true;
     }
 
     public int GOLD_PER_ROUND = 1000;
@@ -43,7 +44,7 @@ public class ArenaGameManager : GameManager
     private int redPlayersDead = 0;
     private int bluePlayersDead = 0;
 
-    [SerializeField] private BonusObjectives[] bonusObjectives;
+    [SerializeField] private BonusObjective[] bonusObjectives;
     [SerializeField] private Transform redTeamArenaSpawn;
     [SerializeField] private Transform blueTeamArenaSpawn;
     [SerializeField] private Transform[] flaskPoints;
@@ -53,6 +54,9 @@ public class ArenaGameManager : GameManager
     [SerializeField] private Animator uiAnimator;
 
     private Objective currentBonusObjective;
+    private List<NetworkObject> removeAfterRound = new List<NetworkObject>();
+
+    private BonusObjective[] BonusObjectives { get => bonusObjectives.ToList().FindAll(x => x.active).ToArray(); }
 
     public override void OnNetworkSpawn()
     {
@@ -67,20 +71,6 @@ public class ArenaGameManager : GameManager
                 if (Mathf.CeilToInt(newValue) == 3)
                     uiAnimator.SetTrigger("Countdown");
             }
-            /*if (IsServer)
-            {
-                if(Mathf.CeilToInt(phaseTimer.Value) % 60 == 0)
-                {
-                    foreach (var point in flaskPoints)
-                    {
-                        if(point.childCount == 0)
-                        {
-                            var flask = Instantiate(flaskObject);
-                            flask.Spawn();
-                        }
-                    }
-                }
-            }*/
             UpdatePhaseTimer();
         };
         phase.OnValueChanged += (Phase oldValue, Phase newValue) =>
@@ -101,7 +91,7 @@ public class ArenaGameManager : GameManager
                     break;
             }
         };
-        /*bonusObjectiveIndex.OnValueChanged += (int old, int newValue) =>
+        bonusObjectiveIndex.OnValueChanged += (int old, int newValue) =>
         {
             if (bonusObjectiveIndex.Value == -1)
             {
@@ -110,9 +100,9 @@ public class ArenaGameManager : GameManager
             }
             else
             {
-                bonusObjectiveText.text = bonusObjectives[bonusObjectiveIndex.Value].description;
+                bonusObjectiveText.text = BonusObjectives[bonusObjectiveIndex.Value].description;
             }
-        };*/
+        };
         round.OnValueChanged += (int old, int value) =>
         {
             /*if ((value+1) % 3 == 0)
@@ -176,7 +166,7 @@ public class ArenaGameManager : GameManager
                 phaseTimer.Value = battleTime;
                 if (bonusObjectiveIndex.Value != -1)
                 {
-                    currentBonusObjective = Instantiate(bonusObjectives[bonusObjectiveIndex.Value].objective, transform.position, Quaternion.identity);
+                    currentBonusObjective = Instantiate(BonusObjectives[bonusObjectiveIndex.Value].objective, transform.position, Quaternion.identity);
                     currentBonusObjective.GetComponent<NetworkObject>().Spawn();
                     currentBonusObjective.OnObjectiveComplete += (ulong completer) =>
                     {
@@ -192,6 +182,16 @@ public class ArenaGameManager : GameManager
                         ChangePhase();
                     };
                 }
+                foreach (var point in flaskPoints)
+                {
+                    if (point.childCount == 0)
+                    {
+                        var flask = Instantiate(flaskObject);
+                        flask.Spawn();
+                        removeAfterRound.Add(flask);
+                        flask.transform.position = point.position;
+                    }
+                }
                 SpawnAllPlayersInArena();
                 break;
             case Phase.Battle:
@@ -202,11 +202,14 @@ public class ArenaGameManager : GameManager
                     if (redPlayersDead <= bluePlayersDead)
                         blueTeamHealth.TakeDamage(DAMAGE_PER_ROUND * round.Value, Vector2.zero, null);
                 }
-                /*if (currentBonusObjective != null)
+                if (currentBonusObjective != null)
                     Destroy(currentBonusObjective.gameObject);
                 currentBonusObjective = null;
-                int index = UnityEngine.Random.Range(0, bonusObjectives.Length + 1) - 1;
-                bonusObjectiveIndex.Value = index;*/
+                foreach (var obj in removeAfterRound)
+                    if(obj != null) Destroy(obj.gameObject);
+                removeAfterRound.Clear();
+                int index = UnityEngine.Random.Range(0, BonusObjectives.Length + 1) - 1;
+                bonusObjectiveIndex.Value = index;
                 phase.Value = Phase.Prepare;
                 redPlayersDead = 0;
                 bluePlayersDead = 0;

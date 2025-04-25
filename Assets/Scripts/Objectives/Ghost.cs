@@ -20,6 +20,12 @@ public class Ghost : Objective
     private Light2D ownLight;
     private Collider2D coll;
 
+    private enum State {
+        Idle, Following, Charging, Attacking, Returning  
+    }
+
+    private State state = State.Idle;
+
     public override void OnNetworkSpawn()
     {
         healthbar = GetComponentInChildren<UIBar>();
@@ -41,7 +47,9 @@ public class Ghost : Objective
         };
         stats.OnServerTakeDamage += (ulong damager, ref int damage) =>
         {
+            if (state == State.Attacking || state == State.Charging) return;
             target = NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<CharacterStats>();
+            state = State.Following;
         };
         stats.OnServerRespawn += () =>
         {
@@ -69,10 +77,19 @@ public class Ghost : Objective
         healthbar.UpdateBar(1f);
     }
 
-
     private float timer = 1f;
 
-    bool isReturning;
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (state == State.Attacking)
+        {
+            var targetStats = collision.GetComponent<CharacterStats>();
+            if (targetStats != null)
+            {
+                targetStats.TakeDamage(stats.stats.damage.Value, stats.GenerateKnockBack(collision.transform, transform, 15f), stats);
+            }
+        }
+    }
 
     private void Update()
     {
@@ -80,41 +97,50 @@ public class Ghost : Objective
         if (stats.IsDead) target = null;
         if (Vector2.Distance(transform.position, originalPos) > followRange)
         {
-            isReturning = true;
-            target = null;
-        }
-        if (isReturning)
-        {
-            stats.Heal((int)(stats.stats.health.Value / 100f));
-            healthbar.UpdateBar(stats.Health/(float)stats.stats.health.Value);
-            var originalPosDir = (originalPos - (Vector2)transform.position).normalized;
-            rb.velocity = (originalPosDir * stats.stats.speed.Value * 2 * Time.deltaTime);
-            if (Vector2.Distance(transform.position, originalPos) <= 0.1)
+            if (state != State.Attacking)
             {
-                rb.velocity = Vector2.zero;
-                isReturning = false;
+                state = State.Returning;
+                target = null;
             }
-            return;
         }
-        if (target == null) return;
-        var dir = (target.transform.position - transform.position).normalized;
-        if (Vector2.Distance(transform.position, target.transform.position) <= attackRange)
+        switch (state)
         {
-            rb.velocity = Vector2.zero;
-            if (timer > 0)
-            {
+            case State.Returning:
+                stats.Heal((int)(stats.stats.health.Value / 100f));
+                healthbar.UpdateBar(stats.Health / (float)stats.stats.health.Value);
+                var originalPosDir = (originalPos - (Vector2)transform.position).normalized;
+                rb.velocity = (originalPosDir * stats.stats.speed.Value * 2 * Time.deltaTime);
+                if (Vector2.Distance(transform.position, originalPos) <= 0.1)
+                {
+                    rb.velocity = Vector2.zero;
+                    state = State.Idle;
+                }
+                break;
+            case State.Following:
+                var dir = (target.transform.position - transform.position).normalized;
+                rb.velocity = (dir * stats.stats.speed.Value * Time.deltaTime);
+                if (Vector2.Distance(transform.position, target.transform.position) <= attackRange)
+                {
+                    rb.velocity = Vector2.zero;
+                    timer = 1f;
+                    state = State.Charging;
+                }
+                break;
+            case State.Charging:
                 timer -= Time.deltaTime;
                 if (timer <= 0)
                 {
-                    target.TakeDamage(stats.stats.damage.Value, Vector2.zero, stats);
+                    var attackDir = (target.transform.position - transform.position).normalized;
+                    rb.AddForce(attackDir * 2f, ForceMode2D.Impulse);
+                    state = State.Attacking;
                     timer = 1f;
                 }
-            }
-        }
-        else
-        {
-            timer = 1f;
-            rb.velocity = (dir * stats.stats.speed.Value * Time.deltaTime);
+                break;
+            case State.Attacking:
+                timer -= Time.deltaTime;
+                if (timer <= 0)
+                    state = State.Following;
+                break;
         }
     }
 }
