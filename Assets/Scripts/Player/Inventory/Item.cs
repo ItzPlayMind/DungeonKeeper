@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
 
@@ -56,7 +57,10 @@ public class Item
     {
         get
         {
-            return DescriptionCreator.Generate(description, variables);
+            Dictionary<string, DescriptionCreator.Variable> vars = new Dictionary<string, DescriptionCreator.Variable>();
+            foreach (var item in variables)
+                vars[item.Key.ToLower()] = item.Value;
+            return DescriptionCreator.Generate(description, vars);
         }
     }
 
@@ -76,7 +80,7 @@ public class Item
         this.timer = item.timer;
         this.multiple = item.multiple;
         this.sameItems = item.sameItems;
-        variables["Cooldown"] = new DescriptionCreator.Variable() { value = cooldown };
+        variables["cooldown"] = new DescriptionCreator.Variable() { value = cooldown };
     }
 
     public Item(string name)

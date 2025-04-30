@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 40, y: 0}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1487546282895342126
 CanvasRenderer:
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7c32ab96b9e78a246ae0fb559b4c2c69, type: 3}
+  m_Sprite: {fileID: -375656507, guid: 9c252f8e3c0ef8a43836f3a29f97cf50, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -88,6 +88,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 780546348256a354bbce97caa3e78026, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkedSprite: {fileID: 21300000, guid: d22cbcdadb8afb54396809cc13a92e5d, type: 3}
-  uncheckedSprite: {fileID: 21300000, guid: 7c32ab96b9e78a246ae0fb559b4c2c69, type: 3}
+  checkedSprite: {fileID: 1767022959, guid: 9c252f8e3c0ef8a43836f3a29f97cf50, type: 3}
+  uncheckedSprite: {fileID: -375656507, guid: 9c252f8e3c0ef8a43836f3a29f97cf50, type: 3}
   spriteRenderer: {fileID: 1734613470274384119}

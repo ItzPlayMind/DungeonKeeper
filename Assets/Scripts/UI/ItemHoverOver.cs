@@ -59,11 +59,11 @@ public class ItemHoverOver : HoverOver<Item>
             if (statBlock.GetChild(i).gameObject.activeSelf)
                 activeChildren++;
         }
-        var height = Mathf.Ceil(activeChildren / 2f) * 30;
+        var height = Mathf.Ceil(activeChildren / 2f) * 35;
         statBlock.sizeDelta = new Vector2(statBlock.sizeDelta.x,height);
         descriptionText.text = item.Description; 
         cooldownText.text = item.cooldown > 0 ? item.cooldown + " sec" : "";
-        description.offsetMax = new Vector2(description.offsetMax.x, -(20+20+15+height));
+        description.offsetMax = new Vector2(description.offsetMax.x, -(40+40+15+height));
         if (!string.IsNullOrEmpty(item.Description)) {
             height += 200;
         }

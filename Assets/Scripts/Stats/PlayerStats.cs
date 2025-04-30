@@ -14,6 +14,7 @@ public class PlayerStats : CharacterStats
     [SerializeField] private float healthPerSecond = 1;
     [SerializeField] private Canvas playerUI;
 
+    [SerializeField] private UIBar playerHealthBar;
     [SerializeField] private TMPro.TextMeshProUGUI damageText;
     [SerializeField] private TMPro.TextMeshProUGUI specialDamageText;
     [SerializeField] private TMPro.TextMeshProUGUI speedText;
@@ -32,7 +33,6 @@ public class PlayerStats : CharacterStats
 
     //[SerializeField] private GameObject hitPrefab;
     private Animator animator;
-    private UIBar playerHealthBar;
 
     private Dictionary<ulong, float> assistTimers = new Dictionary<ulong, float>();
 
@@ -80,7 +80,6 @@ public class PlayerStats : CharacterStats
             stats.damageReduction.OnChangeValue += () => damageReductionText.text = stats.damageReduction.Value.ToString();
 
             Healthbar.transform.parent.gameObject.SetActive(false);
-            playerHealthBar = playerUI.transform.Find("Healthbar").GetComponent<UIBar>();
             playerHealthBar.UpdateBar(1f);
             (playerHealthBar as TextUIBar).Text = Health + "/" + stats.health.Value;
             OnHealthChange += (int _, int value) =>
@@ -119,6 +118,8 @@ public class PlayerStats : CharacterStats
     [ClientRpc]
     protected override void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID)
     {
+        if (IsLocalPlayer)
+            CinemachineShake.Instance.Shake(0.5f, 0.1f);
         base.TakeDamageClientRPC(damage, knockback, damagerID);
     }
 

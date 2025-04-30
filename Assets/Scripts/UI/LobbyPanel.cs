@@ -61,6 +61,7 @@ public class LobbyPanel : MonoBehaviour
     private void OnEnable()
     {
         isLocalReady = false;
+        readyButton.interactable = false;
         characterSelectionPanel.SetActive(true);
         lobbyCodeText.text = Lobby.Instance.LobbyCode;
         foreach (var portraits in Lobby.Instance.CharacterPortraits)
@@ -140,7 +141,7 @@ public class LobbyPanel : MonoBehaviour
         ColorBlock colorBlock = button.colors;
         colorBlock.disabledColor = Color.gray;
         button.colors = colorBlock;
-        button.interactable= value;
+        button.interactable= !value;
         if(index == characterSelectionIndex && value)
         {
             var newIndex=(characterSelectionIndex+1)%Lobby.Instance.CharacterPortraits.Count;
@@ -178,7 +179,6 @@ public class LobbyPanel : MonoBehaviour
             clientID = client,
             readyStateObject = newReadyState
         });
-        Debug.Log(clientReadyStates.Count);
     }
 
     public void SetReadyState(ulong client, bool value)

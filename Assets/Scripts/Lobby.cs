@@ -118,6 +118,7 @@ public class Lobby : NetworkBehaviour
         NetworkUI.gameObject.SetActive(true);
         NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+        GameManager.OnInstanceSet -= SpawnGameManager;
         characterPortraits.ForEach(x => x.locked = false);
         selectedCharacters.Clear();
         SceneManager.LoadScene(0);
@@ -130,15 +131,17 @@ public class Lobby : NetworkBehaviour
         {
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-            GameManager.OnInstanceSet += () =>
-            {
-                var network = GameManager.instance.GetComponent<NetworkObject>();
-                if (!network.IsSpawned)
-                    network.Spawn();
-            };
+            GameManager.OnInstanceSet += SpawnGameManager;
         }
         LobbyPanel.Instance.StartButton.gameObject.SetActive(IsHost);
         LobbyPanel.Instance.ReadyButton.GetComponent<Image>().color = Color.red;
+    }
+
+    private void SpawnGameManager()
+    {
+        var network = GameManager.instance.GetComponent<NetworkObject>();
+        if (!network.IsSpawned)
+            network.Spawn();
     }
 
     public override void OnNetworkDespawn()

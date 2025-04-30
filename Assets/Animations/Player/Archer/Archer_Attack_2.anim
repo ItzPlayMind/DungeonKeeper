@@ -22,34 +22,34 @@ AnimationClip:
     curve:
     - time: 0
       value: {fileID: -411113535, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
-    - time: 0.1
+    - time: 0.083333336
       value: {fileID: -1175972849, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
-    - time: 0.2
+    - time: 0.16666667
       value: {fileID: -1897352705, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
-    - time: 0.3
+    - time: 0.25
       value: {fileID: -629796654, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
-    - time: 0.4
+    - time: 0.33333334
       value: {fileID: -815903568, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
-    - time: 0.5
+    - time: 0.41666666
       value: {fileID: 1487311881, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
-    - time: 0.6
+    - time: 0.5
       value: {fileID: -828157315, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
-    - time: 0.7
+    - time: 0.5833333
       value: {fileID: 501728025, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
-    - time: 0.8
+    - time: 0.6666667
       value: {fileID: 405260079, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
-    - time: 0.9
+    - time: 0.75
       value: {fileID: 65474633, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
-    - time: 1
+    - time: 0.8333333
       value: {fileID: -1264292886, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
-    - time: 1.1
+    - time: 0.9166667
       value: {fileID: 278407614, guid: dd5258fc359cb4244b8c2ba7443930b4, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
     flags: 2
-  m_SampleRate: 10
+  m_SampleRate: 12
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -83,7 +83,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1.2
+    m_StopTime: 1
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -103,14 +103,14 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.9
+  - time: 0.75
     functionName: OnAnimationEventRecieved
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 2
     messageOptions: 0
-  - time: 1.1
+  - time: 0.9166667
     functionName: OnAnimationEventRecieved
     data: 
     objectReferenceParameter: {fileID: 0}

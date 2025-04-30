@@ -809,6 +809,8 @@ MonoBehaviour:
   enhancedArrowSpeed: 15
   slowAmount: 25
   slowDuration: 2
+  aSIncrease: 10
+  durationIncrease: 5
 --- !u!114 &3384574628130357759 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 201704820803556755, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}

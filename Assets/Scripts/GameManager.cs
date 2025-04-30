@@ -10,6 +10,7 @@ using UnityEngine.Experimental.Rendering;
 using UnityEngine.InputSystem;
 using UnityEngine.Playables;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : NetworkBehaviour
@@ -194,23 +195,23 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public void Win(int team)
+    public void Win(Lobby.Team team)
     {
         WinServerRPC(team);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void WinServerRPC(int team)
+    private void WinServerRPC(Lobby.Team team)
     {
         WinClientRPC(team);
     }
 
     [ClientRpc]
-    private void WinClientRPC(int team)
+    private void WinClientRPC(Lobby.Team team)
     {
         GameOver = true;
         var virtualCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
-        if (team == LayerMask.NameToLayer(redTeamlayer))
+        if (team == Lobby.Team.Red)
         {
             redTeamWinUI.SetActive(true);
             if (Objectives == null) return;

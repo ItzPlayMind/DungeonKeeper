@@ -46,10 +46,12 @@ public class ObjectiveSystem : NetworkBehaviour
         var redNexus = Instantiate(nexusPrefab, redTeamNexusSpawn.position, redTeamNexusSpawn.rotation);
         var redNexusScript = redNexus.GetComponent<Nexus>();
         redNexus.Spawn();
+        redNexusScript.SetTeam(Lobby.Team.Red);
         SetAggroSwap(redTeam, redNexusScript);
         var blueNexus = Instantiate(nexusPrefab, blueTeamNexusSpawn.position, blueTeamNexusSpawn.rotation);
         var blueNexusScript = blueNexus.GetComponent<Nexus>();
         blueNexus.Spawn();
+        blueNexusScript.SetTeam(Lobby.Team.Blue);
         SetAggroSwap(blueTeam, blueNexusScript);
         var redTurrets = new ulong[redTeamTurretSpawns.Length];
         for (int i = 0; i < redTeamTurretSpawns.Length; i++)

@@ -1064,6 +1064,7 @@ MonoBehaviour:
     damageMultiplier: 1
     dashForce: 0
     hitbox: {fileID: 2641078802898038366}
+    index: 0
     clip: {fileID: 7400000, guid: 0876b73199fd71e419626f34ef27fe63, type: 2}
     canMoveWhileUsing: 1
     needHit: 0
@@ -1071,6 +1072,7 @@ MonoBehaviour:
     damageMultiplier: 1.5
     dashForce: 30
     hitbox: {fileID: 5946602018783795462}
+    index: 0
     clip: {fileID: 7400000, guid: af4be58ea0ac70a47bcc5f142d8f1b84, type: 2}
     canMoveWhileUsing: 0
     needHit: 1

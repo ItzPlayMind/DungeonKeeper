@@ -133,12 +133,12 @@ public class ArenaGameManager : GameManager
     {
         redTeamHealth.OnServerDeath += (_) =>
         {
-            Win(LayerMask.NameToLayer(blueTeamlayer));
+            Win(Lobby.Team.Blue);
             phase.Value = Phase.GameOver;
         };
         blueTeamHealth.OnServerDeath += (_) =>
         {
-            Win(LayerMask.NameToLayer(redTeamlayer));
+            Win(Team.Red);
             phase.Value = Phase.GameOver;
         };
     }

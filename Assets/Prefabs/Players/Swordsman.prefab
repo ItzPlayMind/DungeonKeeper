@@ -1117,6 +1117,7 @@ MonoBehaviour:
     damageMultiplier: 1
     dashForce: 20
     hitbox: {fileID: 6248944469416874631}
+    index: 0
     clip: {fileID: 7400000, guid: e957efd4cd462f841baaf90b6c7b796f, type: 2}
     canMoveWhileUsing: 0
     needHit: 0
@@ -1124,6 +1125,7 @@ MonoBehaviour:
     damageMultiplier: 1.5
     dashForce: 20
     hitbox: {fileID: 2308244259437245122}
+    index: 0
     clip: {fileID: 7400000, guid: 47626e9f3d6de494a91f1df060b05066, type: 2}
     canMoveWhileUsing: 0
     needHit: 0
@@ -1131,12 +1133,14 @@ MonoBehaviour:
     damageMultiplier: 2
     dashForce: 45
     hitbox: {fileID: 3572432952164073544}
+    index: 0
     clip: {fileID: 7400000, guid: b6c99f00d05872240847e6f90b8fa409, type: 2}
     canMoveWhileUsing: 0
     needHit: 0
   originalAnimator: {fileID: 22100000, guid: c8d27d47b08063244b2cc8bf70bcd1ea, type: 2}
   windyDuration: 1
   windyAmount: 10
+  hpAmount: 10
   stunDuration: 2
 --- !u!114 &4192858828411715537 stripped
 MonoBehaviour:

@@ -92,7 +92,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         inventory = GetComponentInParent<Inventory>();
         inventory.OnCashChange((value) =>
         {
-            cashText.text = "Cash: " + value;
+            cashText.text = value+"";
         });
         var allItems = ItemRegistry.Instance.GetAll();
         foreach (var item in allItems)

@@ -14,7 +14,6 @@ public class Inventory : NetworkBehaviour
     [SerializeField] private NetworkVariable<int> cash = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] private UITextIconBar[] inventorySlots = new UITextIconBar[INVENTORY_SIZE];
     [SerializeField] private UIIconBar[] teamInventorySlots = new UIIconBar[3];
-    [SerializeField] private GameObject inventoryPanel;
     [SerializeField] private Sprite emptySlot;
     [SerializeField] private Sprite normalItemSlot;
     [SerializeField] private Sprite activeItemSlot;

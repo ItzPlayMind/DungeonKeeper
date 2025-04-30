@@ -12,6 +12,7 @@ public class Nexus : ObjectiveAI
     [SerializeField] private List<ObjectiveAI> otherObjectives = new List<ObjectiveAI>();
     private NetworkAnimator animator;
     private AnimationEventSender eventSender;
+    private Lobby.Team team;
 
     public System.Action OnMinionSpawnEvent;
 
@@ -39,10 +40,16 @@ public class Nexus : ObjectiveAI
         stats.OnServerDeath += OnDeath;
     }
 
+
+
+    public void SetTeam(Lobby.Team team)
+    {
+        this.team = team;
+    }
+
     protected override void OnDeath(ulong id)
     {
         Destroy();
-        var team = NetworkManager.Singleton.SpawnManager.SpawnedObjects[id].gameObject.layer;
         GameManager.instance.Win(team);
     }
 
