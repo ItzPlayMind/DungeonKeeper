@@ -6,11 +6,13 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Experimental.AI;
 using UnityEngine.UI;
 
 public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private UIButton iconButtonPrefab;
+    [SerializeField] private RectTransform itemSelectionPanel;
     [SerializeField] private Transform[] shopTransforms;
     [SerializeField] private UIFilter[] filters;
     [SerializeField] private TMPro.TextMeshProUGUI cashText;
@@ -41,12 +43,13 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public void UpdateFiltersAndSearch()
     {
         bool isFilterActive = filters.Any(x => x.Value);
+        List<Item> shownItems = new List<Item>();
         foreach (var key in itemButtons.Keys)
         {
             bool hasStat = true;
+            var item = ItemRegistry.Instance.GetByID(key);
             if (isFilterActive)
             {
-                var item = ItemRegistry.Instance.GetByID(key);
                 if (item.stats != null)
                 {
                     if (filters[0].Value && item.stats.damage.BaseValue <= 0)
@@ -66,7 +69,22 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                     hasStat = false;
             }
             itemButtons[key].gameObject.SetActive(key.Contains(search) && hasStat);
+            if (key.Contains(search) && hasStat)
+                shownItems.Add(item);
         }
+        var items = shownItems.ToArray();
+        SetSizeForAllCategories(items);
+    }
+
+    private void SetSizeForAllCategories(Item[] items)
+    {
+        var size = itemSelectionPanel.sizeDelta;
+        size.y = 200;
+        itemSelectionPanel.sizeDelta = size;
+        SetAndAddSizeForCategory(CharacterType.Tank, items);
+        SetAndAddSizeForCategory(CharacterType.Damage, items);
+        SetAndAddSizeForCategory(CharacterType.Support, items);
+        SetAndAddSizeForCategory(CharacterType.None, items);
     }
 
     public void SetInstanceToThis()
@@ -77,6 +95,29 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public void SetAbleToShop(bool value)
     {
         canShop = value;
+    }
+
+    private void SetAndAddSizeForCategory(CharacterType type, Item[] items)
+    {
+        Vector2 contentSize = itemSelectionPanel.sizeDelta;
+        int itemCount = items.Count(x => x.type == type);
+        int characterLinesForSection = 0;
+        if(itemCount > 0)
+            characterLinesForSection = (int)Mathf.Ceil((itemCount * (75 + 15)) / (1202)) + 1;
+        var category = (shopTransforms[(int)type].parent as RectTransform);
+        if (itemCount == 0)
+        {
+            category.gameObject.SetActive(false);
+        }
+        else
+        {
+            category.gameObject.SetActive(true);
+            Vector2 size = category.sizeDelta;
+            size.y = characterLinesForSection * (75 + 15) + 50 + 15;
+            category.sizeDelta = size;
+            contentSize.y += size.y - 50;
+        }
+        itemSelectionPanel.sizeDelta = contentSize;
     }
 
     private void Start()
@@ -95,6 +136,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             cashText.text = value+"";
         });
         var allItems = ItemRegistry.Instance.GetAll();
+        SetSizeForAllCategories(allItems);
         foreach (var item in allItems)
         {
             var iconButton = Instantiate(iconButtonPrefab, shopTransforms[(int)item.type]);
