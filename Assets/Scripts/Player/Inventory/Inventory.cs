@@ -15,8 +15,6 @@ public class Inventory : NetworkBehaviour
     [SerializeField] private UITextIconBar[] inventorySlots = new UITextIconBar[INVENTORY_SIZE];
     [SerializeField] private UIIconBar[] teamInventorySlots = new UIIconBar[3];
     [SerializeField] private Sprite emptySlot;
-    [SerializeField] private Sprite normalItemSlot;
-    [SerializeField] private Sprite activeItemSlot;
 
     private PlayerItemShow playerItemShow;
     private Item[] items;
@@ -124,7 +122,8 @@ public class Inventory : NetworkBehaviour
         {
             item.UpdateText("");
             item.OnUpdateText = null;
-            inventorySlots[slot].GetComponent<UnityEngine.UI.Image>().sprite = normalItemSlot;
+
+            inventorySlots[slot].transform.Find("Active").gameObject.SetActive(false);
             item?.OnUnequip(stats, slot);
         }
     }
@@ -159,7 +158,7 @@ public class Inventory : NetworkBehaviour
         if (!team)
         {
             item?.OnEquip(stats, slot);
-            inventorySlots[slot].GetComponent<UnityEngine.UI.Image>().sprite = item.onUse != null ? activeItemSlot : normalItemSlot;
+            inventorySlots[slot].transform.Find("Active").gameObject.SetActive(item.onUse != null);
             if (inventorySlots[slot] is UITextIconBar)
                 item.OnUpdateText = (string text) => { inventorySlots[slot].Text = text; };
         }
@@ -234,8 +233,8 @@ public class Inventory : NetworkBehaviour
                     items[dest].OnUpdateText = (string text) => { (inventorySlots[dest] as UITextIconBar).Text = text; };
                 else
                     (inventorySlots[dest] as UITextIconBar).Text = "";
-            inventorySlots[src].GetComponent<UnityEngine.UI.Image>().sprite = items[src] != null && items[src].onUse != null ? activeItemSlot : normalItemSlot;
-            inventorySlots[dest].GetComponent<UnityEngine.UI.Image>().sprite = items[dest] != null && items[dest].onUse != null ? activeItemSlot : normalItemSlot;
+            inventorySlots[src].transform.Find("Active").gameObject.SetActive(items[src] != null && items[src].onUse != null);
+            inventorySlots[dest].transform.Find("Active").gameObject.SetActive(items[dest] != null && items[dest].onUse != null);
         }
         else
         {
