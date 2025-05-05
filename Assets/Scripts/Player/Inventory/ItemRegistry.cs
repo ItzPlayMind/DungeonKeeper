@@ -7,6 +7,7 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.Rendering.Universal;
 using static DescriptionCreator;
@@ -149,8 +150,31 @@ public class ItemRegistry : Registry<Item>
             }
         });
 
-        AddItem("Wind Sigil", "circlet", CharacterType.Damage, "On use dash towards the targeted position", new StatBlock(10, 10, 10, 5, 50, 0), 1200, 20,
-            null, (item, stats, _) =>
+        AddItemWithVariables("Wind Sigil", "circlet", CharacterType.Damage, "On use dash towards the targeted position. Moving for {MoveDuration} seconds adds {SpeedMult}% speed. The next attack on a target will slow it by {SpeedMult}% for {SlowDuration} seconds.", new StatBlock(10, 10, 10, 5, 50, 0), 2200, 20,
+            new Dictionary<string, Variable>() { { "SpeedMult", new Variable() { value = 15f, color = "yellow" } }, { "MoveDuration", new Variable() { value = 3f, color = "white" } }, { "SlowDuration", new Variable() { value = 3, color = "white" } }, { "Timer", new Variable() { value = 0f, color = "white" } } },
+            (item, stats, _) =>
+            {
+                var controller = stats.GetComponent<PlayerAttack>();
+                AddToAction(item, () => controller.OnAttack, (value) => controller.OnAttack = value, (ulong target, ulong damager, ref int damage) =>
+                {
+                    if ((float)item.variables["Timer"].value >= (float)item.variables["MoveDuration"].value)
+                    {
+                        var effectManager = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target].GetComponent<EffectManager>();
+                        if(effectManager != null)
+                        {
+                            effectManager.AddEffect("slow", (int)item.variables["SlowDuration"].value, (int)(float)item.variables["SpeedMult"].value, stats);
+                            item.variables["Timer"].value = 0f;
+                        }
+                    }
+                });
+                AddToAction(item, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
+                {
+                    if((float)item.variables["Timer"].value >= (float)item.variables["MoveDuration"].value)
+                    {
+                        speed = (int)(speed * (1 + ((float)item.variables["SpeedMult"].value / 100f)));
+                    }
+                });
+            }, (item, stats, _) =>
             {
                 var mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
                 var dir = (mouseWorldPos - stats.transform.position).normalized;
@@ -158,6 +182,17 @@ public class ItemRegistry : Registry<Item>
                 rb.velocity = Vector2.zero;
                 rb.AddForce(dir * 250, ForceMode2D.Impulse);
                 item.StartCooldown();
+            }, (item, stats, _) =>
+            {
+                var rb = stats.GetComponent<Rigidbody2D>();
+                if (rb != null)
+                {
+                    if (rb.velocity != Vector2.zero)
+                        item.variables["Timer"].value = (float)item.variables["Timer"].value + Time.deltaTime;
+                    else
+                        item.variables["Timer"].value = (float)item.variables["Timer"].value - Time.deltaTime*2f;
+                }
+                
             });
 
         AddItemWithVariables("Guillotine", "hoe", CharacterType.Damage, "Executes players below {ExecutePerc}% of their Maximum Health. Can only accure once every {Cooldown} seconds",

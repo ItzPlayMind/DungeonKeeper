@@ -60,7 +60,7 @@ public class Lobby : NetworkBehaviour
     private bool isStarted;
     private bool isShuttingDown;
     private int playerCount;
-    private int gameModeIndex = 1;
+    private int gameModeIndex = 0;
     public string LobbyCode { get; private set; }
     private Dictionary<ulong, int> selectedCharacters = new Dictionary<ulong, int>();
     public System.Action OnGameStart;

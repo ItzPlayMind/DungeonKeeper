@@ -22,7 +22,6 @@ public class GameManager : NetworkBehaviour
     {
         instance = this;
         Chat = GetComponent<ChatSystem>();
-        Objectives = GetComponent<ObjectiveSystem>();
         PrefabSystem = GetComponent<PrefabSystem>();
         OnInstanceSet?.Invoke();
     }
@@ -49,7 +48,6 @@ public class GameManager : NetworkBehaviour
 
     public bool GameOver { get; private set; }
     public ChatSystem Chat { get; private set; }
-    public ObjectiveSystem Objectives { get; private set; }
     public PrefabSystem PrefabSystem { get; private set; }
 
     private Dictionary<ulong, ulong> playerIDNetworkID = new Dictionary<ulong, ulong>();
@@ -58,7 +56,6 @@ public class GameManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Objectives?.Setup(redTeamlayer, blueTeamlayer);
         StartGame();
     }
 
@@ -155,7 +152,6 @@ public class GameManager : NetworkBehaviour
                 ids.Add(clients[item].PlayerObject.NetworkObjectId);
             }
             AllClientsSetupClientRPC(ids.ToArray());
-            Objectives?.SpawnObjectives(Lobby.Instance.GetTeam(Lobby.Team.Red).ToArray(), Lobby.Instance.GetTeam(Lobby.Team.Blue).ToArray());
             lights.AddRange(FindObjectsOfType<Light2D>());
         }
     }
@@ -214,14 +210,10 @@ public class GameManager : NetworkBehaviour
         if (team == Lobby.Team.Red)
         {
             redTeamWinUI.SetActive(true);
-            if (Objectives == null) return;
-            virtualCamera.Follow = Objectives.blueTeamNexusSpawn;
         }
         else
         {
             blueTeamWinUI.SetActive(true);
-            if (Objectives == null) return;
-            virtualCamera.Follow = Objectives.redTeamNexusSpawn;
         }
     }
 
