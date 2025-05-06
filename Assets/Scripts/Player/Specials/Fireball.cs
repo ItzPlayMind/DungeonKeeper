@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Fireball : MonoBehaviour
+public class Fireball : NetworkBehaviour
 {
     public System.Action onExplosion;
     public CollisionSender.OnCollosion onExplosionCollision;
@@ -33,6 +34,7 @@ public class Fireball : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (!IsOwner) return;
         if (hits.Contains(collision.gameObject.GetInstanceID())) return;
         hits.Add(collision.gameObject.GetInstanceID());
         onDirectHit?.Invoke(collision.gameObject);

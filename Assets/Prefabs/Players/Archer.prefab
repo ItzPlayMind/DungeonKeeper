@@ -786,8 +786,8 @@ MonoBehaviour:
     {Damage} damage to targets hit and applying a {SlowAmount}% slow for {SlowDuration}
     seconds.
 
-    Change back to normal stance after {ActiveTime} or by using special
-    again.'
+    Change back to normal stance after {ActiveTime} seconds or by using
+    special again.'
   upgrades:
   - name: Quickdraw String
     description: Increase Attack Speed by {ASIncrease}
