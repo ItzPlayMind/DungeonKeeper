@@ -30,7 +30,7 @@ public class BlockSpecial : AbstractSpecial
             if (isBlocking)
             {
                 var enemy = NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<CharacterStats>();
-                enemy.TakeDamage(damage, enemy.GenerateKnockBack(enemy.transform, transform, knockBackForce),characterStats);
+                DealDamage(enemy,damage, enemy.GenerateKnockBack(enemy.transform, transform, knockBackForce));
             }
         };
         characterStats.stats.damageReduction.ChangeValueAdd += (ref int value, int old) =>

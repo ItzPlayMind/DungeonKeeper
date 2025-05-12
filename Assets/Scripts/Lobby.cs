@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Xml;
@@ -36,6 +37,7 @@ public class Lobby : NetworkBehaviour
         [HideInInspector] public bool locked;
         [HideInInspector] public Button characterPotrait;
         [HideInInspector] public GameObject selectionObject;
+        [HideInInspector] public bool enabled = true;
     }
     public static Lobby Instance { get; private set; }
     // Start is called before the first frame update
@@ -44,6 +46,8 @@ public class Lobby : NetworkBehaviour
         if (Instance == null)
         {
             Instance = this;
+            Matchmaking = new Matchmaking();
+            UpdateCharacters();
             ResetTeams();
             DontDestroyOnLoad(gameObject);
         }
@@ -51,6 +55,16 @@ public class Lobby : NetworkBehaviour
             Destroy(gameObject);
         PlayerStatistic = GetComponent<PlayerStatisticsSystem>();
     }
+
+    private async void UpdateCharacters()
+    {
+        var dtos = await Matchmaking.GetCharacters();
+        foreach (var item in dtos.characters)
+        {
+            characterPortraits[item.id].enabled = item.enabled;
+        }
+    }
+
     [SerializeField] private List<CharacterPortrait> characterPortraits = new List<CharacterPortrait>();
     [SerializeField] private NetworkManagerUI NetworkUI;
     [SerializeField] private List<GameMode> GameModes = new List<GameMode>();
@@ -61,6 +75,7 @@ public class Lobby : NetworkBehaviour
     private bool isShuttingDown;
     private int playerCount;
     private int gameModeIndex = 0;
+    public Matchmaking Matchmaking { get; private set; }
     public string LobbyCode { get; private set; }
     private Dictionary<ulong, int> selectedCharacters = new Dictionary<ulong, int>();
     public System.Action OnGameStart;

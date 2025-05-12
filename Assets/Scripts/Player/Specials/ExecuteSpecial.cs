@@ -65,12 +65,12 @@ public class ExecuteSpecial : AbstractSpecial
             {
                 if (stats.Health <= stats.stats.health.Value * (executeThreshold / 100f) && stats is PlayerStats)
                 {
-                    stats.TakeDamage(10000, Vector2.zero, characterStats);
+                    DealDamage(stats, 10000, Vector2.zero);
                     executed = true;
                 }
                 else
                 {
-                    stats.TakeDamage(Damage, Vector2.zero, characterStats);
+                    DealDamage(stats, Damage, Vector2.zero);
                     stats.GetComponent<EffectManager>()?.AddEffect("bleed", bleedDuration, bleedAmount, stats);
                 }
             }

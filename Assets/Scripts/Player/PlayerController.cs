@@ -15,8 +15,6 @@ public class PlayerController : NetworkBehaviour
     public static System.Action OnLocalPlayerSetup;
 
     [SerializeField] private SpriteRenderer gfx;
-    [SerializeField] private ShopPanel shopPanel;
-    [SerializeField] private GameObject pausePanel;
     private Animator animator;
     private Inventory inventory; 
     private AnimationEventSender animatorEvent;
@@ -32,6 +30,7 @@ public class PlayerController : NetworkBehaviour
 
     public PlayerAttack Attack { get => attack; }
     public PlayerMovement Movement { get => movement; }
+    public Inventory Inventory { get => inventory; }
 
     public CharacterStats HoveredStats { get; private set; }
     public SpriteRenderer GFX { get => gfx; }
@@ -42,13 +41,11 @@ public class PlayerController : NetworkBehaviour
         inventory = GetComponent<Inventory>();
         if (!IsLocalPlayer)
             return;
-        shopPanel.SetInstanceToThis();
         attack = GetComponent<PlayerAttack>();
         movement = GetComponent<PlayerMovement>();
         animator = GetComponentInChildren<Animator>();
         stats = GetComponent<PlayerStats>();
         animatorEvent = animator.GetComponent<AnimationEventSender>();
-        InputManager.Instance.PlayerControls.UI.Close.performed += CloseShopOrExit;
         LocalPlayer = this;
         OnLocalPlayerSetup?.Invoke();
         var camera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
@@ -66,22 +63,9 @@ public class PlayerController : NetworkBehaviour
         stats.Heal(currentAmount);
     }
 
-    private void CloseShopOrExit(UnityEngine.InputSystem.InputAction.CallbackContext context)
-    {
-        if (shopPanel.IsActive)
-            shopPanel.Toggle();
-        else
-            pausePanel.SetActive(!pausePanel.activeSelf);
-    }
-
     public void ExitGame()
     {
         Lobby.Instance.Shutdown();
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        InputManager.Instance.PlayerControls.UI.Close.performed -= CloseShopOrExit;
     }
 
     public void OnTeamAssigned()
@@ -133,8 +117,6 @@ public class PlayerController : NetworkBehaviour
         }
         else
             scanTimer -= Time.deltaTime;
-        if (inputManager.PlayerShopTrigger)
-            shopPanel.Toggle();
         if (stats.IsDead) return;
         inventory.UpdateItems();
         if (!attack.isAttacking || (special != null && special.UseRotation && special.isUsing))

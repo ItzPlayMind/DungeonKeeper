@@ -36,7 +36,7 @@ public class SelfHealHitSpecial : AbstractSpecial
             if (stats == null) return;
             if(hits.Contains(stats.NetworkObjectId)) return;
             hits.Add(stats.NetworkObjectId);
-            stats.TakeDamage(Damage, Vector2.zero, characterStats);
+            DealDamage(stats, Damage, Vector2.zero);
             if (stats is PlayerStats)
             {
                 controller.Heal(characterStats, (int)(characterStats.stats.health.Value * ((HasUpgradeUnlocked(1) ? playerMaxHealthPerc : maxHealthPerc) / 100f)));

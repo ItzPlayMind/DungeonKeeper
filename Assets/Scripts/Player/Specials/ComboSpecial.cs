@@ -58,7 +58,7 @@ public class ComboSpecial : AbstractSpecial
                     return;
                 this.hit = true;
                 int damage = (int)(Damage * hitbox.damageMultiplier);
-                target.TakeDamage(damage, target.GenerateKnockBack(target.transform.transform, transform, hitbox.knockBackForce), characterStats);
+                DealDamage(target, damage, target.GenerateKnockBack(target.transform.transform, transform, hitbox.knockBackForce));
                 OnAttackHit(hitbox.index, damage,target);
             };
             index++;

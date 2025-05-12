@@ -45,7 +45,7 @@ public class Ghost : Objective
         };
         stats.OnServerTakeDamage += (ulong damager, ref int damage) =>
         {
-            if (state == State.Attacking || state == State.Charging) return;
+            if (state != State.Idle) return;
             target = NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<CharacterStats>();
             state = State.Following;
         };

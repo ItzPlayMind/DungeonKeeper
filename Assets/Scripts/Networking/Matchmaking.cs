@@ -35,6 +35,17 @@ public class Matchmaking
         public string message;
         public bool success;
     }
+    [System.Serializable]
+    public class CharactersDTO
+    {
+        public CharacterDTO[] characters;
+    }
+    [System.Serializable]
+    public class CharacterDTO
+    {
+        public int id;
+        public bool enabled;
+    }
 
     public Matchmaking()
     {
@@ -87,6 +98,15 @@ public class Matchmaking
         client.DefaultRequestHeaders.Remove(DELETION_TOKEN);
         client.DefaultRequestHeaders.Add(DELETION_TOKEN, tokens);
         return text;
+    }
+
+    public async Task<CharactersDTO> GetCharacters()
+    {
+        var query = HttpUtility.ParseQueryString(client.BaseAddress.Query);
+        var response = await client.GetAsync(Config.CHARACTERS_ROUTE);
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonUtility.FromJson<CharactersDTO>(content);
     }
 
     public static async Task<IPAddress?> GetExternalIpAddress()

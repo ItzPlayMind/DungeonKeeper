@@ -100,6 +100,7 @@ public class LobbyPanel : MonoBehaviour
 
     private void SetupPotraitWithIndex(int index)
     {
+        if (!Lobby.Instance.CharacterPortraits[index].enabled) return;
         var portrait = Instantiate(characterPortraitPrefab, characterSelection[(int)Lobby.Instance.CharacterPortraits[index].type]);
         Lobby.Instance.CharacterPortraits[index].characterPotrait = portrait.GetComponent<Button>();
         portrait.transform.Find("Character").GetComponent<Image>().sprite = Lobby.Instance.CharacterPortraits[index].characterSprite;

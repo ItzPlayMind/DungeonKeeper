@@ -108,8 +108,8 @@ public class ArenaGameManager : GameManager
             /*if ((value+1) % 3 == 0)
                 cardSelection.gameObject.SetActive(true);*/
             if (!IsServer) return;
-            if (value % 5 == 0)
-                UnlockUpgradeForAll(value/5);
+            if (value % 3 == 0)
+                UnlockUpgradeForAll((value/3)-1);
         };
         if (IsServer)
         {
@@ -133,7 +133,7 @@ public class ArenaGameManager : GameManager
     {
         redTeamHealth.OnServerDeath += (_) =>
         {
-            Win(Lobby.Team.Blue);
+            Win(Team.Blue);
             phase.Value = Phase.GameOver;
         };
         blueTeamHealth.OnServerDeath += (_) =>
@@ -145,6 +145,13 @@ public class ArenaGameManager : GameManager
 
     protected override void Update()
     {
+        if(phase.Value == Phase.Prepare)
+        {
+            if (InputManager.Instance.PlayerShopTrigger)
+            {
+                ShopPanel.Instance.Toggle();
+            }
+        }
         if (!IsServer) return;
         if (phaseTimer.Value <= 0 && phase.Value != Phase.GameOver)
         {

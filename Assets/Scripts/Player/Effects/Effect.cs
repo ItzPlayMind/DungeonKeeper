@@ -18,7 +18,7 @@ public class Effect
     public CharacterStats applier;
     [HideInInspector] public Dictionary<string, object> variables = new Dictionary<string, object>();
 
-    private float currentTime;
+    private float remainingTime;
 
     public Effect(string name)
     {
@@ -39,7 +39,7 @@ public class Effect
 
     public void Start(CharacterStats stats)
     {
-        currentTime = duration;
+        remainingTime = duration;
         onStart?.Invoke(this, stats);
     }
 
@@ -53,16 +53,16 @@ public class Effect
     public void Update(CharacterStats stats)
     {
         onUpdate?.Invoke(this, stats);
-        if (currentTime > 0)
+        if (remainingTime > 0)
         {
-            currentTime -= Time.deltaTime;
-            if (currentTime <= 0)
+            remainingTime -= Time.deltaTime;
+            if (remainingTime <= 0)
             {
                 End(stats);
             }
         }
         if (activeIcon != null)
-            activeIcon.UpdateBar(1-(currentTime / duration));
+            activeIcon.UpdateBar(1-(remainingTime / duration));
     }
 
     public static string GetIDFromName(string name)

@@ -38,6 +38,11 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private GameObject blueTeamWinUI;
     [SerializeField] private LayerMask redCameraLayer;
     [SerializeField] private LayerMask blueCameraLayer;
+
+    [SerializeField] private ShopPanel shopPanel;
+    [SerializeField] private GameObject pausePanel;
+    [SerializeField] private DeathScreen deathScreen;
+
     public Material UNLIT_MATERIAL;
     public Material LIT_MATERIAL;
     public int GOLD_FOR_KILL;
@@ -49,6 +54,7 @@ public class GameManager : NetworkBehaviour
     public bool GameOver { get; private set; }
     public ChatSystem Chat { get; private set; }
     public PrefabSystem PrefabSystem { get; private set; }
+    public DeathScreen DeathScreen { get => deathScreen; }
 
     private Dictionary<ulong, ulong> playerIDNetworkID = new Dictionary<ulong, ulong>();
 
@@ -57,6 +63,8 @@ public class GameManager : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         StartGame();
+        shopPanel.SetInstanceToThis();
+        InputManager.Instance.PlayerControls.UI.Close.performed += CloseShopOrExit;
     }
 
     public void SetTorch(Vector2 pos)
@@ -64,6 +72,18 @@ public class GameManager : NetworkBehaviour
         SetTorchServerRpc(pos);
     }
 
+    public override void OnNetworkDespawn()
+    {
+        InputManager.Instance.PlayerControls.UI.Close.performed -= CloseShopOrExit;
+    }
+
+    private void CloseShopOrExit(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    {
+        if (shopPanel.IsActive)
+            shopPanel.Toggle();
+        else
+            pausePanel.SetActive(!pausePanel.activeSelf);
+    }
 
 
     [ServerRpc(RequireOwnership = false)]

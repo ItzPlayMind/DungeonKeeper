@@ -72,9 +72,9 @@ public class AxeSpecial : AbstractSpecial
             if (stats != null)
             {
                 if(!returning)
-                    stats.TakeDamage(Damage, axe.velocity.normalized*10, characterStats);
+                    DealDamage(stats, Damage, axe.velocity.normalized * 10);
                 else
-                    stats.TakeDamage(ReturnDamage, axe.velocity.normalized * 3, characterStats);
+                    DealDamage(stats, ReturnDamage, axe.velocity.normalized * 3);
                 targetsHit++;
                 if (!HasUpgradeUnlocked(1))
                 {

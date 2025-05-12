@@ -74,7 +74,7 @@ public class ChargeSpecial : AbstractSpecial
         var stats = collision.GetComponent<CharacterStats>();
         if(stats != null)
         {
-            stats.TakeDamage(ChargeDamage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), characterStats);
+            DealDamage(stats, ChargeDamage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce));
             if (HasUpgradeUnlocked(2))
             {
                 characterStats.Heal((int)(characterStats.stats.health.Value * (healAmount / 100f)));

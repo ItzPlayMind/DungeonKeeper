@@ -26,6 +26,14 @@ public abstract class Registry<T> : MonoBehaviour
             setAction(getAction() - a);
         };
     }
+    public void AddToAction(Item item, Func<AbstractSpecial.ActionDelegate> getAction, Action<AbstractSpecial.ActionDelegate> setAction, AbstractSpecial.ActionDelegate a)
+    {
+        setAction(getAction() + a);
+        item.onUnequip += (Item item, CharacterStats stats, int slot) =>
+        {
+            setAction(getAction() - a);
+        };
+    }
     public void AddToAction(Item item, Func<AbstractSpecial.SpecialDelegate> getAction, Action<AbstractSpecial.SpecialDelegate> setAction, AbstractSpecial.SpecialDelegate a)
     {
         setAction(getAction() + a);
@@ -71,6 +79,47 @@ public abstract class Registry<T> : MonoBehaviour
         };
     }
     public void AddToAction(Effect effect, Func<CharacterStats.HealDelegate> getAction, Action<CharacterStats.HealDelegate> setAction, CharacterStats.HealDelegate a)
+    {
+        setAction(getAction() + a);
+        effect.onEnd += (Effect effect, CharacterStats stats) =>
+        {
+            setAction(getAction() - a);
+        };
+    }
+    public void AddToAction(Effect effect, Func<CharacterStats.DamageDelegate> getAction, Action<CharacterStats.DamageDelegate> setAction, CharacterStats.DamageDelegate a)
+    {
+        setAction(getAction() + a);
+        effect.onEnd += (Effect effect, CharacterStats stats) =>
+        {
+            setAction(getAction() - a);
+        };
+    }
+    public void AddToAction(Effect effect, Func<CharacterStats.ServerDamageDelegate> getAction, Action<CharacterStats.ServerDamageDelegate> setAction, CharacterStats.ServerDamageDelegate a)
+    {
+        setAction(getAction() + a);
+        effect.onEnd += (Effect effect, CharacterStats stats) =>
+        {
+            setAction(getAction() - a);
+        };
+    }
+    public void AddToAction(Effect effect, Func<CharacterStats.DeathDelegate> getAction, Action<CharacterStats.DeathDelegate> setAction, CharacterStats.DeathDelegate a)
+    {
+        setAction(getAction() + a);
+        effect.onEnd += (Effect effect, CharacterStats stats) =>
+        {
+            setAction(getAction() - a);
+        };
+    }
+    public void AddToAction(Effect effect, Func<PlayerAttack.ActionDelegate> getAction, Action<PlayerAttack.ActionDelegate> setAction, PlayerAttack.ActionDelegate a)
+    {
+        setAction(getAction() + a);
+        effect.onEnd += (Effect effect, CharacterStats stats) =>
+        {
+            setAction(getAction() - a);
+        };
+    }
+
+    public void AddToAction(Effect effect, Func<System.Action> getAction, Action<System.Action> setAction, System.Action a)
     {
         setAction(getAction() + a);
         effect.onEnd += (Effect effect, CharacterStats stats) =>

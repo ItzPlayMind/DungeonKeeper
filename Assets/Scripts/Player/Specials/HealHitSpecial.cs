@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 
@@ -37,8 +38,8 @@ public class HealHitSpecial : AbstractSpecial
             if (target.gameObject == gameObject) return;
             if (target.gameObject.layer == gameObject.layer)
                 return;
-            target.TakeDamage(Damage, Vector2.zero, characterStats);
-            if(HasUpgradeUnlocked(1))
+            DealDamage(target, Damage, Vector2.zero);
+            if (HasUpgradeUnlocked(1))
                 target.GetComponent<EffectManager>()?.AddEffect("slow", slowDuration, slowAmount, characterStats);
             var colliders = Physics2D.OverlapCircleAll(transform.position, healRadius);
             foreach (var item in colliders)

@@ -1387,14 +1387,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.47450984, b: 0.9960785, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 53187e60fe4da8741bf757a53994c5fb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c6bb63f4f811842458243d22d569eba5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3978,7 +3978,7 @@ RectTransform:
   m_GameObject: {fileID: 593425320}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3873407, y: 0.3873407, z: 0.3873407}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1097049324}
@@ -3986,7 +3986,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 200, y: 0}
+  m_AnchoredPosition: {x: 500, y: 0}
   m_SizeDelta: {x: 300, y: 600}
   m_Pivot: {x: -0.02, y: 1.03}
 --- !u!1 &624492071
@@ -4869,14 +4869,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.050980397, g: 0.9960785, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2a76db50c3913cd4b8d30b80b2c74ea5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2d45bf3e4855bd94cb4fb55218c771b3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5138,14 +5138,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9960785, g: 0.9960785, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 057c50ddddcff5341bdb93342026e730, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b490a76560b7b75468852966c132af4c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5721,7 +5721,7 @@ RectTransform:
   m_GameObject: {fileID: 957620684}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3873407, y: 0.3873407, z: 0.3873407}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1783070257}
@@ -5991,14 +5991,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.99607843, g: 0.6067447, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b461c12232bbf2442a2a8192c262fbc6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a0d998bbbc831714e9541790ac281653, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7232,6 +7232,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 8245200998436573719, guid: 7b56ec5580eed7d488b53535b8138ae6, type: 3}
     type: 0
     animations: {fileID: 22100000, guid: 04076dedcf4dfcb46809561106107c15, type: 2}
@@ -7239,6 +7240,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 3142224569691415050, guid: f25b57d7cd28561438ee0a77235c6fa1, type: 3}
     type: 1
     animations: {fileID: 22100000, guid: 5909582fd1dca1b43b7747caea4f7e86, type: 2}
@@ -7246,6 +7248,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 3997949999163186543, guid: a70ca7d1aedb9f44bbdb04c0831070f1, type: 3}
     type: 0
     animations: {fileID: 22100000, guid: 2b2a8fbbf5154ca45a3e32ab61da4bed, type: 2}
@@ -7253,6 +7256,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 9007947629058500587, guid: a01b9a0fd68a43f4f962ebc23266992d, type: 3}
     type: 1
     animations: {fileID: 22100000, guid: 55a7c8b74a853a94a98078bfe1254b8c, type: 2}
@@ -7260,6 +7264,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 6450457472251928768, guid: 3dacc9443f007f64f8216e3fd8eeea90, type: 3}
     type: 0
     animations: {fileID: 22100000, guid: edabe3805097f574dbdd53ccf375dcec, type: 2}
@@ -7267,6 +7272,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 5344524070209225449, guid: ae9e824427ae0a947b0335d73eeb8f7c, type: 3}
     type: 1
     animations: {fileID: 22100000, guid: 6105324b90f177645b100260aa90d3f0, type: 2}
@@ -7274,6 +7280,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 4731828795626014044, guid: 87053c123f5a0a8459fa497a25559a42, type: 3}
     type: 2
     animations: {fileID: 22100000, guid: 6901e08afcd31bb4ca7298e3aa0eb602, type: 2}
@@ -7281,6 +7288,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 4373359943049224201, guid: 2a382c56a39d2cf468e003e9b5f21b93, type: 3}
     type: 1
     animations: {fileID: 22100000, guid: e13d02984c3eac542b2f4d0d66fdce70, type: 2}
@@ -7288,6 +7296,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 7660536583118647434, guid: b48daef94be18844d8c3b976c5b1a6dc, type: 3}
     type: 2
     animations: {fileID: 22100000, guid: caf98e7854e07b34f87cfc6e094d20df, type: 2}
@@ -7295,6 +7304,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 2490300795773199028, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
     type: 1
     animations: {fileID: 22100000, guid: 727e23854102b7b47825de76bc1c6de6, type: 2}
@@ -7302,6 +7312,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 1906092422870518006, guid: f5a0ecd3112333f4ba58bd9957056d4f, type: 3}
     type: 1
     animations: {fileID: 22100000, guid: c8d27d47b08063244b2cc8bf70bcd1ea, type: 2}
@@ -7309,6 +7320,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 8527237696378834581, guid: 0c8e83f7913402d4f9e4b614dfbaae7f, type: 3}
     type: 0
     animations: {fileID: 22100000, guid: 17eb144ade4aede48ad3714e5b173435, type: 2}
@@ -7316,13 +7328,15 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 5209447165607796675, guid: 4c498918c07556b45833328400c52e63, type: 3}
     type: 1
     animations: {fileID: 22100000, guid: 7cf32b502f1d2f7419cdb7108160ccb1, type: 2}
-    characterSprite: {fileID: 1511467043, guid: 0a5ca901a1383a44a84555e67e5e5756, type: 3}
+    characterSprite: {fileID: -225065691, guid: 57f19003226733b47bc47c7a6f80c3a6, type: 3}
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 4429821254534221984, guid: 8aa67e443791c494fb1c828082d6bce6, type: 3}
     type: 1
     animations: {fileID: 22100000, guid: 7de1dd83ffbd60b4b889435ed50e389b, type: 2}
@@ -7330,6 +7344,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 6019547017040817506, guid: 0320599bca54f37429c299394d7e62b3, type: 3}
     type: 2
     animations: {fileID: 22100000, guid: 7b23f0ea957ddf44ab508a09fb2237a2, type: 2}
@@ -7337,6 +7352,7 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
   - character: {fileID: 3514787149977174597, guid: f5e70a0651e8c9145909bba33e5f00b6, type: 3}
     type: 1
     animations: {fileID: 22100000, guid: 02f24e8d7bda65745a3ae6217602de5e, type: 2}
@@ -7344,6 +7360,15 @@ MonoBehaviour:
     locked: 0
     characterPotrait: {fileID: 0}
     selectionObject: {fileID: 0}
+    enabled: 1
+  - character: {fileID: 7063463340670844183, guid: b7c884e112a320b4c80e32dbd150b5ec, type: 3}
+    type: 1
+    animations: {fileID: 22100000, guid: 410c56adf0058364697a6a6f6b9f2bc6, type: 2}
+    characterSprite: {fileID: 797145958, guid: b978f19cd347c124e814135e06a9f4ae, type: 3}
+    locked: 0
+    characterPotrait: {fileID: 0}
+    selectionObject: {fileID: 0}
+    enabled: 1
   NetworkUI: {fileID: 172311379}
   GameModes:
   - name: ARENA
@@ -9413,14 +9438,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9960785, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 86b1b81b1ea2fa34babb9119913ccc80, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f27928e18891619459f0729d9123777d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9495,7 +9520,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7f1733df24937be42b796f158c92f781, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7740cd0911c725d478707c6d06f4fe84, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10064,7 +10089,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -80}
-  m_SizeDelta: {x: 0, y: 105}
+  m_SizeDelta: {x: 0, y: 120}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1821897464
 MonoBehaviour:
@@ -10087,7 +10112,7 @@ MonoBehaviour:
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 90, y: 35}
-  m_Spacing: {x: 10, y: 0}
+  m_Spacing: {x: 10, y: 5}
   m_Constraint: 1
   m_ConstraintCount: 2
 --- !u!1 &1846521842

@@ -810,15 +810,15 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 0b670b50a08fde342a9710e58a75ac65, type: 3}
   hoverEvent: {fileID: 5718147958205733361}
   description: "Shoots out a fireball that deals {Damage} on hit and creates an explosion
-    that deals {Damage}. \nOn use gain a stack. Each stack increases the damage by
-    20% but also increases the mana cost by 20%.\nMaximum of 5 stacks possible."
+    that deals {ExplosionDamage}. \nOn use gain a stack. Each stack increases the
+    mana cost by 20%.\nMaximum of 5 stacks possible."
   upgrades:
   - name: Arcane Mastery
     description: Reduces the Mana increase per stack to {ManaIncrease}%
     hoverEvent: {fileID: 4715831310541530647}
   - name: Lasting Burn
-    description: Hitting a target with {Name} applies Flames for {FlameDuration}
-      seconds, dealing damage {FlameAmount} damage each second
+    description: Hitting a target with {Name} applies Flames for {FlamesDuration}
+      seconds, dealing damage {FlamesAmount} damage each second
     hoverEvent: {fileID: 3994953236353562944}
   - name: Combustion
     description: Damaging a target, that has Flames, with {Name} creates an Explosion

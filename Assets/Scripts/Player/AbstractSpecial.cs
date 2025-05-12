@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
 using static DescriptionCreator;
@@ -54,6 +55,10 @@ public abstract class AbstractSpecial : NetworkBehaviour
     [SerializeField] private UIBar specialIcon;
     [SerializeField] private UIBar specialInUseIcon;
     [SerializeField] private TextUIBar resourceBar;
+
+    public delegate void ActionDelegate(ulong target, ulong user, ref int amount);
+    public ActionDelegate OnTargetHit;
+
     private TMPro.TextMeshProUGUI amountText;
 
     public delegate void SpecialDelegate();
@@ -86,6 +91,14 @@ public abstract class AbstractSpecial : NetworkBehaviour
         {
             resource.Value = Mathf.Clamp(value, 0, characterStats.stats.resource.Value);
         }
+    }
+
+    protected void DealDamage(CharacterStats target, int amount, Vector2 knockback, CharacterStats dealer = null)
+    {
+        var user = dealer ?? characterStats;
+        int damageAmount = amount;
+        OnTargetHit?.Invoke(target.NetworkObjectId, user.NetworkObjectId, ref damageAmount);
+        target.TakeDamage(damageAmount, knockback,user);
     }
 
     protected void UpdateResourceBar()

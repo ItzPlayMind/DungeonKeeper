@@ -15,22 +15,19 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     [SerializeField] private RectTransform itemSelectionPanel;
     [SerializeField] private Transform[] shopTransforms;
     [SerializeField] private UIFilter[] filters;
-    [SerializeField] private TMPro.TextMeshProUGUI cashText;
     [SerializeField] private Transform otherPlayerItems;
     [SerializeField] private Button otherPlayerButton;
     [SerializeField] private PlayerItemShow playerItemShowPrefab;
     [SerializeField] private Transform playerItemShowParent;
     private GameObject panel;
 
-    private Inventory inventory;
+    //private Inventory inventory;
 
     public bool IsActive { get => panel.activeSelf; }
 
     private Dictionary<string, Button> itemButtons = new Dictionary<string, Button>();
 
     public static ShopPanel Instance;
-
-    private bool canShop = false;
 
     private string search = "";
 
@@ -92,11 +89,6 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         Instance = this;
     }
 
-    public void SetAbleToShop(bool value)
-    {
-        canShop = value;
-    }
-
     private void SetAndAddSizeForCategory(CharacterType type, Item[] items)
     {
         Vector2 contentSize = itemSelectionPanel.sizeDelta;
@@ -130,11 +122,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                 UpdateFiltersAndSearch();
             };
         }
-        inventory = GetComponentInParent<Inventory>();
-        inventory.OnCashChange((value) =>
-        {
-            cashText.text = value+"";
-        });
+        //inventory = GetComponentInParent<Inventory>();
         var allItems = ItemRegistry.Instance.GetAll();
         SetSizeForAllCategories(allItems);
         foreach (var item in allItems)
@@ -148,7 +136,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             var buttonListener = new Button.ButtonClickedEvent();
             buttonListener.AddListener(() =>
             {
-                if (!canShop) return;
+                var inventory = PlayerController.LocalPlayer.Inventory;
                 if (inventory.Cash >= item.cost && inventory.CanAddItem())
                 {
                     inventory.RemoveCash(item.cost);
@@ -162,7 +150,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             var buttonRightListener = new Button.ButtonClickedEvent();
             buttonRightListener.AddListener(() =>
             {
-                if (!canShop) return;
+                var inventory = PlayerController.LocalPlayer.Inventory;
                 if (inventory.Cash >= item.cost && inventory.CanAddItem(true))
                 {
                     inventory.RemoveCash(item.cost);
@@ -181,7 +169,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void SellItem(int slot)
     {
-        if (!canShop) return;
+        var inventory = PlayerController.LocalPlayer.Inventory;
         var item = inventory.GetItem(slot);
         if (item == null) return;
         inventory.AddCash((int)(item.cost * 0.8f));
@@ -193,6 +181,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void AddItemFromTeamToPlayer(int slot) 
     {
+        var inventory = PlayerController.LocalPlayer.Inventory;
         if (!inventory.CanAddItem()) return;
         var item = inventory.GetItem(slot,true);
         if (item == null) return;
@@ -208,7 +197,6 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     public void Toggle()
     {
-        if (!canShop && !panel.activeSelf) return;
         panel.SetActive(!panel.activeSelf);
         if (!panel.activeSelf)
             ItemHoverOver.Hide();

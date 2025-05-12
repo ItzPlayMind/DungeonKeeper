@@ -14,8 +14,26 @@ public class FireballSpecial : AbstractSpecial
     [DescriptionCreator.DescriptionVariable][SerializeField] private int combustionDamage = 50;
     //[SerializeField] private float fireballKnockback = 35f;
 
+    [DescriptionCreator.DescriptionVariable]
+    private int explosionDamage
+    {
+        get
+        {
+            return (int)(Damage * 0.5f);
+        }
+    }
     Vector2 mouseWorldPos;
     private int stacks = 0;
+
+    private int ResourceNeeded
+    {
+        get
+        {
+            int resource = HasUpgradeUnlocked(0) ? manaIncrease : 20;
+            int resourcePerStack = (int)(resource * (20f / 100f));
+            return resource + resourcePerStack * stacks;
+        }
+    }
 
     protected override void _Start()
     {
@@ -29,14 +47,14 @@ public class FireballSpecial : AbstractSpecial
 
     protected override void RemoveResource()
     {
-        Resource -= 20 + (4 * stacks);
+        Resource -= ResourceNeeded;
         stacks = Mathf.Min(stacks + 1, 5);
         UpdateAmountText(stacks.ToString());
     }
 
     protected override bool HasResource()
     {
-        return Resource > (HasUpgradeUnlocked(0) ? manaIncrease : 20) + (4*stacks);
+        return Resource > ResourceNeeded;
     }
 
     protected override void _OnSpecialPress(PlayerController controller)
@@ -85,7 +103,7 @@ public class FireballSpecial : AbstractSpecial
             if (stats != null)
             {
                 hit = true;
-                stats.TakeDamage(combustionDamage, Vector2.zero, characterStats);
+                DealDamage(stats, combustionDamage, Vector2.zero);
             }
         };
     }
@@ -119,7 +137,7 @@ public class FireballSpecial : AbstractSpecial
             if (stats != null)
             {
                 hit = true;
-                stats.TakeDamage(Damage+(int)((stacks - 1) * (Damage/5f)), Vector2.zero, characterStats);
+                DealDamage(stats, explosionDamage, Vector2.zero);
                 var effectManager = stats.GetComponent<EffectManager>();
                 if (HasUpgradeUnlocked(1))
                     effectManager?.AddEffect("flames", flamesDuration, flamesAmount, characterStats);
@@ -137,7 +155,7 @@ public class FireballSpecial : AbstractSpecial
             {
                 if (stats != null)
                 {
-                    stats.TakeDamage(Damage + (int)((stacks - 1) * (Damage / 5f)), Vector2.zero, characterStats);
+                    DealDamage(stats, Damage, Vector2.zero);
                     var effectManager = stats.GetComponent<EffectManager>();
                     if (HasUpgradeUnlocked(1))
                         effectManager?.AddEffect("flames", flamesDuration, flamesAmount, characterStats);
@@ -156,7 +174,7 @@ public class FireballSpecial : AbstractSpecial
     [ServerRpc]
     private void DespawnArrowServerRPC(ulong objectId)
     {
-        Destroy(NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].gameObject,0.5f);
+        Destroy(NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].gameObject, 0.5f);
     }
 
     private float timer = 0f;

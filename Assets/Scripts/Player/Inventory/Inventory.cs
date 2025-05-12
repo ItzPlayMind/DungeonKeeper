@@ -15,6 +15,7 @@ public class Inventory : NetworkBehaviour
     [SerializeField] private UITextIconBar[] inventorySlots = new UITextIconBar[INVENTORY_SIZE];
     [SerializeField] private UIIconBar[] teamInventorySlots = new UIIconBar[3];
     [SerializeField] private Sprite emptySlot;
+    [SerializeField] private TMPro.TextMeshProUGUI cashText;
 
     private PlayerItemShow playerItemShow;
     private Item[] items;
@@ -65,6 +66,10 @@ public class Inventory : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        OnCashChange((value) =>
+        {
+            cashText.text = value + "";
+        });
         DebugConsole.OnCommand((Command command) =>
         {
             if (command.args.Length != 2) return;

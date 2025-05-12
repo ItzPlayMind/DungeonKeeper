@@ -22,9 +22,6 @@ public class PlayerStats : CharacterStats
     [SerializeField] private TMPro.TextMeshProUGUI healthText;
     [SerializeField] private TMPro.TextMeshProUGUI damageReductionText;
 
-    [SerializeField] private Volume deathScreenEffect;
-    [SerializeField] private GameObject deathScreen;
-    [SerializeField] private TMPro.TextMeshProUGUI deathTimer;
 
     [SerializeField] private CollisionSender reviveArea;
     [SerializeField] private float reviveTime = 30f;
@@ -61,7 +58,7 @@ public class PlayerStats : CharacterStats
         {
             reviveProgress.OnValueChanged += (float old, float value) =>
             {
-                deathTimer.text = "Progress: " + (Mathf.CeilToInt(value/reviveTime*100f)).ToString() + "%";
+                GameManager.instance.DeathScreen.UpdateText("Progress: " + (Mathf.CeilToInt(value / reviveTime * 100f)).ToString() + "%");
             };
         }
     }
@@ -148,8 +145,7 @@ public class PlayerStats : CharacterStats
             PlayerController.LocalPlayer.OnKill?.Invoke();
         if (IsLocalPlayer)
         {
-            deathTimer.text = "Progress: 0%";
-            deathScreen.SetActive(true);
+            GameManager.instance.DeathScreen.Show();
             animator.SetBool("death", true);
         }
     }
@@ -167,7 +163,7 @@ public class PlayerStats : CharacterStats
         if (IsLocalPlayer)
         {
             OnClientRespawn?.Invoke();
-            deathScreen.SetActive(false);
+            GameManager.instance.DeathScreen.Hide();
             if(!revived)
                 transform.position = GameManager.instance.GetSpawnPoint(gameObject.layer).position;
             animator.SetBool("death", false);
@@ -193,10 +189,6 @@ public class PlayerStats : CharacterStats
     {
         if (IsLocalPlayer)
         {
-            if (IsDead && deathScreenEffect.weight < 1)
-                deathScreenEffect.weight += Time.deltaTime;
-            if (!IsDead && deathScreenEffect.weight > 0)
-                deathScreenEffect.weight -= Time.deltaTime;
             if (statTimer > 0)
             {
                 statTimer -= Time.deltaTime;

@@ -32,7 +32,7 @@ public class KnockBackSpecial : AbstractSpecial
 
     protected virtual void OnSpecialHit(CharacterStats enemyStats)
     {
-        enemyStats.TakeDamage(Damage, enemyStats.GenerateKnockBack(enemyStats.transform, transform, knockBackForce), characterStats);
+        DealDamage(enemyStats, Damage, enemyStats.GenerateKnockBack(enemyStats.transform, transform, knockBackForce));
         enemyStats.GetComponent<EffectManager>()?.AddEffect(effectName, duration, amount, characterStats);
     }
 

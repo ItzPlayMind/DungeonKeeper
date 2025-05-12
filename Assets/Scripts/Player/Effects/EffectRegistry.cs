@@ -74,6 +74,24 @@ public class EffectRegistry : Registry<Effect>
             controller.GFX.color = Color.grey;
             animator.enabled = false;
         }, null);
+        AddEffect("Invisible", "invisible", (Effect effect, CharacterStats stats) =>
+        {
+            var controller = stats.GetComponent<PlayerController>();
+            var attack = stats.GetComponent<PlayerAttack>();
+            controller.GFX.color = new Color(1f, 1f, 1f, stats.IsLocalPlayer ? 25/255f : 0f);
+            AddToAction(effect, () => stats.OnClientTakeDamage, (value) => stats.OnClientTakeDamage = value, (ulong damager, int damage) =>
+            {
+                effect.End(stats);
+            });
+            AddToAction(effect, () => attack.OnAttackPress, (value) => attack.OnAttackPress = value, () =>
+            {
+                effect.End(stats);
+            });
+            effect.onEnd += (Effect effect, CharacterStats stats) =>
+            {
+                controller.GFX.color = Color.white;
+            };
+        }, null);
         AddEffect("Lit", "lit", (Effect effect, CharacterStats stats) =>
         {
             var light = stats.GetComponentInChildren<Light2D>();
@@ -182,6 +200,23 @@ public class EffectRegistry : Registry<Effect>
             AddToAction(effect, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
             {
                 speed = (int)(speed * (1+effect.amount/100f));
+            });
+        });
+        AddEffect("Wanted", "wanted", (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsServer) return;
+            AddToAction(effect, () => stats.OnServerTakeDamage, (value) => stats.OnServerTakeDamage = value, (ulong damager, ref int damage) =>
+            {
+                damage = damage + (int)(damage*(effect.amount/100f));
+            });
+            AddToAction(effect, () => stats.OnServerDeath, (value) => stats.OnServerDeath = value, (ulong killer) =>
+            {
+                var player = NetworkManager.Singleton.SpawnManager.SpawnedObjects[killer];
+                var targetInventory = player.GetComponent<Inventory>();
+                if(targetInventory != null)
+                {
+                    targetInventory.AddCash((int)(stats.stats.health.Value * (effect.amount/100f)));
+                }
             });
         });
     }

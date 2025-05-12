@@ -19,7 +19,6 @@ public class NetworkManagerUI : MonoBehaviour
     [SerializeField] private TMPro.TMP_InputField nameInput;
     [SerializeField] private TMPro.TextMeshProUGUI statusText;
 
-    private Matchmaking matchmaking;
     private bool isFetching = false;
     private string namePreview;
 
@@ -34,7 +33,6 @@ public class NetworkManagerUI : MonoBehaviour
         networkManager = GetComponentInParent<NetworkManager>();
         transport = networkManager.GetComponent<UnityTransport>();
         nameInput.text = Lobby.Instance.PlayerStatistic.Name;
-        matchmaking = new Matchmaking();
     }
 
     private void OnEnable()
@@ -43,7 +41,7 @@ public class NetworkManagerUI : MonoBehaviour
         if (Lobby.Instance == null) return;
         if (!string.IsNullOrEmpty(Lobby.Instance.LobbyCode) && Lobby.Instance.IsHost)
         {
-            matchmaking?.RemoveMatch(Lobby.Instance.LobbyCode);
+            Lobby.Instance.Matchmaking?.RemoveMatch(Lobby.Instance.LobbyCode);
             Lobby.Instance.SetLobbyCode("");
         }
     }
@@ -99,7 +97,7 @@ public class NetworkManagerUI : MonoBehaviour
         StartRotatingText("Matching");
         try
         {
-            var match = await matchmaking.GetMatch(Lobby.Instance.LobbyCode);
+            var match = await Lobby.Instance.Matchmaking.GetMatch(Lobby.Instance.LobbyCode);
             transport.ConnectionData.Address = match.address;
             transport.ConnectionData.Port = match.port;
             Lobby.Instance.SetLobbyCode(match.id);
@@ -128,7 +126,7 @@ public class NetworkManagerUI : MonoBehaviour
         isFetching = true;
         try
         {
-            Lobby.Instance.SetLobbyCode(await matchmaking.CreateMatch());
+            Lobby.Instance.SetLobbyCode(await Lobby.Instance.Matchmaking.CreateMatch());
             if (networkManager.StartHost())
             {
                 isFetching = false;
@@ -138,7 +136,7 @@ public class NetworkManagerUI : MonoBehaviour
             else
             {
                 isFetching = false;
-                matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
+                Lobby.Instance.Matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
                 Lobby.Instance.SetLobbyCode("");
             }
             StopRotatingText();
@@ -154,7 +152,7 @@ public class NetworkManagerUI : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(Lobby.Instance.LobbyCode) && Lobby.Instance.IsHost)
         {
-            matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
+            Lobby.Instance.Matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
             Lobby.Instance.SetLobbyCode("");
         }
     }
