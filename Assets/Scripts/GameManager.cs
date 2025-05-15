@@ -249,17 +249,6 @@ public class GameManager : NetworkBehaviour
             NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.AddCash(cash);
     }
 
-    public void AddItemToTeamFromPlayer(ulong id, Item item)
-    {
-        List<ulong> team = null;
-        if (checkIfIsInTeam(id, Lobby.Team.Red))
-            team = Lobby.Instance.GetTeam(Lobby.Team.Red);
-        if (checkIfIsInTeam(id, Lobby.Team.Blue))
-            team = Lobby.Instance.GetTeam(Lobby.Team.Blue);
-        if (team == null) return;
-        foreach (var player in team)
-            NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.AddItem(item, true);
-    }
 
     private bool checkIfIsInTeam(ulong id, Lobby.Team team)
     {
@@ -274,30 +263,6 @@ public class GameManager : NetworkBehaviour
         if (LayerMask.LayerToName(layer) == redTeamlayer) return redTeamSpawns[0];
         if (LayerMask.LayerToName(layer) == blueTeamlayer) return blueTeamSpawns[0];
         return redTeamSpawns[0];
-    }
-
-    public void SwapItemsForTeamFromPlayer(ulong id, int src, int dest)
-    {
-        List<ulong> team = null;
-        if (checkIfIsInTeam(id, Lobby.Team.Red))
-            team = Lobby.Instance.GetTeam(Lobby.Team.Red);
-        if (checkIfIsInTeam(id, Lobby.Team.Blue))
-            team = Lobby.Instance.GetTeam(Lobby.Team.Blue);
-        if (team == null) return;
-        foreach (var player in team)
-            NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.SwapItems(src,dest,true);
-    }
-
-    public void RemoveItemToTeamFromPlayer(ulong id, int slot)
-    {
-        List<ulong> team = null;
-        if (checkIfIsInTeam(id, Lobby.Team.Red))
-            team = Lobby.Instance.GetTeam(Lobby.Team.Red);
-        if (checkIfIsInTeam(id, Lobby.Team.Blue))
-            team = Lobby.Instance.GetTeam(Lobby.Team.Blue);
-        if (team == null) return;
-        foreach (var player in team)
-            NetworkManager.Singleton.ConnectedClients[player].PlayerObject.GetComponent<Inventory>()?.RemoveItem(slot, true);
     }
 
     public ulong GetPlayerIDFromNetworkID(ulong id)

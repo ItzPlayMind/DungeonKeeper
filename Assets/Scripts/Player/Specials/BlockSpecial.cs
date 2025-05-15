@@ -7,6 +7,8 @@ public class BlockSpecial : AbstractSpecial
 {
     [SerializeField] private float knockBackForce = 35;
     [DescriptionCreator.DescriptionVariable("white")]
+    [SerializeField] private int counterDuration = 10;
+    [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int damageReductionIncrease = 10;
     [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int blockingDuration = 5;
@@ -31,6 +33,7 @@ public class BlockSpecial : AbstractSpecial
             {
                 var enemy = NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<CharacterStats>();
                 DealDamage(enemy,damage, enemy.GenerateKnockBack(enemy.transform, transform, knockBackForce));
+                StartActive();
             }
         };
         characterStats.stats.damageReduction.ChangeValueAdd += (ref int value, int old) =>
@@ -48,13 +51,30 @@ public class BlockSpecial : AbstractSpecial
             }
         };
         effectManager = GetComponent<EffectManager>();
+        var playerAttack = GetComponent<PlayerAttack>();
+        playerAttack.OnAttack += (ulong targetID, ulong user, ref int amount) =>
+        {
+            if (!IsActive) return;
+            var target = NetworkManager.Singleton.SpawnManager.SpawnedObjects[targetID];
+            if (target != null)
+            {
+                target.GetComponent<EffectManager>()?.AddEffect("stunned", counterDuration, 1, characterStats);
+                StartCooldown();
+            }
+        };
     }
     protected override void _OnSpecialFinish(PlayerController controller)
     {
         isBlocking = false;
-        StartCooldown();
+        if (!IsActive)
+            StartCooldown();
         if(HasUpgradeUnlocked(2))
             effectManager.AddEffect("blocking", blockingDuration, blockingAmount, characterStats);
+    }
+
+    protected override void OnActiveOver()
+    {
+        StartCooldown();
     }
 
     protected override void _OnSpecialPress(PlayerController controller)

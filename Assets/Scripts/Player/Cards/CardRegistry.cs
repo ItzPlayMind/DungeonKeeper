@@ -10,66 +10,29 @@ public class CardRegistry : Registry<Card>
 
     private void Start()
     {
-        AddCard("Damage +", "Adds {Value} to Damage", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 10 } } }, (Card card, CharacterStats stats) =>
+        AddCard("Damage I", "Adds {Value} to Damage", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 10, color = "red" } } }, (Card card, CharacterStats stats) =>
         {
-            if (!stats.IsOwner) return;
             stats.stats.damage.ChangeValueAdd += (ref int value,int old) => value += (int)card.variables["Value"].value;
         });
-        AddCard("Special Damage +", "Adds {Value} to Special Damage", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 10 } } }, (Card card, CharacterStats stats) =>
+        AddCard("Special Damage I", "Adds {Value} to Special Damage", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 10, color = "blue" } } }, (Card card, CharacterStats stats) =>
         {
-            if (!stats.IsOwner) return;
             stats.stats.specialDamage.ChangeValueAdd += (ref int value, int old) => value += (int)card.variables["Value"].value;
         });
-        AddCard("Health +", "Adds {Value} to Health", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 100 } } }, (Card card, CharacterStats stats) =>
+        AddCard("Health I", "Adds {Value} to Health", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 100, color="green" } } }, (Card card, CharacterStats stats) =>
         {
-            if (!stats.IsOwner) return;
             stats.stats.health.ChangeValueAdd += (ref int value, int old) => value += (int)card.variables["Value"].value;
         });
-        AddCard("Damage Reduction +", "Adds {Value}% to Damage Reduction", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 5 } } }, (Card card, CharacterStats stats) =>
+        AddCard("Damage Reduction I", "Adds {Value}% to Damage Reduction", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 5, color = "grey" } } }, (Card card, CharacterStats stats) =>
         {
-            if (!stats.IsOwner) return;
             stats.stats.damageReduction.ChangeValueAdd += (ref int value, int old) => value += (int)card.variables["Value"].value;
         });
-        AddCard("Speed +", "Adds {Value} to Speed", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 10 } } }, (Card card, CharacterStats stats) =>
+        AddCard("Speed I", "Adds {Value} to Speed", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 10, color = "yellow" } } }, (Card card, CharacterStats stats) =>
         {
-            if (!stats.IsOwner) return;
             stats.stats.speed.ChangeValueAdd += (ref int value, int old) => value += (int)card.variables["Value"].value;
         });
-        AddCard("Attack Speed +", "Adds {Value}% to Attack Speed", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 5 } } }, (Card card, CharacterStats stats) =>
+        AddCard("Attack Speed I", "Adds {Value}% to Attack Speed", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 5, color = "orange" } } }, (Card card, CharacterStats stats) =>
         {
-            if (!stats.IsOwner) return;
             stats.stats.attackSpeed.ChangeValueAdd += (ref int value, int old) => value += (int)card.variables["Value"].value;
-        });
-        AddCard("Heavy Brawler", "Gain {Value}% Health as Attack Damage", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 0.01f } } }, (Card card, CharacterStats stats) =>
-        {
-            if (!stats.IsOwner) return;
-            stats.stats.damage.ChangeValueAdd += (ref int value, int old) => value += (int)(stats.stats.health.Value* (float)card.variables["Value"].value);
-        });
-        AddCard("On The Edge", "While below {HPThreshold}% health, heal for {Value}% damage dealt", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 10 } }, { "HPThreshold", new Variable() { value = 10 } } }, (Card card, CharacterStats stats) =>
-        {
-            if (!stats.IsOwner) return;
-            var attack = stats.GetComponent<PlayerAttack>();
-            if(attack != null)
-            {
-                attack.OnAttack += (ulong target, ulong user, ref int amount) =>
-                {
-                    if (stats.Health <= stats.stats.health.Value * (int)((int)card.variables["HPThreshold"].value/100f))
-                    {
-                        stats.Heal(amount*(int)((int)card.variables["Value"].value/100f));
-                    }
-                };
-            }
-        });
-        AddCard("Perfectionist", "While above {HPThreshold}% HP, gain {Value}% Attack Speed", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 10 } }, { "HPThreshold", new Variable() { value = 10 } } }, (Card card, CharacterStats stats) =>
-        {
-            if (!stats.IsOwner) return;
-            stats.stats.attackSpeed.ChangeValueAdd += (ref int value, int old) =>
-            {
-                if(stats.Health >= stats.stats.health.Value * (int)((int)card.variables["HPThreshold"].value / 100f))
-                {
-                    value += (int)card.variables["Value"].value;
-                }
-            };
         });
     }
     public Card AddCard(string name, string description, Card.CardFunction onSelect = null)

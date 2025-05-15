@@ -65,7 +65,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                 else
                     hasStat = false;
             }
-            itemButtons[key].gameObject.SetActive(key.Contains(search) && hasStat);
+            itemButtons[key].gameObject.SetActive((key.Contains(search) && hasStat) || item.type == CharacterType.None);
             if (key.Contains(search) && hasStat)
                 shownItems.Add(item);
         }
@@ -81,7 +81,6 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         SetAndAddSizeForCategory(CharacterType.Tank, items);
         SetAndAddSizeForCategory(CharacterType.Damage, items);
         SetAndAddSizeForCategory(CharacterType.Support, items);
-        SetAndAddSizeForCategory(CharacterType.None, items);
     }
 
     public void SetInstanceToThis()
@@ -137,33 +136,21 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             buttonListener.AddListener(() =>
             {
                 var inventory = PlayerController.LocalPlayer.Inventory;
-                if (inventory.Cash >= item.cost && inventory.CanAddItem())
+                if (inventory.Cash >= item.cost && (inventory.CanAddItem() || item is Consumable))
                 {
                     inventory.RemoveCash(item.cost);
-                    inventory.AddItem(item);
-                    if(!item.multiple)
+                    if (item is Consumable)
+                        inventory.AddConsumable(item as Consumable);
+                    else
+                        inventory.AddItem(item);
+                    if (!item.multiple)
                         iconButton.interactable = false;
                     foreach (var item1 in item.sameItems)
                         itemButtons[item1].interactable = false;
                 }
             });
-            var buttonRightListener = new Button.ButtonClickedEvent();
-            buttonRightListener.AddListener(() =>
-            {
-                var inventory = PlayerController.LocalPlayer.Inventory;
-                if (inventory.Cash >= item.cost && inventory.CanAddItem(true))
-                {
-                    inventory.RemoveCash(item.cost);
-                    inventory.AddItemToTeamFromPlayer(item);
-                    /*if (!item.multiple)
-                        iconButton.interactable = false;
-                    foreach (var item1 in item.sameItems)
-                        itemButtons[item1].interactable = false;*/
-                }
-            });
             itemButtons.Add(item.ID, iconButton);
             iconButton.onClick = buttonListener;
-            iconButton.onRightClick = buttonRightListener;
         }
     }
 
@@ -177,16 +164,6 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         itemButtons[item.ID].interactable = true;
         foreach (var item1 in item.sameItems)
             itemButtons[item1].interactable = true;
-    }
-
-    public void AddItemFromTeamToPlayer(int slot) 
-    {
-        var inventory = PlayerController.LocalPlayer.Inventory;
-        if (!inventory.CanAddItem()) return;
-        var item = inventory.GetItem(slot,true);
-        if (item == null) return;
-        inventory.AddItem(item);
-        inventory.RemoveItemFromTeamFromPlayer(slot);
     }
 
     public void ToggleOtherPlayerItems()

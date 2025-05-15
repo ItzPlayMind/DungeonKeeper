@@ -1,12 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Card
 {
     public string Name { get; private set; }
     public string ID { get; private set; }
-    public string Description { get => DescriptionCreator.Generate(description, variables); }
+    public string Description { get {
+            var vars = new Dictionary<string, DescriptionCreator.Variable>();
+            foreach (var item in variables)
+            {
+                vars.Add(item.Key.ToLower(), item.Value);
+            }
+            return DescriptionCreator.Generate(description, vars); 
+        } }
 
     private string description;
 

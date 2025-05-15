@@ -2,14 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
+using UnityEngine.SceneManagement;
 using static DescriptionCreator;
 
 public class OnHitDamageAndHealSpecial : AbstractSpecial
 {
     [DescriptionVariable]
-    public int ResourceDamage { get => (int)(Damage * (Resource / (float)characterStats.stats.resource.BaseValue)); }
+    public int ResourceDamage
+    {
+        get
+        {
+            if (SceneManager.GetActiveScene().buildIndex == 0)
+                return (int)(Damage * 1f);
+            return (int)(Damage * (Resource / (float)characterStats.stats.resource.BaseValue));
+        }
+    }
     [DescriptionVariable]
-    public int HealAmount { get => (int)((characterStats.stats.health.Value-characterStats.Health) * 0.1f) + ResourceDamage * 2; }
+    public int HealAmount { get => (int)((characterStats.stats.health.Value - characterStats.Health) * 0.1f) + ResourceDamage * 2; }
     [DescriptionVariable("white")]
     public int RageOverTime = 5;
     [DescriptionVariable("white")]
@@ -74,7 +83,7 @@ public class OnHitDamageAndHealSpecial : AbstractSpecial
                 int old = Resource;
                 Resource += RageOverTime;
                 timer = 1f;
-                if(old < Resource && Resource == 100 && HasUpgradeUnlocked(2))
+                if (old < Resource && Resource == 100 && HasUpgradeUnlocked(2))
                 {
                     effectManager.AddEffect("frenzy", FrenzyDuration, FrenzyAmount, characterStats);
                 }
@@ -90,5 +99,5 @@ public class OnHitDamageAndHealSpecial : AbstractSpecial
         StartCooldown();
     }
 
-    protected override void _OnSpecialPress(PlayerController controller) {}
+    protected override void _OnSpecialPress(PlayerController controller) { }
 }

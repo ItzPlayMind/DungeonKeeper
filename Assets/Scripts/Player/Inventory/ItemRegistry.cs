@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,6 +41,25 @@ public class ItemRegistry : Registry<Item>
             stats.GetComponent<Inventory>().RemoveItem(slot);
         });
         torch.multiple = true;
+
+        AddConsumable("Runestone I", "runestone_1", CharacterType.None, "On buy unlocks the first upgrade of the special", null, 3000, (Item item, CharacterStats stats, int slot) =>
+        {
+            stats.GetComponent<AbstractSpecial>().UnlockUpgrade(0);
+        });
+        AddConsumable("Runestone II", "runestone_2", CharacterType.None, "On buy unlocks the second upgrade of the special", null, 4000, (Item item, CharacterStats stats, int slot) =>
+        {
+            stats.GetComponent<AbstractSpecial>().UnlockUpgrade(1);
+        });
+        AddConsumable("Runestone III", "runestone_3", CharacterType.None, "On buy unlocks the third upgrade of the special", null, 5000, (Item item, CharacterStats stats, int slot) =>
+        {
+            stats.GetComponent<AbstractSpecial>().UnlockUpgrade(2);
+        });
+        var fateScroll = AddConsumable("Scroll of Fate", "scroll_of_fate", CharacterType.None, "On buy gain 3 random Fates, 1 can be chosen", null, 2000, (Item item, CharacterStats stats, int slot) =>
+        {
+            ShopPanel.Instance.Toggle();
+            (GameManager.instance as ArenaGameManager).CardSelection.gameObject.SetActive(true);
+        });
+        fateScroll.multiple = true;
 
         List<Item> boots = new List<Item>();
         var boot = AddItem("Knights Sandles", "knights_sandles", CharacterType.Damage, "", new StatBlock(15, 0, 0, 10, 0, 0), 500);
@@ -723,7 +743,23 @@ public class ItemRegistry : Registry<Item>
 
     public override Item GetByID(string id)
     {
+        if (items[id] is Consumable)
+            return new Consumable(items[id] as Consumable);
         return new Item(items[id]);
+    }
+
+    public Consumable AddConsumable(string name, string spritePath, CharacterType type = CharacterType.None, string description = "", StatBlock stats = null,
+        int cost = 0, ItemFunction onBuy = null)
+    {
+        Consumable item = new Consumable(name);
+        item.type = type;
+        item.description = description;
+        item.stats = stats;
+        item.icon = Resources.Load<Sprite>("Items/" + spritePath);
+        item.cost = cost;
+        item.onBuy = onBuy;
+        items.Add(item.ID, item);
+        return item;
     }
 
     public Item AddItem(string name, string spritePath, CharacterType type = CharacterType.None, string description = "", StatBlock stats = null,
@@ -737,7 +773,7 @@ public class ItemRegistry : Registry<Item>
         item.description = description;
         item.cooldown = cooldown;
         item.stats = stats;
-        item.icon = Resources.Load<Sprite>("Equipment/" + spritePath);
+        item.icon = Resources.Load<Sprite>("Items/" + spritePath);
         item.cost = cost;
         items.Add(item.ID, item);
         return item;
@@ -755,6 +791,10 @@ public class ItemRegistry : Registry<Item>
     {
         var items = this.items.Values.ToList();
         items.Sort((x, y) => x.cost.CompareTo(y.cost));
-        return items.Select(x => new Item(x)).ToArray();
+        return items.Select(x => {
+            if (x is Consumable)
+                return new Consumable(x as Consumable);
+            return new Item(x);
+        }).ToArray();
     }
 }

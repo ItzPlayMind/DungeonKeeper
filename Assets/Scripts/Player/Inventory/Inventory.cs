@@ -19,12 +19,11 @@ public class Inventory : NetworkBehaviour
 
     private PlayerItemShow playerItemShow;
     private Item[] items;
-    private Item[] teamItems;
     public int Cash { get => cash.Value; }
 
-    public Item GetItem(int slot, bool team = false)
+    public Item GetItem(int slot)
     {
-        return (team ? teamItems : items)[slot];
+        return items[slot];
     }
 
     public void OnCashChange(System.Action<int> callback)
@@ -77,7 +76,6 @@ public class Inventory : NetworkBehaviour
             Debug.Log("Cash added");
         }, "cash", "add");
         items = new Item[INVENTORY_SIZE];
-        teamItems = new Item[3];
         stats = GetComponent<CharacterStats>();
     }
 
@@ -87,30 +85,30 @@ public class Inventory : NetworkBehaviour
             playerItemShow = ShopPanel.Instance.CreatePlayerItemsShow(Lobby.Instance.PlayerStatistic.GetNameByClientID(OwnerClientId));
     }
 
-    public bool CanAddItem(bool team = false)
+    public bool CanAddItem()
     {
-        var items = team ? teamItems : this.items;
+        var items = this.items;
         for (int i = 0; i < items.Length; i++)
             if (items[i] == null) return true;
         return false;
     }
 
-    public void RemoveItem(int slot, bool team = false)
+    public void RemoveItem(int slot)
     {
-        RemoveItemServerRPC(slot,team);
+        RemoveItemServerRPC(slot);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void RemoveItemServerRPC(int slot, bool team)
+    private void RemoveItemServerRPC(int slot)
     {
-        RemoveItemClientRPC(slot,team);
+        RemoveItemClientRPC(slot);
     }
 
     [ClientRpc]
-    private void RemoveItemClientRPC(int slot, bool team)
+    private void RemoveItemClientRPC(int slot)
     {
-        var slots = team ? this.teamInventorySlots: inventorySlots;
-        var items = team ? teamItems : this.items;
+        var slots =  inventorySlots;
+        var items = this.items;
         var item = items[slot];
         if (item == null) return;
         items[slot] = null;
@@ -123,50 +121,62 @@ public class Inventory : NetworkBehaviour
         {
             playerItemShow?.SetItemInSlot(emptySlot, slot);
         }
-        if (!team)
-        {
-            item.UpdateText("");
-            item.OnUpdateText = null;
+        item.UpdateText("");
+        item.OnUpdateText = null;
 
-            inventorySlots[slot].transform.Find("Active").gameObject.SetActive(false);
-            item?.OnUnequip(stats, slot);
-        }
+        inventorySlots[slot].transform.Find("Active").gameObject.SetActive(false);
+        item?.OnUnequip(stats, slot);
     }
 
-    public void AddItem(Item item, bool team = false)
+    public void AddConsumable(Consumable item)
+    {
+        AddConsumableServerRPC(item.ID);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void AddConsumableServerRPC(string itemID)
+    {
+        AddConsumableClientRPC(itemID);
+    }
+
+    [ClientRpc]
+    private void AddConsumableClientRPC(string itemID)
+    {
+        var item = (ItemRegistry.Instance as ItemRegistry).GetByID(itemID) as Consumable;
+        item?.OnBuy(stats);
+    }
+
+    public void AddItem(Item item)
     {
         int index;
-        var items = team ? this.teamItems : this.items;
-        for (index = 0; index < (team ? 3 : INVENTORY_SIZE); index++)
+        var items = this.items;
+        for (index = 0; index < INVENTORY_SIZE; index++)
         {
             if (items[index] == null)
                 break;
         };
-        AddItemServerRPC(item.ID, index, team);
+        AddItemServerRPC(item.ID, index);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void AddItemServerRPC(string itemID, int slot, bool team)
+    private void AddItemServerRPC(string itemID, int slot)
     {
-        AddItemClientRPC(itemID,slot,team);
+        AddItemClientRPC(itemID,slot);
     }
 
     [ClientRpc]
-    private void AddItemClientRPC(string itemID, int slot, bool team)
+    private void AddItemClientRPC(string itemID, int slot)
     {
         var item = (ItemRegistry.Instance as ItemRegistry).GetByID(itemID);
-        (team ? teamItems : items)[slot] = item;
+        items[slot] = item;
         if (IsLocalPlayer)
-            (team ? teamInventorySlots : inventorySlots)[slot].Icon = item.icon;
+            inventorySlots[slot].Icon = item.icon;
         else
             playerItemShow?.SetItemInSlot(item.icon, slot);
-        if (!team)
-        {
-            item?.OnEquip(stats, slot);
-            inventorySlots[slot].transform.Find("Active").gameObject.SetActive(item.onUse != null);
-            if (inventorySlots[slot] is UITextIconBar)
-                item.OnUpdateText = (string text) => { inventorySlots[slot].Text = text; };
-        }
+        item?.OnEquip(stats, slot);
+        inventorySlots[slot].transform.Find("Active").gameObject.SetActive(item.onUse != null);
+        if (inventorySlots[slot] is UITextIconBar)
+            item.OnUpdateText = (string text) => { inventorySlots[slot].Text = text; };
     }
 
     private float goldTimer = 1f;
@@ -192,33 +202,22 @@ public class Inventory : NetworkBehaviour
         }
     }
 
-    public void SwapItems(int src, int dest, bool team = false)
+    public void SwapItems(int src, int dest)
     {
-        SwapItemsServerRPC(src, dest,team);
-    }
-
-    public void SwapItemsForTeamFromPlayer(int src, int dest)
-    {
-        SwapItemsForTeamFromPlayerServerRPC(src, dest);
+        SwapItemsServerRPC(src, dest);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SwapItemsForTeamFromPlayerServerRPC(int src, int dest)
+    private void SwapItemsServerRPC(int src, int dest)
     {
-        GameManager.instance.SwapItemsForTeamFromPlayer(NetworkObjectId,src,dest);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void SwapItemsServerRPC(int src, int dest, bool team)
-    {
-        SwapItemsClientRPC(src, dest,team);
+        SwapItemsClientRPC(src, dest);
     }
 
     [ClientRpc]
-    private void SwapItemsClientRPC(int src, int dest, bool team)
+    private void SwapItemsClientRPC(int src, int dest)
     {
-        var items = team ? teamItems : this.items;
-        var inventorySlots = team ? teamInventorySlots : this.inventorySlots;
+        var items =  this.items;
+        var inventorySlots =  this.inventorySlots;
         var oldItem = items[src];
         items[src] = items[dest];
         items[dest] = oldItem;
@@ -246,28 +245,5 @@ public class Inventory : NetworkBehaviour
             playerItemShow?.SetItemInSlot(items[src] != null ? items[src].icon : emptySlot, src);
             playerItemShow?.SetItemInSlot(items[dest] != null ? items[dest].icon : emptySlot, dest);
         }
-    }
-
-    public void AddItemToTeamFromPlayer(Item item)
-    {
-        AddItemToTeamFromPlayerServerRPC(item.ID);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void AddItemToTeamFromPlayerServerRPC(string itemID)
-    {
-        var item = ItemRegistry.Instance.GetByID(itemID);
-        GameManager.instance.AddItemToTeamFromPlayer(NetworkObjectId, item);
-    }
-
-    public void RemoveItemFromTeamFromPlayer(int slot)
-    {
-        RemoveItemFromTeamPlayerServerRPC(slot);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void RemoveItemFromTeamPlayerServerRPC(int slot)
-    {
-        GameManager.instance.RemoveItemToTeamFromPlayer(NetworkObjectId, slot);
     }
 }

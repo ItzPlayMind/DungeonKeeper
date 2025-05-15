@@ -58,6 +58,8 @@ public class ArenaGameManager : GameManager
 
     private BonusObjective[] BonusObjectives { get => bonusObjectives.ToList().FindAll(x => x.active).ToArray(); }
 
+    public CardSelection CardSelection { get => cardSelection; }
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -102,14 +104,6 @@ public class ArenaGameManager : GameManager
             {
                 bonusObjectiveText.text = BonusObjectives[bonusObjectiveIndex.Value].description;
             }
-        };
-        round.OnValueChanged += (int old, int value) =>
-        {
-            /*if ((value+1) % 3 == 0)
-                cardSelection.gameObject.SetActive(true);*/
-            if (!IsServer) return;
-            if (value % 3 == 0)
-                UnlockUpgradeForAll((value/3)-1);
         };
         if (IsServer)
         {
@@ -320,7 +314,7 @@ public class ArenaGameManager : GameManager
             var player = NetworkManager.Singleton.ConnectedClients[id].PlayerObject;
             var stats = player.GetComponent<PlayerStats>();
             stats.Respawn();
-            stats.Heal(100000);
+            stats.Heal(stats.stats.health.Value);
         }
     }
 

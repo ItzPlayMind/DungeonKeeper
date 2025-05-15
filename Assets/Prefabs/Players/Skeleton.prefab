@@ -812,10 +812,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d624e2eb1d7e6cf45a697608e38e017b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: Block
+  Name: Block & Counter
   icon: {fileID: 21300000, guid: 85996623571ca0b4aa6a2b2fb162d445, type: 3}
   hoverEvent: {fileID: 5661684447495956824}
-  description: Block the next attack and return 2x the damage.
+  description: Block the next attack and return {Damage}% of the damage back to the
+    target. The next attack within {ActiveTime} seconds after successfully blocking
+    stuns the target for {CounterDuration} seconds
   upgrades:
   - name: Hard Bones
     description: Increases Damage Reduction by {DamageReductionIncrease}
@@ -827,14 +829,15 @@ MonoBehaviour:
     description: After using {Name} gain Blocking for {BlockingDuration} seconds,
       increasing Damage Reduction by {BlockingAmount} decaying over the duration
     hoverEvent: {fileID: 4906923671832884721}
-  damage: 0
-  damageMultiplier: 0
+  damage: 100
+  damageMultiplier: 0.1
   MaxCooldown: 5
-  activeTime: 0
+  activeTime: 1.5
   specialIcon: {fileID: 8222713075817727796}
   specialInUseIcon: {fileID: 2085872119115863854}
   resourceBar: {fileID: 6570867328608115179}
   knockBackForce: 35
+  counterDuration: 2
   damageReductionIncrease: 10
   blockingDuration: 5
   blockingAmount: 30
