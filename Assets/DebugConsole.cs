@@ -22,12 +22,18 @@ public class DebugConsole : MonoBehaviour
 
     private List<string> logMessages = new List<string>();
     private static System.Action<Command> onCommand;
-    private static bool HasInstance;
+    private static DebugConsole instance;
+
+    public static bool Active { get
+        {
+            return instance.consolePanel.activeSelf;
+        }
+    }
 
     private void Awake()
     {
-        if (HasInstance) Destroy(gameObject);
-        HasInstance = true;
+        if (instance != null) { Destroy(gameObject); return; }
+        instance = this;
     }
 
     private void Start()
@@ -40,10 +46,16 @@ public class DebugConsole : MonoBehaviour
             SendCommand(inputField.text);
             inputField.text = "";
             inputField.Select();
+            inputField.ActivateInputField();
         };
         consolePanel.SetActive(false);
         DontDestroyOnLoad(gameObject);
         Application.logMessageReceived += Application_logMessageReceived;
+    }
+
+    private void OnDisable()
+    {
+        Application.logMessageReceived -= Application_logMessageReceived;
     }
 
     private void Application_logMessageReceived(string condition, string stackTrace, LogType type)
@@ -53,23 +65,33 @@ public class DebugConsole : MonoBehaviour
 
     void AddLogMessage(string message, LogType type)
     {
-        string formattedMessage = $"[{System.DateTime.Now.ToLongTimeString()}] [{type.ToString()}] {message}";
+        string color = "";
+        switch (type)
+        {
+            case LogType.Error:
+                color = "red";
+                break;
+            case LogType.Warning:
+                color = "yellow";
+                break;
+            default:
+                color = "white";
+                break;
+        }
+        string formattedMessage = $"<color={color}>[{System.DateTime.Now.ToLongTimeString()}] [{type.ToString()}] {message}</color>";
         logMessages.Add(formattedMessage);
 
         var textMesh = Instantiate(textPrefab, scrollRect.content);
-        StartCoroutine(UpdateTextAfterFrame(formattedMessage, textMesh));
+        StartCoroutine(scrollToBottomAfterText(textMesh, formattedMessage));
         scrollRect.verticalNormalizedPosition = 0f;
     }
 
-    IEnumerator UpdateTextAfterFrame(string newText, TextMeshProUGUI textMesh)
+    IEnumerator scrollToBottomAfterText(TextMeshProUGUI textMesh, string formattedMessage)
     {
-        textMesh.text = newText;
-        yield return new WaitForEndOfFrame(); // Wait until the next frame
+        textMesh.text = formattedMessage;
 
-        float preferredWidth = textMesh.preferredWidth;
-        float preferredHeight = textMesh.preferredHeight;
-
-        textMesh.rectTransform.sizeDelta = new Vector2(textPrefab.rectTransform.sizeDelta.x, preferredHeight);
+        yield return new WaitForSeconds(0.1f);
+        scrollRect.verticalNormalizedPosition = 0f;
     }
 
     public void ToggleConsole()
@@ -77,6 +99,7 @@ public class DebugConsole : MonoBehaviour
         consolePanel.SetActive(!consolePanel.activeSelf);
         if (consolePanel.activeSelf)
         {
+            scrollRect.verticalNormalizedPosition = 0f;
             inputField.Select();
         }
     }
@@ -88,7 +111,6 @@ public class DebugConsole : MonoBehaviour
         command.name = parts[0];
         command.args = new string[parts.Length - 1];
         Array.Copy(parts, 1, command.args, 0, parts.Length-1);
-        AddLogMessage(message, LogType.Log);
         onCommand?.Invoke(command);
     }
 

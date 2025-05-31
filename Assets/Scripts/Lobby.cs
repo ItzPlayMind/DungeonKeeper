@@ -47,7 +47,7 @@ public class Lobby : NetworkBehaviour
         {
             Instance = this;
             Matchmaking = new Matchmaking();
-            UpdateCharacters();
+            //UpdateCharacters();
             ResetTeams();
             DontDestroyOnLoad(gameObject);
         }
@@ -62,6 +62,9 @@ public class Lobby : NetworkBehaviour
         foreach (var item in dtos.characters)
         {
             characterPortraits[item.id].enabled = item.enabled;
+#if UNITY_EDITOR
+            characterPortraits[item.id].enabled = true;
+#endif
         }
     }
 

@@ -119,6 +119,8 @@ public class PlayerController : NetworkBehaviour
             scanTimer -= Time.deltaTime;
         if (stats.IsDead) return;
         inventory.UpdateItems();
+        if (DebugConsole.Active)
+            return;
         if (!attack.isAttacking || (special != null && special.UseRotation && special.isUsing))
         {
             Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(inputManager.MousePosition);
@@ -161,6 +163,8 @@ public class PlayerController : NetworkBehaviour
     {
         if (!IsLocalPlayer) return;
         if (stats.IsDead) return;
+        if (DebugConsole.Active)
+            return;
         Vector2 input = inputManager.PlayerMovement;
         input = input.normalized;
         if (animator != null)

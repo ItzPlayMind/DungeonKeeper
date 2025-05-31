@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ItemHoverOver : HoverOver<Item>
 {
-
+    [SerializeField] private Transform buttons;
+    [SerializeField] private UITextIcon buttonPrefab;
     [SerializeField] private TMPro.TextMeshProUGUI nameText;
     [SerializeField] private TMPro.TextMeshProUGUI cashText;
     [SerializeField] private RectTransform statBlock;
@@ -25,9 +27,43 @@ public class ItemHoverOver : HoverOver<Item>
     [SerializeField] private TMPro.TextMeshProUGUI descriptionText;
     [SerializeField] private RectTransform description;
 
+    public class InputButton
+    {
+        public InputAction action;
+        public string text;
+
+        public InputButton(InputAction action, string text)
+        {
+            this.action = action;
+            this.text = text;
+        }
+    }
+
+    public static void Show(Item item, params InputButton[] buttons)
+    {
+        HoverOver<Item>.Show(item);
+        foreach (var button in buttons)
+            (Instance as ItemHoverOver).AddButton(button);
+    }
+
+    public void AddButton(InputButton button)
+    {
+        var b = Instantiate(buttonPrefab, buttons);
+        b.Text = button.text;
+        b.Icon = InputManager.GetIconForKey(button.action);
+    }
+
+    public void RemoveAllButtons()
+    {
+        for (int i = 0; i < buttons.childCount; i++)
+        {
+            Destroy(buttons.GetChild(i).gameObject);
+        }
+    }
 
     protected override void _Show(Item item)
     {
+        RemoveAllButtons();
         nameText.text = item.Name;
         cashText.text = item.cost.ToString();
         if (item.stats != null) {

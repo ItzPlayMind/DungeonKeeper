@@ -363,60 +363,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Active Item 1"",
-                    ""type"": ""Button"",
-                    ""id"": ""70aac93c-b04f-499a-8a9d-b2b87d297a72"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Active Item 2"",
-                    ""type"": ""Button"",
-                    ""id"": ""a8230654-7699-4c90-9862-20e83265e2b5"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Active Item 3"",
-                    ""type"": ""Button"",
-                    ""id"": ""6c570b34-b92b-4b14-8313-dba5c203320a"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Active Item 4"",
-                    ""type"": ""Button"",
-                    ""id"": ""f506bab9-2e17-45a9-abae-e00ad8877752"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Active Item 5"",
-                    ""type"": ""Button"",
-                    ""id"": ""9ddd1f71-4822-47e9-a889-32489e5783cb"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Active Item 6"",
-                    ""type"": ""Button"",
-                    ""id"": ""60dafd71-fe3b-4158-969b-b8497fcc8bec"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Details"",
                     ""type"": ""Button"",
                     ""id"": ""dd86172b-5e14-4cbf-9eda-74e809367538"",
@@ -444,72 +390,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Close"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""14f4ed2c-06e6-4cd3-9323-5aff01e06347"",
-                    ""path"": ""<Keyboard>/1"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Active Item 1"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""5ac5a1d6-d727-4cca-8701-f43a50d763db"",
-                    ""path"": ""<Keyboard>/2"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Active Item 2"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""3e1f9878-bbf8-4d4f-a4f4-5566599a3f7f"",
-                    ""path"": ""<Keyboard>/3"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Active Item 3"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""0784c005-ed6e-4d9b-935b-05e355f2d340"",
-                    ""path"": ""<Keyboard>/4"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Active Item 4"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""9a729b52-cee7-497a-90fd-f24ebd85ef16"",
-                    ""path"": ""<Keyboard>/5"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Active Item 5"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b149c2a9-530d-47c8-aaaf-281cdb53decc"",
-                    ""path"": ""<Keyboard>/6"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Active Item 6"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -585,12 +465,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_UI_Close = m_UI.FindAction("Close", throwIfNotFound: true);
         m_UI_Submit = m_UI.FindAction("Submit", throwIfNotFound: true);
         m_UI_Fullscreen = m_UI.FindAction("Fullscreen", throwIfNotFound: true);
-        m_UI_ActiveItem1 = m_UI.FindAction("Active Item 1", throwIfNotFound: true);
-        m_UI_ActiveItem2 = m_UI.FindAction("Active Item 2", throwIfNotFound: true);
-        m_UI_ActiveItem3 = m_UI.FindAction("Active Item 3", throwIfNotFound: true);
-        m_UI_ActiveItem4 = m_UI.FindAction("Active Item 4", throwIfNotFound: true);
-        m_UI_ActiveItem5 = m_UI.FindAction("Active Item 5", throwIfNotFound: true);
-        m_UI_ActiveItem6 = m_UI.FindAction("Active Item 6", throwIfNotFound: true);
         m_UI_Details = m_UI.FindAction("Details", throwIfNotFound: true);
         m_UI_DebugConsole = m_UI.FindAction("Debug Console", throwIfNotFound: true);
     }
@@ -867,12 +741,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_Close;
     private readonly InputAction m_UI_Submit;
     private readonly InputAction m_UI_Fullscreen;
-    private readonly InputAction m_UI_ActiveItem1;
-    private readonly InputAction m_UI_ActiveItem2;
-    private readonly InputAction m_UI_ActiveItem3;
-    private readonly InputAction m_UI_ActiveItem4;
-    private readonly InputAction m_UI_ActiveItem5;
-    private readonly InputAction m_UI_ActiveItem6;
     private readonly InputAction m_UI_Details;
     private readonly InputAction m_UI_DebugConsole;
     public struct UIActions
@@ -882,12 +750,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Close => m_Wrapper.m_UI_Close;
         public InputAction @Submit => m_Wrapper.m_UI_Submit;
         public InputAction @Fullscreen => m_Wrapper.m_UI_Fullscreen;
-        public InputAction @ActiveItem1 => m_Wrapper.m_UI_ActiveItem1;
-        public InputAction @ActiveItem2 => m_Wrapper.m_UI_ActiveItem2;
-        public InputAction @ActiveItem3 => m_Wrapper.m_UI_ActiveItem3;
-        public InputAction @ActiveItem4 => m_Wrapper.m_UI_ActiveItem4;
-        public InputAction @ActiveItem5 => m_Wrapper.m_UI_ActiveItem5;
-        public InputAction @ActiveItem6 => m_Wrapper.m_UI_ActiveItem6;
         public InputAction @Details => m_Wrapper.m_UI_Details;
         public InputAction @DebugConsole => m_Wrapper.m_UI_DebugConsole;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
@@ -908,24 +770,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Fullscreen.started += instance.OnFullscreen;
             @Fullscreen.performed += instance.OnFullscreen;
             @Fullscreen.canceled += instance.OnFullscreen;
-            @ActiveItem1.started += instance.OnActiveItem1;
-            @ActiveItem1.performed += instance.OnActiveItem1;
-            @ActiveItem1.canceled += instance.OnActiveItem1;
-            @ActiveItem2.started += instance.OnActiveItem2;
-            @ActiveItem2.performed += instance.OnActiveItem2;
-            @ActiveItem2.canceled += instance.OnActiveItem2;
-            @ActiveItem3.started += instance.OnActiveItem3;
-            @ActiveItem3.performed += instance.OnActiveItem3;
-            @ActiveItem3.canceled += instance.OnActiveItem3;
-            @ActiveItem4.started += instance.OnActiveItem4;
-            @ActiveItem4.performed += instance.OnActiveItem4;
-            @ActiveItem4.canceled += instance.OnActiveItem4;
-            @ActiveItem5.started += instance.OnActiveItem5;
-            @ActiveItem5.performed += instance.OnActiveItem5;
-            @ActiveItem5.canceled += instance.OnActiveItem5;
-            @ActiveItem6.started += instance.OnActiveItem6;
-            @ActiveItem6.performed += instance.OnActiveItem6;
-            @ActiveItem6.canceled += instance.OnActiveItem6;
             @Details.started += instance.OnDetails;
             @Details.performed += instance.OnDetails;
             @Details.canceled += instance.OnDetails;
@@ -945,24 +789,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Fullscreen.started -= instance.OnFullscreen;
             @Fullscreen.performed -= instance.OnFullscreen;
             @Fullscreen.canceled -= instance.OnFullscreen;
-            @ActiveItem1.started -= instance.OnActiveItem1;
-            @ActiveItem1.performed -= instance.OnActiveItem1;
-            @ActiveItem1.canceled -= instance.OnActiveItem1;
-            @ActiveItem2.started -= instance.OnActiveItem2;
-            @ActiveItem2.performed -= instance.OnActiveItem2;
-            @ActiveItem2.canceled -= instance.OnActiveItem2;
-            @ActiveItem3.started -= instance.OnActiveItem3;
-            @ActiveItem3.performed -= instance.OnActiveItem3;
-            @ActiveItem3.canceled -= instance.OnActiveItem3;
-            @ActiveItem4.started -= instance.OnActiveItem4;
-            @ActiveItem4.performed -= instance.OnActiveItem4;
-            @ActiveItem4.canceled -= instance.OnActiveItem4;
-            @ActiveItem5.started -= instance.OnActiveItem5;
-            @ActiveItem5.performed -= instance.OnActiveItem5;
-            @ActiveItem5.canceled -= instance.OnActiveItem5;
-            @ActiveItem6.started -= instance.OnActiveItem6;
-            @ActiveItem6.performed -= instance.OnActiveItem6;
-            @ActiveItem6.canceled -= instance.OnActiveItem6;
             @Details.started -= instance.OnDetails;
             @Details.performed -= instance.OnDetails;
             @Details.canceled -= instance.OnDetails;
@@ -1012,12 +838,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnClose(InputAction.CallbackContext context);
         void OnSubmit(InputAction.CallbackContext context);
         void OnFullscreen(InputAction.CallbackContext context);
-        void OnActiveItem1(InputAction.CallbackContext context);
-        void OnActiveItem2(InputAction.CallbackContext context);
-        void OnActiveItem3(InputAction.CallbackContext context);
-        void OnActiveItem4(InputAction.CallbackContext context);
-        void OnActiveItem5(InputAction.CallbackContext context);
-        void OnActiveItem6(InputAction.CallbackContext context);
         void OnDetails(InputAction.CallbackContext context);
         void OnDebugConsole(InputAction.CallbackContext context);
     }

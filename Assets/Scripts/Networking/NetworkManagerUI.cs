@@ -12,6 +12,7 @@ public class NetworkManagerUI : MonoBehaviour
 {
     UnityTransport transport;
     NetworkManager networkManager;
+    [SerializeField] private GameObject howToPlay;
     [SerializeField] private GameObject loadingScreen;
     [SerializeField] private Button playButton;
     [SerializeField] private GameObject matchmakingUI;
@@ -155,6 +156,16 @@ public class NetworkManagerUI : MonoBehaviour
             Lobby.Instance.Matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
             Lobby.Instance.SetLobbyCode("");
         }
+    }
+
+    public void RemoveAllKeybindings()
+    {
+        RebindActionUI.ResetAllToDefault();
+    }
+
+    public void ToggleHowToPlay()
+    {
+        howToPlay.SetActive(!howToPlay.activeSelf);
     }
 
     private void Update()

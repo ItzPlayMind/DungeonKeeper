@@ -21,11 +21,6 @@ public class PlayerStatisticsSystem : NetworkBehaviour
         Name = playerName;
     }
 
-    private void OnApplicationQuit()
-    {
-        PlayerPrefs.Save();
-    }
-
     public override void OnNetworkSpawn()
     {
         PlayerPrefs.SetString(PLAYER_NAME, Name);

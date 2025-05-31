@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Skeleton : NetworkBehaviour
 {
@@ -20,10 +21,16 @@ public class Skeleton : NetworkBehaviour
     private CharacterStats target;
     private Animator animator;
     private Rigidbody2D rb;
+    private NavMeshAgent agent;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+        agent.stoppingDistance = explosionRange-0.2f;
     }
 
     public override void OnNetworkSpawn()
@@ -51,10 +58,15 @@ public class Skeleton : NetworkBehaviour
         if (state != State.Running) return;
         Vector2 dir = (target.transform.position- transform.position).normalized;
         facingRight.Value = dir.x < 0;
-        rb.velocity = dir * 1.5f;
         float distance = Vector2.Distance(transform.position, target.transform.position);
         if (distance <= explosionRange)
             Explode();
+        agent.SetDestination(target.transform.position);
+        if (agent.pathStatus != NavMeshPathStatus.PathComplete)
+        {
+            Explode();
+            return;
+        }
     }
 
     public void SpawnFinished()
@@ -64,6 +76,7 @@ public class Skeleton : NetworkBehaviour
 
     private void Explode()
     {
+        agent.isStopped = true;
         rb.velocity = Vector2.zero;
         state = State.Explode;
         animator.SetTrigger("Explode");

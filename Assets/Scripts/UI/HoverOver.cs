@@ -6,7 +6,7 @@ using UnityEngine;
 
 public abstract class HoverOver<T> : MonoBehaviour
 {
-    private static HoverOver<T> Instance;
+    protected static HoverOver<T> Instance;
     private GameObject gfx;
 
     private void Awake()

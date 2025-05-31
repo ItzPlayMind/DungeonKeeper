@@ -60,7 +60,7 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IDropHan
     {
         var item = inventory.GetItem(slot);
         if(item == null) return;
-        ItemHoverOver.Show(item);
+        ItemHoverOver.Show(item, new ItemHoverOver.InputButton(InputManager.Instance.PlayerControls.Combat.Attack, "Sell"));
     }
 
     public void OnPointerExit(PointerEventData eventData)

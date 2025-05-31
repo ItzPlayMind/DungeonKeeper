@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
+using UnityEngine.UIElements;
 
 public class InputManager : MonoBehaviour
 {
@@ -24,6 +27,9 @@ public class InputManager : MonoBehaviour
 
     [SerializeField] private float bufferTime;
     private Dictionary<InputAction, float> buffer = new Dictionary<InputAction, float>();
+
+
+    private static Stack<EscapeClosableWindow> windows = new Stack<EscapeClosableWindow>();
 
     private PlayerInput playerControls;
 
@@ -117,7 +123,7 @@ public class InputManager : MonoBehaviour
     private void Awake()
     {
         fullscreen = Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen;
-        if (instance != null && instance != this)
+        if (instance != null)
         {
             Destroy(gameObject);
             return;
@@ -139,6 +145,13 @@ public class InputManager : MonoBehaviour
         {
             playerInteractHold = state.interaction is HoldInteraction;
             playerInteractTrigger = state.interaction is TapInteraction;
+        };
+        playerControls.UI.Close.performed += (state) =>
+        {
+            if (windows.Count > 0)
+            {
+                windows.Pop().CloseOnEscape();
+            }
         };
         //AddToSave(this);
     }
@@ -183,12 +196,63 @@ public class InputManager : MonoBehaviour
 
     private void OnEnable()
     {
+        var rebinds = PlayerPrefs.GetString(Config.KEYBINDS_SAVE_KEY);
+        if (!string.IsNullOrEmpty(rebinds))
+            playerControls.asset.LoadBindingOverridesFromJson(rebinds);
         playerControls?.Enable();
     }
 
     private void OnDisable()
     {
-        playerControls?.Disable();
+        if (playerControls != null)
+        {
+            var rebinds = playerControls.asset.SaveBindingOverridesAsJson();
+            PlayerPrefs.SetString(Config.KEYBINDS_SAVE_KEY, rebinds);
+            playerControls.Disable();
+        }
+    }
+
+    public static Sprite GetIconForKey(InputAction action)
+    {
+        foreach (var binding in action.bindings)
+        {
+            // Skip composite parts if needed
+            if (binding.isPartOfComposite)
+                continue;
+            var path = binding.effectivePath.Replace("<", "").Replace(">", "").ToUpper();
+            return Resources.Load<Sprite>("Buttons/" + path);
+        }
+        return null;
+    }
+
+    public static Sprite GetIconForBinding(InputBinding binding)
+    {
+        var path = binding.effectivePath.Replace("<", "").Replace(">", "").ToUpper();
+        //Debug.Log(path);
+        return Resources.Load<Sprite>("Buttons/" + path);
+    }
+
+    public void AddEscapeClosableWindow(EscapeClosableWindow window)
+    {
+        windows.Push(window);
+    }
+
+    public void RemoveEscapeClosableWindow(EscapeClosableWindow window)
+    {
+        var stack = windows.ToList();
+        windows.Clear();
+        foreach (var item in stack)
+        {
+            if(item != window)
+            {
+                windows.Push(item);
+            }
+        }
+    }
+
+    private void OnLevelWasLoaded(int level)
+    {
+        windows.Clear();
     }
 
     //private Cinemachine.CinemachinePOV pov;
@@ -209,31 +273,5 @@ public class InputManager : MonoBehaviour
     //    pov.m_VerticalAxis.m_MaxSpeed = defaultVerticalSpeed * (scoped ? Scope_Sensitivity : Sensitivity);
     //}
 
-    //public void Save()
-    //{
-    //    var bindingsString = playerControls.asset.SaveBindingOverridesAsJson();
-    //    PlayerPrefs.SetString(SaveSystem.BINDINGS, bindingsString);
-    //    PlayerPrefs.SetFloat(SaveSystem.SENSITIVITY, Sensitivity);
-    //    PlayerPrefs.SetFloat(SaveSystem.SCOPE_SENSITIVITY, Scope_Sensitivity);
-    //    PlayerPrefs.SetFloat(SaveSystem.CROSSHAIR_COLOR_RED, crosshairColor.r);
-    //    PlayerPrefs.SetFloat(SaveSystem.CROSSHAIR_COLOR_GREEN, crosshairColor.g);
-    //    PlayerPrefs.SetFloat(SaveSystem.CROSSHAIR_COLOR_BLUE, crosshairColor.b);
-    //    PlayerPrefs.SetFloat(SaveSystem.CROSSHAIR_SIZE, crosshairSize);
-    //    PlayerPrefs.SetFloat(SaveSystem.MINIMAP_SIZE, miniMapSize);
-    //}
 
-    //public void OnSave(ref Data data)
-    //{
-    //    Save();
-    //}
-
-    //public void OnLoad(Data data)
-    //{
-    //    playerControls.asset.LoadBindingOverridesFromJson(PlayerPrefs.GetString(SaveSystem.BINDINGS));
-    //    Sensitivity = PlayerPrefs.GetFloat(SaveSystem.SENSITIVITY);
-    //    CrosshairColor = new Color(PlayerPrefs.GetFloat(SaveSystem.CROSSHAIR_COLOR_RED), PlayerPrefs.GetFloat(SaveSystem.CROSSHAIR_COLOR_GREEN), PlayerPrefs.GetFloat(SaveSystem.CROSSHAIR_COLOR_BLUE), 1);
-    //    CrosshairSize = PlayerPrefs.GetFloat(SaveSystem.CROSSHAIR_SIZE);
-    //    MiniMapSize = PlayerPrefs.GetFloat(SaveSystem.MINIMAP_SIZE);
-    //    Scope_Sensitivity = PlayerPrefs.GetFloat(SaveSystem.SCOPE_SENSITIVITY);
-    //}
 }

@@ -9,4 +9,6 @@ public static class Config
     public const string MATCHMAKING_LOBBY_ROUTES = "lobby";
     public const string CHARACTERS_ROUTE = "characters";
     public const string EXTERNAL_IP = "https://ipinfo.io/ip";
+
+    public const string KEYBINDS_SAVE_KEY = "rebinds";
 }

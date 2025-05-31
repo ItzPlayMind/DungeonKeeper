@@ -129,7 +129,7 @@ public class ShopPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             var iconButton = Instantiate(iconButtonPrefab, shopTransforms[(int)item.type]);
             iconButton.transform.GetChild(0).GetComponent<Image>().sprite = item.icon;
             var hoverEvent = iconButton.GetComponent<HoverEvent>();
-            hoverEvent.onPointerEnter += () => ItemHoverOver.Show(item);
+            hoverEvent.onPointerEnter += () => ItemHoverOver.Show(item, new ItemHoverOver.InputButton(InputManager.Instance.PlayerControls.Combat.Attack, "Buy"));
             hoverEvent.onPointerExit += () => ItemHoverOver.Hide();
 
             var buttonListener = new Button.ButtonClickedEvent();
