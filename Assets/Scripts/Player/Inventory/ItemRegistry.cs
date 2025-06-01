@@ -27,7 +27,7 @@ public class ItemRegistry : Registry<Item>
         });
         potion.multiple = true;
 
-        var torch = AddItem("Torch", "torch", CharacterType.None, "On use place a torch", null, 50, 0, null, (Item item, CharacterStats stats, int slot) =>
+        /*var torch = AddItem("Torch", "torch", CharacterType.None, "On use place a torch", null, 50, 0, null, (Item item, CharacterStats stats, int slot) =>
         {
             var mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
             var dir = (mouseWorldPos - stats.transform.position);
@@ -40,22 +40,26 @@ public class ItemRegistry : Registry<Item>
             GameManager.instance.SetTorch(pos);
             stats.GetComponent<Inventory>().RemoveItem(slot);
         });
-        torch.multiple = true;
+        torch.multiple = true;*/
 
         AddConsumable("Runestone I", "runestone_1", CharacterType.None, "On buy unlocks the first upgrade of the special", null, 3000, (Item item, CharacterStats stats, int slot) =>
         {
+            if (!stats.IsLocalPlayer) return;
             stats.GetComponent<AbstractSpecial>().UnlockUpgrade(0);
         });
         AddConsumable("Runestone II", "runestone_2", CharacterType.None, "On buy unlocks the second upgrade of the special", null, 4000, (Item item, CharacterStats stats, int slot) =>
         {
+            if (!stats.IsLocalPlayer) return;
             stats.GetComponent<AbstractSpecial>().UnlockUpgrade(1);
         });
         AddConsumable("Runestone III", "runestone_3", CharacterType.None, "On buy unlocks the third upgrade of the special", null, 5000, (Item item, CharacterStats stats, int slot) =>
         {
+            if (!stats.IsLocalPlayer) return;
             stats.GetComponent<AbstractSpecial>().UnlockUpgrade(2);
         });
         var fateScroll = AddConsumable("Scroll of Fate", "scroll_of_fate", CharacterType.None, "On buy gain 3 random Fates, 1 can be chosen", null, 2000, (Item item, CharacterStats stats, int slot) =>
         {
+            if (!stats.IsLocalPlayer) return;
             ShopPanel.Instance.Toggle();
             (GameManager.instance as ArenaGameManager).CardSelection.gameObject.SetActive(true);
         });
@@ -237,8 +241,8 @@ public class ItemRegistry : Registry<Item>
                 
             });
 
-        AddItemWithVariables("Jesters Dagger", "dagger_01", CharacterType.Damage, "On use blink to the targeted position. Afterwards become invisible for {InvisibleDuration} seconds", new StatBlock(20, 0, 15, 5, 50, 0), 2100, 1,
-           new Dictionary<string, Variable>() { { "InvisibleDuration", new Variable() { value = 3, color = "white" } } },
+        AddItemWithVariables("Jesters Dagger", "dagger_01", CharacterType.Damage, "On use blink to the targeted position. Afterwards become invisible for {InvisibleDuration} seconds", new StatBlock(20, 0, 15, 5, 50, 0), 2100, 40,
+           new Dictionary<string, Variable>() { { "InvisibleDuration", new Variable() { value = 30, color = "white" } } },
            null, (item, stats, _) =>
            {
                var mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
@@ -312,7 +316,7 @@ public class ItemRegistry : Registry<Item>
                     if (targetStats == null) return;
                     if (targetStats.Health - damage < targetStats.stats.health.Value * ((float)item.variables["ExecutePerc"].value / 100f))
                     {
-                        targetStats.TakeDamage(10000, Vector2.zero, stats);
+                        damage = 10000;
                         item.StartCooldown();
                     }
                 });
@@ -338,7 +342,7 @@ public class ItemRegistry : Registry<Item>
             });
 
 
-        var spear = AddItem("Battlemage Spear", "spear_01", CharacterType.Support, "On use reset current special cooldown", new StatBlock(0, 20, 0, 0, 50, 0), 2000, 0,
+        var spear = AddItem("Battlemage Spear", "spear_01", CharacterType.Support, "On use reset current special cooldown", new StatBlock(0, 20, 0, 0, 50, 0), 2000, 40,
             null, (item, stats, _) =>
             {
                 stats.GetComponent<AbstractSpecial>().SetCooldown(0);
@@ -514,7 +518,7 @@ public class ItemRegistry : Registry<Item>
                });
            });
 
-        var box = AddItem("Magical Box", "wooden_box", CharacterType.Support, "On use place a torch",
+        /*var box = AddItem("Magical Box", "wooden_box", CharacterType.Support, "On use place a torch",
            new StatBlock(0, 15, 0, 5, 0, 0), 1400, 10, null, (item, stats, _) =>
            {
                var mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
@@ -527,7 +531,7 @@ public class ItemRegistry : Registry<Item>
                    pos = mouseWorldPos;
                GameManager.instance.SetTorch(pos);
                item.StartCooldown();
-           });
+           });*/
 
         var ring = AddItemWithVariables("Miners Ring", "ring_02", CharacterType.Support, "Increase own light range by {LightMult}x. Hitting a target applies lit to them for {LitDuration} seconds.", new StatBlock(0, 15, 0, 5, 50, 0), 1200,5,
             new Dictionary<string, Variable>() { { "LightMult", new Variable() { value = 2f } }, { "LitDuration", new Variable() { value = 5 } } }, (item, stats, _) =>
@@ -548,8 +552,8 @@ public class ItemRegistry : Registry<Item>
                     item.StartCooldown();
                 });
             });
-        ring.sameItems.Add(box.ID);
-        box.sameItems.Add(ring.ID);
+        //ring.sameItems.Add(box.ID);
+        //box.sameItems.Add(ring.ID);
 
         AddItemWithVariables("Bleeding Scythe", "scythe", CharacterType.Damage, "Applies Bleeding for {BleedTime} seconds on attack. The Bleed deals {Damage} every 1 second. Can only happen every {Cooldown} seconds.", new StatBlock(25, 0, 10, 5, 25, 0), 1400, 2,
             new Dictionary<string, Variable>() { { "BleedTime", new Variable() { value = 5 } }, { "BaseDamage", new Variable() { value = 5 } }, { "Damage", new Variable() { value = 5, color = "red" } }, { "DamageScaling", new Variable() { value = 10f, color = "red" } } }, (item, stats, _) =>

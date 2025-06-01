@@ -32,7 +32,7 @@ public class EffectManager : NetworkBehaviour
         {
             if (activeEffects[effect.ID].amount <= effect.amount)
             {
-                activeEffects[effect.ID].End(stats);
+                activeEffects[effect.ID].End(stats); 
                 activeEffects.Remove(effect.ID);
             }
             else return;
@@ -67,6 +67,23 @@ public class EffectManager : NetworkBehaviour
         var effect = (EffectRegistry.Instance as EffectRegistry).CreateEffect(id, duration, amount);
         effect.applier = applier;
         AddEffect(effect);
+    }
+
+    public void EndEffect(string id)
+    {
+        EndEffectServerRPC(id);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void EndEffectServerRPC(string id)
+    {
+        EndEffectClientRPC(id);
+    }
+
+    [ClientRpc]
+    public void EndEffectClientRPC(string id)
+    {
+        activeEffects[id].End(stats);
     }
 
     public bool HasEffect(string id)

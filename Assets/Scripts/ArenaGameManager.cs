@@ -62,7 +62,6 @@ public class ArenaGameManager : GameManager
 
     public override void OnNetworkSpawn()
     {
-        base.OnNetworkSpawn();
         ChangePhaseText("Prepare", Color.blue);
         phaseTimer.OnValueChanged += (float old, float newValue) =>
         {
@@ -121,6 +120,8 @@ public class ArenaGameManager : GameManager
             AddCardToPlayer(card);
             Debug.Log("Card added");
         }, "card", "add");
+
+        base.OnNetworkSpawn();
     }
 
     private void SetupWinConditionForTeams()

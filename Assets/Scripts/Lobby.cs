@@ -258,6 +258,10 @@ public class Lobby : NetworkBehaviour
         readyState.Remove(id);
         LobbyPanel.Instance.RemoveReadyState(id);
         playerCount--;
+        if (selectedCharacters.ContainsKey(id)) { 
+            var characterIndex = selectedCharacters[id];
+            ChangeLockStateClientRpc(characterIndex, false);
+        }
         UpdatePlayerCountServerRpc(playerCount);
     }
 

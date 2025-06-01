@@ -1,9 +1,13 @@
 Other Characters (5 USD+): https://zerie.itch.io/tiny-rpg-character-asset-pack
 
-Gameplay Test v0.1.0:
-- HP Bar doesnt update (/)
-- Ghost HP bar old Images (/)
-- Item empty icon missing (/)
-- Wind Sigil does not work correctly (Moving Part) (/)
-- Upgrade 1 not unlocked (/)
-- Wizard Upgrade 2 Variable Names visible (/)
+Gameplay Test v0.1.3:
+- Consumables bought for everyone (/)
+- Armored Skeleton no healthbar (/)
+- Effects not beeing cancelled for everyone (/)
+- Jester Dagger & Druids Wand Cooldowns not set (/)
+- Guillutine instantly finishing round (/)
+- Wizard Attack speed and Damage down (/)
+- UI for different Screen sizes (/)
+- Remove Ghost (Disabled for now) (/)
+- Remove Torches & Box (Not needed anymore) (Disabled for now) (/)
+- Leaving with character selected locks it (/)

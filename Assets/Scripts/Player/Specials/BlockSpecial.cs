@@ -5,7 +5,6 @@ using Unity.Netcode;
 
 public class BlockSpecial : AbstractSpecial
 {
-    [SerializeField] private float knockBackForce = 35;
     [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int counterDuration = 10;
     [DescriptionCreator.DescriptionVariable("white")]
@@ -32,7 +31,7 @@ public class BlockSpecial : AbstractSpecial
             if (isBlocking)
             {
                 var enemy = NetworkManager.Singleton.SpawnManager.SpawnedObjects[damager].GetComponent<CharacterStats>();
-                DealDamage(enemy,damage, enemy.GenerateKnockBack(enemy.transform, transform, knockBackForce));
+                DealDamage(enemy,damage, Vector2.zero);
                 StartActive();
             }
         };

@@ -78,14 +78,15 @@ public class EffectRegistry : Registry<Effect>
         {
             var controller = stats.GetComponent<PlayerController>();
             var attack = stats.GetComponent<PlayerAttack>();
+            var effectManager = stats.GetComponent<EffectManager>();
             controller.GFX.color = new Color(1f, 1f, 1f, stats.IsLocalPlayer ? 25/255f : 0f);
             AddToAction(effect, () => stats.OnClientTakeDamage, (value) => stats.OnClientTakeDamage = value, (ulong damager, int damage) =>
             {
-                effect.End(stats);
+                effectManager.EndEffect(effect.ID);
             });
             AddToAction(effect, () => attack.OnAttackPress, (value) => attack.OnAttackPress = value, () =>
             {
-                effect.End(stats);
+                effectManager.EndEffect(effect.ID);
             });
             effect.onEnd += (Effect effect, CharacterStats stats) =>
             {
