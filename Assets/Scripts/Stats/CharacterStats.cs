@@ -79,7 +79,7 @@ public class CharacterStats : NetworkBehaviour
         currentHealth.OnValueChanged += (int oldValue, int newValue) => OnHealthChange?.Invoke(oldValue, newValue);
     }
 
-    public void TakeDamage(int damage, Vector2 knockback, CharacterStats damager)
+    public void TakeDamage(int damage, Vector2 knockback, CharacterStats damager, float stagger = 0f)
     {
         if (!enabled) return;
         if (IsDead)
@@ -89,21 +89,21 @@ public class CharacterStats : NetworkBehaviour
             {
                 ShowHealtBar();
             }
-        TakeDamageServerRPC(damage, knockback, damager == null ? ulong.MaxValue : damager.NetworkObjectId);
+        TakeDamageServerRPC(damage, knockback, damager == null ? ulong.MaxValue : damager.NetworkObjectId, stagger);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    protected virtual void TakeDamageServerRPC(int damage, Vector2 knockback, ulong damagerID)
+    protected virtual void TakeDamageServerRPC(int damage, Vector2 knockback, ulong damagerID, float stagger)
     {
         OnServerTakeDamage?.Invoke(damagerID, ref damage);
         currentHealth.Value -= Mathf.Max((int)(damage * (1 - (stats.damageReduction.Value / 100f))), 0);
-        TakeDamageClientRPC(damage, knockback, damagerID);
+        TakeDamageClientRPC(damage, knockback, damagerID, stagger);
         if (currentHealth.Value <= 0)
             Die(damagerID);
     }
 
     [ClientRpc]
-    protected virtual void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID)
+    protected virtual void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID, float stagger)
     {
         if (damagerID == PlayerController.LocalPlayer.NetworkObjectId)
             GameManager.instance.PrefabSystem.SpawnDamageNumber(transform.position,damage,Color.red);

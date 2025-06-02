@@ -16,6 +16,7 @@ public class PlayerMovement : NetworkBehaviour
     public bool canMove { get => (special != null && !special.isUsing) || (special != null && special.isUsing && special.CanMoveWhileUsing()); }
 
     private float speedAfterDamage;
+    private float staggerTime;
 
     private void Start()
     {
@@ -23,19 +24,22 @@ public class PlayerMovement : NetworkBehaviour
         special = GetComponent<AbstractSpecial>();
         rb = GetComponent<Rigidbody2D>();
         stats = GetComponent<PlayerStats>();
-        stats.OnClientTakeDamage += (_,_) =>
-        {
-            speedAfterDamage = 0.1f;
-        };
     }
 
     public void OnTeamAssigned()
     {
     }
+
+    public void Stagger(float time)
+    {
+        speedAfterDamage = 0.01f;
+        staggerTime = time;
+    }
+
     private void Update()
     {
         if (speedAfterDamage < 1)
-            speedAfterDamage = Math.Min(1, speedAfterDamage + Time.deltaTime * 10f);
+            speedAfterDamage = Math.Min(1, speedAfterDamage + Time.deltaTime / staggerTime);
     }
 
     public void Move(Vector2 input)

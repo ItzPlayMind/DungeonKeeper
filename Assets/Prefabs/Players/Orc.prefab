@@ -473,7 +473,7 @@ MonoBehaviour:
   axeReturnSpeed: 5
   axeDistance: 3
   damageIncrease: 10
-  cDReduce: 2
+  cDReduce: 6
   axe: {fileID: 0}
 --- !u!114 &7667477618547848654 stripped
 MonoBehaviour:

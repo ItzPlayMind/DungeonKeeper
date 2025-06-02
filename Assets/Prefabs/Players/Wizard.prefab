@@ -854,6 +854,7 @@ MonoBehaviour:
   attackRange: 1.5
   setRotation: 0
   knockBackForce: 0
+  stagger: 0
 --- !u!114 &4715831310541530647 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6811498739307238403, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}

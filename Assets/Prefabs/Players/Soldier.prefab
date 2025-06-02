@@ -1870,9 +1870,11 @@ MonoBehaviour:
   - damageMultiplier: 1
     knockBack: 4
     selfKnockBack: 0
+    stagger: 0.1
   - damageMultiplier: 1.2
     knockBack: 6
     selfKnockBack: 0
+    stagger: 0.2
   hitboxes: {fileID: 7232061464970721204}
   attackComboTime: 0.2
 --- !u!114 &3328234273386232486

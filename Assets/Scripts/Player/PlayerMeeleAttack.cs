@@ -11,6 +11,7 @@ public class PlayerMeeleAttack : PlayerAttack
         public float damageMultiplier = 1;
         public float knockBack = 4;
         public float selfKnockBack = 0;
+        public float stagger = 0.1f;
     }
 
     [SerializeField] private AttackSetting[] attackSettings = new AttackSetting[2];
@@ -38,7 +39,7 @@ public class PlayerMeeleAttack : PlayerAttack
                 {
                     var damage = (int)(this.stats.stats.damage.Value * attackSettings[currentAttack].damageMultiplier);
                     OnAttack?.Invoke(stats.NetworkObjectId, this.stats.NetworkObjectId, ref damage);
-                    stats.TakeDamage(damage, stats.GenerateKnockBack(stats.transform, transform, attackSettings[currentAttack].knockBack), this.stats);
+                    stats.TakeDamage(damage, stats.GenerateKnockBack(stats.transform, transform, attackSettings[currentAttack].knockBack), this.stats, attackSettings[currentAttack].stagger);
                 }
             };
         }

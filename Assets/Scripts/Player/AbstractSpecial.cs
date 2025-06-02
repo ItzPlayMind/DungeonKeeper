@@ -110,7 +110,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     public virtual bool CanMoveWhileUsing() => false;
 
-    public bool isUsing { get; private set; }
+    public bool isUsing { get; protected set; }
 
     private void Start()
     {

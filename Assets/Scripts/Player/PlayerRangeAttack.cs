@@ -9,8 +9,7 @@ public class PlayerRangeAttack : PlayerAttack
     [SerializeField] private float attackRange = 2;
     [SerializeField] private bool setRotation = false;
     [SerializeField] private float knockBackForce = 0;
-
-    
+    [SerializeField] private float stagger = 0.05f;
 
     protected override void OnAttackEnd()
     {
@@ -69,7 +68,7 @@ public class PlayerRangeAttack : PlayerAttack
                 
                 var damage = (int)(this.stats.stats.damage.Value);
                 OnAttack?.Invoke(stats.NetworkObjectId, this.stats.NetworkObjectId, ref damage);
-                stats.TakeDamage(damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), this.stats);
+                stats.TakeDamage(damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), this.stats, stagger);
             }
             OnAttackHit(obj,collider);
         };

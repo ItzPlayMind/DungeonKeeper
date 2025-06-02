@@ -25,6 +25,8 @@ public class AxeSpecial : AbstractSpecial
 
     private int ReturnDamage { get => returnDamage + (int)(characterStats.stats.specialDamage.Value * returnDamageMultiplier); }
 
+    //public override bool CanMoveWhileUsing() => true;
+
     protected override void _OnSpecialFinish(PlayerController controller)
     {
         SpawnAxeServerRPC(OwnerClientId, gameObject.layer);
@@ -131,6 +133,7 @@ public class AxeSpecial : AbstractSpecial
     protected override void _OnSpecialPress(PlayerController controller)
     {
         Use();
+        isUsing = false;
         returning = false;
         originalPos = transform.position;
         this.mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);

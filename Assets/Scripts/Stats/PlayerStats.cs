@@ -27,6 +27,7 @@ public class PlayerStats : CharacterStats
     [SerializeField] private float reviveTime = 30f;
 
     public System.Action OnClientRespawn;
+    private PlayerMovement movement;
 
     //[SerializeField] private GameObject hitPrefab;
     private Animator animator;
@@ -39,6 +40,7 @@ public class PlayerStats : CharacterStats
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        movement = GetComponent<PlayerMovement>();
         if (IsServer)
         {
             reviveArea.onCollisionEnter += (GameObject gb, ref bool hit) =>
@@ -96,7 +98,7 @@ public class PlayerStats : CharacterStats
             }, "player", "kill");
             /*InputManager.Instance.PlayerControls.Camera.Interact.performed += (_) =>
             {
-                TakeDamage(1, Vector2.zero, this);
+                TakeDamage(1, Vector2.zero, this, 1f);
             };*/
         }
         else
@@ -108,22 +110,23 @@ public class PlayerStats : CharacterStats
     }
 
     [ServerRpc(RequireOwnership = false)]
-    protected override void TakeDamageServerRPC(int damage, Vector2 knockback, ulong damagerID)
+    protected override void TakeDamageServerRPC(int damage, Vector2 knockback, ulong damagerID, float stagger)
     {
         healthTimer = GameManager.OUT_OF_COMBAT_TIME;
         /*if (NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagerID].GetComponent<PlayerStats>() != null)
             assistTimers[damagerID] = GameManager.instance.OUT_OF_COMBAT_TIME;*/
-        base.TakeDamageServerRPC(damage, knockback, damagerID);
+        base.TakeDamageServerRPC(damage, knockback, damagerID,stagger);
     }
 
     [ClientRpc]
-    protected override void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID)
+    protected override void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID, float stagger)
     {
         if (IsLocalPlayer)
         {
             CinemachineShake.Instance.Shake(0.5f, 0.1f);
+            movement.Stagger(stagger);
         }
-        base.TakeDamageClientRPC(damage, knockback, damagerID);
+        base.TakeDamageClientRPC(damage, knockback, damagerID, stagger);
     }
 
     protected override void Die(ulong damagerID)
