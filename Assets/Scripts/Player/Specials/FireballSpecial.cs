@@ -65,7 +65,8 @@ public class FireballSpecial : AbstractSpecial
 
     protected override void _OnSpecialFinish(PlayerController controller)
     {
-        SpawnFireballServerRPC(OwnerClientId, gameObject.layer);
+        Vector2 dir = (mouseWorldPos - (Vector2)transform.position).normalized;
+        SpawnFireballServerRPC(OwnerClientId, dir, gameObject.layer);
         StartActive();
         Finish();
     }
@@ -109,9 +110,10 @@ public class FireballSpecial : AbstractSpecial
     }
 
     [ServerRpc]
-    private void SpawnFireballServerRPC(ulong owner, int layer)
+    private void SpawnFireballServerRPC(ulong owner, Vector2 dir, int layer)
     {
         var networkObject = Instantiate(fireballPrefab, transform.position, Quaternion.identity);
+        networkObject.transform.rotation = Quaternion.FromToRotation(networkObject.transform.right, dir);
         networkObject.SpawnWithOwnership(owner);
         SpawnFireballClientRPC(networkObject.NetworkObjectId, layer);
     }
@@ -121,11 +123,9 @@ public class FireballSpecial : AbstractSpecial
     {
         if (!IsLocalPlayer)
             return;
-        Vector2 dir = (mouseWorldPos - (Vector2)transform.position).normalized;
         var fireball = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId].GetComponent<Rigidbody2D>();
         fireball.gameObject.layer = layer;
         fireball.GetComponent<SpriteRenderer>().material = GameManager.instance.UNLIT_MATERIAL;
-        fireball.transform.rotation = Quaternion.FromToRotation(fireball.transform.right, dir);
         fireball.AddForce(fireball.transform.right * fireballSpeed, ForceMode2D.Impulse);
         var fireballScript = fireball.GetComponent<Fireball>();
         fireballScript.onExplosionCollision += (GameObject collider, ref bool hit) =>

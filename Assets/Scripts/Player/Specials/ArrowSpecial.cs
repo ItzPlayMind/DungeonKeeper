@@ -106,7 +106,6 @@ public class ArrowSpecial : AbstractSpecial
             {
                 if (stats.gameObject.layer == gameObject.layer) return;
                 DealDamage(stats, DamageStacks, Vector2.zero);
-                SetCooldown(0);
                 stacks = Mathf.Clamp(stacks+1,0,maxStackCount);
                 UpdateAmountText(stacks.ToString());
                 hasHitTarget = true;

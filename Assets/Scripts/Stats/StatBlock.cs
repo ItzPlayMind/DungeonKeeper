@@ -108,12 +108,12 @@ public class StatBlock
         this.damageReduction = new Stat<int>(damageReduction);
         this.resource = new Stat<int>(resource);
 
-        this.damageReduction.ConstraintValue += (ref int value, int old) => { value = Mathf.Clamp(value, 0, 100); };
+        this.damageReduction.ConstraintValue += (ref int value, int old) => { value = Mathf.Clamp(value, 0, 99); };
         this.damage.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
         this.specialDamage.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
         this.health.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
         this.speed.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
-        this.attackSpeed.ConstraintValue += (ref int value, int old) => { value = Mathf.Clamp(value, 0, 100); };
+        this.attackSpeed.ConstraintValue += (ref int value, int old) => { value = Mathf.Clamp(value, 0, 200); };
         this.resource.ConstraintValue += (ref int value, int old) => { value = Mathf.Max(value, 0); };
     }
 

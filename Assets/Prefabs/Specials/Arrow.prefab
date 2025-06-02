@@ -166,6 +166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CanHitMultiple: 0
   range: 6
+  useRaycast: 1
   startPos: {x: 0, y: 0}
 --- !u!114 &7306826740333165070
 MonoBehaviour:

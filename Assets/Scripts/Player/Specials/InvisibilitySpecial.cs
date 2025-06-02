@@ -12,7 +12,7 @@ public class InvisibilitySpecial : AbstractSpecial
     [DescriptionCreator.DescriptionVariable("white")] private int cripple = 80;
     [SerializeField]
     [DescriptionCreator.DescriptionVariable("white")] private int crippleTime = 1;
-    public override bool CanMoveWhileUsing() => false;
+    public override bool CanMoveWhileUsing() => true;
 
     private SpriteRenderer gfx;
     private PlayerMeeleAttack controller;

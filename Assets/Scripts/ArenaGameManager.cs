@@ -52,6 +52,7 @@ public class ArenaGameManager : GameManager
     [SerializeField] private CharacterStats redTeamHealth;
     [SerializeField] private CharacterStats blueTeamHealth;
     [SerializeField] private Animator uiAnimator;
+    [SerializeField] private Cinemachine.CinemachineVirtualCamera lastKillCamera;
 
     private Objective currentBonusObjective;
     private List<NetworkObject> removeAfterRound = new List<NetworkObject>();
@@ -188,10 +189,9 @@ public class ArenaGameManager : GameManager
                 {
                     if (point.childCount == 0)
                     {
-                        var flask = Instantiate(flaskObject);
+                        var flask = Instantiate(flaskObject, point.position, Quaternion.identity);
                         flask.Spawn();
                         removeAfterRound.Add(flask);
-                        flask.transform.position = point.position;
                     }
                 }
                 SpawnAllPlayersInArena();
@@ -241,10 +241,10 @@ public class ArenaGameManager : GameManager
         var stats = player.GetComponent<PlayerStats>();
         if (Lobby.Instance.GetTeam(Team.Red).Contains(player.OwnerClientId))
         {
-            stats.OnServerDeath += (_) =>
+            stats.OnServerDeath += (id) =>
             {
                 redPlayersDead++;
-                CheckForEndOfRound();
+                CheckForEndOfRound(id);
             };
             stats.OnServerRespawn += () =>
             {
@@ -253,10 +253,10 @@ public class ArenaGameManager : GameManager
         }
         if (Lobby.Instance.GetTeam(Team.Blue).Contains(player.OwnerClientId))
         {
-            stats.OnServerDeath += (_) =>
+            stats.OnServerDeath += (id) =>
             {
                 bluePlayersDead++;
-                CheckForEndOfRound();
+                CheckForEndOfRound(id);
             };
             stats.OnServerRespawn += () =>
             {
@@ -265,18 +265,42 @@ public class ArenaGameManager : GameManager
         }
     }
 
-    private void CheckForEndOfRound()
+    private void CheckForEndOfRound(ulong lastID)
     {
         if (redPlayersDead == Lobby.Instance.GetTeam(Team.Red).Count)
         {
             redTeamHealth.TakeDamage(DAMAGE_PER_ROUND * round.Value, Vector2.zero, null);
-            ChangePhase();
+            StartCoroutine(BattlePhaseEnd(lastID));
         }
         if (bluePlayersDead == Lobby.Instance.GetTeam(Team.Blue).Count)
         {
             blueTeamHealth.TakeDamage(DAMAGE_PER_ROUND * round.Value, Vector2.zero, null);
-            ChangePhase();
+            StartCoroutine(BattlePhaseEnd(lastID));
         }
+    }
+
+    private IEnumerator BattlePhaseEnd(ulong id)
+    {
+        ShowLastKillClientRPC(id);
+        yield return new WaitForSeconds(4f*Time.timeScale);
+        ChangePhase();
+        ResetLastKillClientRPC();
+    }
+
+    [ClientRpc]
+    private void ShowLastKillClientRPC(ulong lastID)
+    {
+        lastKillCamera.gameObject.SetActive(true);
+        var networkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[lastID];
+        lastKillCamera.Follow = networkObject.transform;
+        Time.timeScale = 0.5f;
+    }
+
+    [ClientRpc]
+    private void ResetLastKillClientRPC()
+    {
+        lastKillCamera.gameObject.SetActive(false);
+        Time.timeScale = 1f;
     }
 
     private void AddCashToAllPlayers(int cash)

@@ -1853,6 +1853,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b4f75026e2526340961769f07facaf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackingSpeedMultiplier: 0.05
 --- !u!114 &3107465351032906959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1892,10 +1893,10 @@ MonoBehaviour:
   description: 'Shoot an arrow which deals {DamageStacks} damage to an enemy hit.
 
     Hitting
-    an enemy refundes a charge and adds a stack increasing damage by {DamagePerStack}
-    damage.
+    an enemy adds a stack increasing damage by {DamagePerStack} damage.
 
-    This special has {MaxResource} charges.'
+    This
+    special has {MaxResource} charges.'
   upgrades:
   - name: Deeper Quiver
     description: Increases Resource by 2
@@ -2041,7 +2042,7 @@ MonoBehaviour:
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
-  Interpolate: 0
+  Interpolate: 1
   SlerpPosition: 0
 --- !u!114 &4963874884400546289
 MonoBehaviour:

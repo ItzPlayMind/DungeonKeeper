@@ -94,6 +94,10 @@ public class PlayerStats : CharacterStats
                 if (command.args.Length != 1) return;
                 TakeDamage(1000000, Vector2.zero, this);
             }, "player", "kill");
+            /*InputManager.Instance.PlayerControls.Camera.Interact.performed += (_) =>
+            {
+                TakeDamage(1, Vector2.zero, this);
+            };*/
         }
         else
         {
@@ -116,7 +120,9 @@ public class PlayerStats : CharacterStats
     protected override void TakeDamageClientRPC(int damage, Vector2 knockback, ulong damagerID)
     {
         if (IsLocalPlayer)
+        {
             CinemachineShake.Instance.Shake(0.5f, 0.1f);
+        }
         base.TakeDamageClientRPC(damage, knockback, damagerID);
     }
 
