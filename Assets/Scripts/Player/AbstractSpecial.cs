@@ -17,6 +17,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
     {
         [SerializeField] private string name;
         public string Name { get => name; }
+        [Multiline]
         [SerializeField] private string description;
 
         [SerializeField] private HoverEvent hoverEvent;

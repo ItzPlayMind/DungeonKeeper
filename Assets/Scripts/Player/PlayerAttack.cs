@@ -54,6 +54,9 @@ public abstract class PlayerAttack : NetworkBehaviour
             case AnimationEventSender.AnimationEvent.SelfKnockBack:
                 OnSelfKnockback();
                 break;
+            case AnimationEventSender.AnimationEvent.SpawnAttack:
+                OnSpawnAttack();
+                break;
             default:
                 break;
         }
@@ -61,7 +64,8 @@ public abstract class PlayerAttack : NetworkBehaviour
 
 
     protected abstract void OnAttackEnd();
-    protected abstract void OnSelfKnockback();
+    protected virtual void OnSelfKnockback() { }
+    protected virtual void OnSpawnAttack() { }
 
     public virtual void OnTeamAssigned() {}
 

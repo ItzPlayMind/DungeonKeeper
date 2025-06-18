@@ -90,7 +90,7 @@ public class PlayerRangeAttack : PlayerAttack
 
     protected virtual void OnAttackHit(NetworkObject obj, GameObject collider) { }
 
-    protected override void OnSelfKnockback()
+    protected override void OnSpawnAttack()
     {
         Vector2 worldMousePos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
         SpawnProjectileServerRPC(worldMousePos, gameObject.layer);

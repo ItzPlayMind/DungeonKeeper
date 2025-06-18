@@ -40,6 +40,7 @@ public class PlayerStats : CharacterStats
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        CanRevive = GameManager.instance.RESPAWN_TIME.Value != -1;
         movement = GetComponent<PlayerMovement>();
         if (IsServer)
         {

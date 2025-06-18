@@ -39,6 +39,7 @@ public class Lobby : NetworkBehaviour
         [HideInInspector] public GameObject selectionObject;
         [HideInInspector] public bool enabled = true;
     }
+    [SerializeField] private GameObject loadingScreen;
     public static Lobby Instance { get; private set; }
     // Start is called before the first frame update
     private void Awake()
@@ -150,6 +151,10 @@ public class Lobby : NetworkBehaviour
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
             GameManager.OnInstanceSet += SpawnGameManager;
+            GetComponent<NetworkLevelLoader>().OnAllClientsLoaded += () =>
+            {
+                var currentGameMode = Instantiate(CurrentGameMode.gameManagerPrefab);
+            };
         }
         LobbyPanel.Instance.StartButton.gameObject.SetActive(IsHost);
         LobbyPanel.Instance.ReadyButton.GetComponent<Image>().color = Color.red;
@@ -397,10 +402,14 @@ public class Lobby : NetworkBehaviour
 
     private void OnLevelWasLoaded(int level)
     {
-        if (!IsServer) return;
         if(level != 0)
         {
-            var currentGameMode = Instantiate(CurrentGameMode.gameManagerPrefab);
+            SetLoading(true);
         }
+    }
+
+    public void SetLoading(bool value)
+    {
+        loadingScreen.SetActive(value);
     }
 }

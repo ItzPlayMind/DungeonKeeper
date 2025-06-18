@@ -11,7 +11,7 @@ public class SelfHealHitSpecial : AbstractSpecial
     [SerializeField] private int onHitSecondsReduce = 5;
 
     [DescriptionCreator.DescriptionVariable("green")]
-    [SerializeField] private int maxHealhIncrease = 300;
+    [SerializeField] private int maxHealthIncrease = 300;
     [DescriptionCreator.DescriptionVariable("green")]
     [SerializeField] private float playerMaxHealthPerc = 5f;
     [DescriptionCreator.DescriptionVariable("green")]
@@ -22,12 +22,16 @@ public class SelfHealHitSpecial : AbstractSpecial
 
     private int stacks = 0;
     private int stacksPerHit = 0;
+    private Vector3 baseScale;
+
+    public override int Damage => base.Damage + (int)((characterStats.stats.health.Value - characterStats.stats.health.BaseValue)*0.05f);
 
     protected override void _Start()
     {
         if (!IsLocalPlayer) return;
         hitbox.gameObject.layer = gameObject.layer;
         controller = GetComponent<PlayerController>();
+        baseScale = transform.localScale;
         hitbox.onCollisionEnter += (GameObject collider, ref bool hit) =>
         {
             if (collider.gameObject.layer == gameObject.layer) return;
@@ -37,26 +41,21 @@ public class SelfHealHitSpecial : AbstractSpecial
             if(hits.Contains(stats.NetworkObjectId)) return;
             hits.Add(stats.NetworkObjectId);
             DealDamage(stats, Damage, Vector2.zero);
-            if (stats is PlayerStats)
-            {
-                controller.Heal(characterStats, (int)(characterStats.stats.health.Value * ((HasUpgradeUnlocked(1) ? playerMaxHealthPerc : maxHealthPerc) / 100f)));
-                if (HasUpgradeUnlocked(2))
-                    stacksPerHit++;
-            }
-            else
-                controller.Heal(characterStats, (int)(characterStats.stats.health.Value * (maxHealthPerc / 100f)));
+            controller.Heal(characterStats, (int)(characterStats.stats.health.Value * ((HasUpgradeUnlocked(1) ? playerMaxHealthPerc : maxHealthPerc) / 100f)));
+            if (HasUpgradeUnlocked(2))
+                stacksPerHit++;
             ReduceCooldown(onHitSecondsReduce);
         };
         characterStats.stats.health.OnChangeValue += () =>
         {
             var bonusHealth = characterStats.stats.health.Value - characterStats.stats.health.BaseValue;
-            transform.localScale *= 1 + (bonusHealth / 3000f);
+            transform.localScale = baseScale * (1 + (bonusHealth / 3000f));
         };
         characterStats.stats.health.ChangeValueAdd += (ref int value, int old) =>
         {
             if (HasUpgradeUnlocked(0))
             {
-                value += maxHealhIncrease;
+                value += maxHealthIncrease;
             }
             if (HasUpgradeUnlocked(2))
             {
@@ -67,6 +66,7 @@ public class SelfHealHitSpecial : AbstractSpecial
 
     protected override void _OnSpecialFinish(PlayerController controller)
     {
+        Debug.Log(stacksPerHit);
         stacks += stacksPerHit;
         stacksPerHit = 0;
     }

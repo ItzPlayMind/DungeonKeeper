@@ -13,7 +13,6 @@ public class NetworkManagerUI : MonoBehaviour
     UnityTransport transport;
     NetworkManager networkManager;
     [SerializeField] private GameObject howToPlay;
-    [SerializeField] private GameObject loadingScreen;
     [SerializeField] private Button playButton;
     [SerializeField] private GameObject matchmakingUI;
     [SerializeField] private GameObject userUI;
@@ -127,6 +126,7 @@ public class NetworkManagerUI : MonoBehaviour
         isFetching = true;
         try
         {
+            Lobby.Instance.SetGameModeIndex(0);
             Lobby.Instance.SetLobbyCode(await Lobby.Instance.Matchmaking.CreateMatch());
             if (networkManager.StartHost())
             {
@@ -142,6 +142,37 @@ public class NetworkManagerUI : MonoBehaviour
             }
             StopRotatingText();
         }catch(Matchmaking.MatchmakingException e)
+        {
+            StopCoroutine(coroutine);
+            statusText.text = e.Message;
+            isFetching = false;
+        }
+    }
+
+    public async void StartTraining()
+    {
+        if (isFetching) return;
+        StartRotatingText("Creating");
+        isFetching = true;
+        try
+        {
+            Lobby.Instance.SetGameModeIndex(1);
+            Lobby.Instance.SetLobbyCode(await Lobby.Instance.Matchmaking.CreateMatch());
+            if (networkManager.StartHost())
+            {
+                isFetching = false;
+                gameObject.SetActive(false);
+                LobbyPanel.Instance.gameObject.SetActive(true);
+            }
+            else
+            {
+                isFetching = false;
+                Lobby.Instance.Matchmaking.RemoveMatch(Lobby.Instance.LobbyCode);
+                Lobby.Instance.SetLobbyCode("");
+            }
+            StopRotatingText();
+        }
+        catch (Matchmaking.MatchmakingException e)
         {
             StopCoroutine(coroutine);
             statusText.text = e.Message;

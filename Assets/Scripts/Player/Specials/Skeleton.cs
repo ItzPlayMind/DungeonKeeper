@@ -20,12 +20,10 @@ public class Skeleton : NetworkBehaviour
     private State state;
     private CharacterStats target;
     private Animator animator;
-    private Rigidbody2D rb;
     private NavMeshAgent agent;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         agent.updateRotation = false;
@@ -77,7 +75,7 @@ public class Skeleton : NetworkBehaviour
     private void Explode()
     {
         agent.isStopped = true;
-        rb.velocity = Vector2.zero;
+        agent.velocity = Vector2.zero;
         state = State.Explode;
         animator.SetTrigger("Explode");
     }

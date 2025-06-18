@@ -588,7 +588,7 @@ MonoBehaviour:
   specialIcon: {fileID: 3218890884391213610}
   specialInUseIcon: {fileID: 4775430144996674096}
   resourceBar: {fileID: 398380323086976245}
-  spawnRange: 2
+  spawnRange: 0.5
   skullPrefab: {fileID: 7493297399804552110, guid: 0ad5f5a5b96ceae4c8e168b8cf6a78a3, type: 3}
   hitsNeededForResource: 5
   knockBackForce: 10

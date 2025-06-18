@@ -125,6 +125,11 @@ public class ArenaGameManager : GameManager
         base.OnNetworkSpawn();
     }
 
+    protected override bool CanOpenShop()
+    {
+        return phase.Value == Phase.Prepare;
+    }
+
     private void SetupWinConditionForTeams()
     {
         redTeamHealth.OnServerDeath += (_) =>
@@ -141,13 +146,7 @@ public class ArenaGameManager : GameManager
 
     protected override void Update()
     {
-        if(phase.Value == Phase.Prepare)
-        {
-            if (InputManager.Instance.PlayerShopTrigger)
-            {
-                ShopPanel.Instance.Toggle();
-            }
-        }
+        base.Update();
         if (!IsServer) return;
         if (phaseTimer.Value <= 0 && phase.Value != Phase.GameOver)
         {

@@ -18,6 +18,7 @@ public class GameManager : NetworkBehaviour
     public static GameManager instance;
 
     public static float OUT_OF_COMBAT_TIME = 10f;
+
     private void Awake()
     {
         instance = this;
@@ -60,6 +61,11 @@ public class GameManager : NetworkBehaviour
 
     private List<Light2D> lights = new List<Light2D>();
 
+    protected virtual bool CanOpenShop()
+    {
+        return true;
+    }
+
     public override void OnNetworkSpawn()
     {
         StartGame();
@@ -92,27 +98,20 @@ public class GameManager : NetworkBehaviour
         PrefabSystem.SetTorch(pos);
     }
 
-    private float respawnTimeTimer = 30f;
-
     protected virtual void Update()
     {
-        if (!IsServer) return;
-        if(respawnTimeTimer <= 0)
+        if (CanOpenShop())
         {
-            RESPAWN_TIME.Value++;
-            respawnTimeTimer = 30f;
+            if (InputManager.Instance.PlayerShopTrigger)
+            {
+                ShopPanel.Instance.Toggle();
+            }
         }
-        respawnTimeTimer -= Time.deltaTime;
     }
 
 
     public void StartGame()
     {
-        if (IsServer)
-        {
-            RESPAWN_TIME.Value = 5;
-            respawnTimeTimer = 30f;
-        }
         var virtualCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
         Transform followTarget = null;
         if (Lobby.Instance.CurrentTeam == Lobby.Team.Red)
@@ -175,7 +174,6 @@ public class GameManager : NetworkBehaviour
             lights.AddRange(FindObjectsOfType<Light2D>());
         }
     }
-
     protected virtual void OnPlayerSpawned(NetworkObject player)
     {
 
@@ -205,6 +203,7 @@ public class GameManager : NetworkBehaviour
     private void AllClientsSetupClientRPC(ulong[] clientIDs)
     {
         nexusUI.SetActive(true);
+        Lobby.Instance.SetLoading(false);
         foreach (var client in clientIDs)
         {
             NetworkManager.Singleton.SpawnManager.SpawnedObjects[client].GetComponent<PlayerController>().OnTeamAssigned();

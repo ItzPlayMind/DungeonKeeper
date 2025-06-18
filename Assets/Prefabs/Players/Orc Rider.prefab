@@ -1112,11 +1112,10 @@ MonoBehaviour:
     description: Gain {MaxHealthIncrease} Max Health and increase size by bonus Health
     hoverEvent: {fileID: 2705745866678195831}
   - name: Hard Hitting
-    description: Increases Heal amount from enemy players to {PlayerMaxHealthPerc}%
-      Max HP
+    description: Increases Heal amount from enemy to {PlayerMaxHealthPerc}% Max HP
     hoverEvent: {fileID: 6020660544121162016}
   - name: Promising Tank
-    description: At the end of {Name} gain {StackHealthIncrease} Max HP per player
+    description: At the end of {Name} gain {StackHealthIncrease} Max HP per enemy
       hit
     hoverEvent: {fileID: 2390582660402902328}
   damage: 10
@@ -1129,7 +1128,7 @@ MonoBehaviour:
   hitbox: {fileID: 2126392770402981792}
   maxHealthPerc: 2
   onHitSecondsReduce: 5
-  maxHealhIncrease: 300
+  maxHealthIncrease: 300
   playerMaxHealthPerc: 5
   stackHealthIncrease: 50
 --- !u!70 &7647172373246440021
