@@ -50,7 +50,7 @@ public class GameManager : NetworkBehaviour
     public int GOLD_PER_SECOND;
     public int GOLD_PER_TURRET;
     private int clientSetupCount = 0;
-    public NetworkVariable<int> RESPAWN_TIME = new NetworkVariable<int>(5);
+    public int RESPAWN_TIME = -1;
 
     public bool GameOver { get; private set; }
     public ChatSystem Chat { get; private set; }

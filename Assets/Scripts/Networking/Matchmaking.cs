@@ -79,15 +79,18 @@ public class Matchmaking
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<string> CreateMatch()
+    public async Task<string> CreateMatch(bool checkPortOpen = true)
     {
         var query = HttpUtility.ParseQueryString(client.BaseAddress.Query);
         Match match = new Match();
         match.address = (await GetExternalIpAddress()).ToString();
         match.port = 7777;
-        bool isPortOpen = await CheckRemotePort(match.address, match.port);
-        if (!isPortOpen)
-            throw new MatchmakingException("Port not open");
+        if (checkPortOpen)
+        {
+            bool isPortOpen = await CheckRemotePort(match.address, match.port);
+            if (!isPortOpen)
+                throw new MatchmakingException("Port not open");
+        }
         HttpContent content = new StringContent(JsonUtility.ToJson(match), System.Text.Encoding.UTF8, "application/json");
         var response = await client.PostAsync(Config.MATCHMAKING_LOBBY_ROUTES, content);
         if (response.StatusCode == HttpStatusCode.BadRequest)

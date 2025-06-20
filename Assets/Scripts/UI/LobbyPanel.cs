@@ -15,6 +15,7 @@ public class LobbyPanel : MonoBehaviour
     {
         Instance = this;
         gameObject.SetActive(false);
+        versionText.text = "v"+Application.version;
     }
 
     private class ClientReadyState
@@ -24,6 +25,7 @@ public class LobbyPanel : MonoBehaviour
     }
     [SerializeField] private Button startButton;
     [SerializeField] private Button readyButton;
+    [SerializeField] private TMPro.TextMeshProUGUI versionText;
     [SerializeField] private GameObject characterSelectionPanel;
     [SerializeField] private RectTransform characterSelectionContentPanel;
     [SerializeField] private TMPro.TextMeshProUGUI playerText;

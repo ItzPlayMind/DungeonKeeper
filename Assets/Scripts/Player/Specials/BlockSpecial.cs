@@ -64,7 +64,8 @@ public class BlockSpecial : AbstractSpecial
     }
     protected override void _OnSpecialFinish(PlayerController controller)
     {
-        isBlocking = false;
+        isBlocking = false; 
+        Finish();
         if (!IsActive)
             StartCooldown();
         if(HasUpgradeUnlocked(2))

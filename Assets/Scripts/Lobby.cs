@@ -151,7 +151,7 @@ public class Lobby : NetworkBehaviour
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
             GameManager.OnInstanceSet += SpawnGameManager;
-            GetComponent<NetworkLevelLoader>().OnAllClientsLoaded += () =>
+            GetComponent<NetworkLevelLoader>().OnAllClientsLoaded = () =>
             {
                 var currentGameMode = Instantiate(CurrentGameMode.gameManagerPrefab);
             };

@@ -40,7 +40,7 @@ public class PlayerStats : CharacterStats
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        CanRevive = GameManager.instance.RESPAWN_TIME.Value != -1;
+        CanRevive = GameManager.instance.RESPAWN_TIME != -1;
         movement = GetComponent<PlayerMovement>();
         if (IsServer)
         {
@@ -143,7 +143,7 @@ public class PlayerStats : CharacterStats
         reviveArea.gameObject.SetActive(true);
         reviveProgress.Value = 0;
         GameManager.instance.AddCashToTeamFromPlayer(NetworkObjectId, GameManager.instance.GOLD_FOR_KILL / 4);
-        respawnTime = GameManager.instance.RESPAWN_TIME.Value;
+        respawnTime = GameManager.instance.RESPAWN_TIME;
         base.Die(damagerID);
         GameManager.instance.Chat.AddMessage($"{damagerID} <color=red>killed</color> {NetworkObjectId}");
     }

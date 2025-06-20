@@ -6450,8 +6450,7 @@ MonoBehaviour:
   GOLD_FOR_KILL: 500
   GOLD_PER_SECOND: 1000
   GOLD_PER_TURRET: 0
-  RESPAWN_TIME:
-    m_InternalValue: 0
+  RESPAWN_TIME: 0
   trainingDummySpawns:
   - {fileID: 6466586136439103173}
   - {fileID: 2264317561003410969}

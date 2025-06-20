@@ -157,7 +157,7 @@ public class NetworkManagerUI : MonoBehaviour
         try
         {
             Lobby.Instance.SetGameModeIndex(1);
-            Lobby.Instance.SetLobbyCode(await Lobby.Instance.Matchmaking.CreateMatch());
+            Lobby.Instance.SetLobbyCode(await Lobby.Instance.Matchmaking.CreateMatch(false));
             if (networkManager.StartHost())
             {
                 isFetching = false;

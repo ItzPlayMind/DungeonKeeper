@@ -50,6 +50,7 @@ public class ArrowStanceSpecial : AbstractSpecial
 
     protected override void _OnSpecialFinish(PlayerController controller)
     {
+        Finish();
         if (!isInStance)
         {
             animator.SetInteger("attack", 1);

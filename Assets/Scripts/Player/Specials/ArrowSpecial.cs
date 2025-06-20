@@ -51,6 +51,7 @@ public class ArrowSpecial : AbstractSpecial
     protected override void _OnSpecialFinish(PlayerController controller)
     {
         StartCoroutine(SpawnArrows());
+        Finish();
     }
 
     private IEnumerator SpawnArrows()
