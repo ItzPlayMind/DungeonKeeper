@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class InputManager : MonoBehaviour
@@ -153,7 +154,13 @@ public class InputManager : MonoBehaviour
                 windows.Pop().CloseOnEscape();
             }
         };
+        SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         //AddToSave(this);
+    }
+
+    private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode arg1)
+    {
+        windows.Clear();
     }
 
     private void CheckForTriggerInActionMap(InputActionMap map)
@@ -248,11 +255,6 @@ public class InputManager : MonoBehaviour
                 windows.Push(item);
             }
         }
-    }
-
-    private void OnLevelWasLoaded(int level)
-    {
-        windows.Clear();
     }
 
     //private Cinemachine.CinemachinePOV pov;

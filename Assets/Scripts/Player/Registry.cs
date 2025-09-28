@@ -52,6 +52,15 @@ public abstract class Registry<T> : MonoBehaviour
         };
     }
 
+    public void AddToAction(Item item, Func<CharacterStats.ServerDamageDelegate> getAction, Action<CharacterStats.ServerDamageDelegate> setAction, CharacterStats.ServerDamageDelegate a)
+    {
+        setAction(getAction() + a);
+        item.onUnequip += (Item item, CharacterStats stats, int slot) =>
+        {
+            setAction(getAction() - a);
+        };
+    }
+
     public void AddToAction(Item item, Func<CharacterStats.DeathDelegate> getAction, Action<CharacterStats.DeathDelegate> setAction, CharacterStats.DeathDelegate a)
     {
         setAction(getAction() + a);

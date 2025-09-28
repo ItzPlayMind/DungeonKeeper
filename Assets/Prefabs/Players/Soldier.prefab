@@ -1783,7 +1783,7 @@ MonoBehaviour:
     speed:
       baseValue: 100
     health:
-      baseValue: 1000
+      baseValue: 900
     damageReduction:
       baseValue: 0
     resource:

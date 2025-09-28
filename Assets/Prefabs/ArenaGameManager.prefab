@@ -8588,18 +8588,17 @@ MonoBehaviour:
   deathScreen: {fileID: 4318724533420840103}
   UNLIT_MATERIAL: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   LIT_MATERIAL: {fileID: 2100000, guid: d1c4176b383bbcd43a36877e408f29e4, type: 2}
-  GOLD_FOR_KILL: 500
+  GOLD_FOR_KILL: 150
   GOLD_PER_SECOND: 0
   GOLD_PER_TURRET: 0
-  RESPAWN_TIME:
-    m_InternalValue: 5
+  RESPAWN_TIME: -1
   battleTime: 300
   prepareTime: 60
   cardSelection: {fileID: 3336915304459476151}
   phaseText: {fileID: 181101340141734312}
   timerText: {fileID: 3983428446545883353}
   bonusObjectiveText: {fileID: 8826545264688883880}
-  GOLD_PER_ROUND: 1000
+  GOLD_PER_ROUND: 500
   DAMAGE_PER_ROUND: 20
   bonusObjectives:
   - name: Ghost

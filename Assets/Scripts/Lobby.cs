@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static Cinemachine.DocumentationSortingAttribute;
 
 public class Lobby : NetworkBehaviour
 {
@@ -55,6 +56,15 @@ public class Lobby : NetworkBehaviour
         else
             Destroy(gameObject);
         PlayerStatistic = GetComponent<PlayerStatisticsSystem>();
+        SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+    }
+
+    private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode arg1)
+    {
+        if (scene.buildIndex != 0)
+        {
+            SetLoading(true);
+        }
     }
 
     private async void UpdateCharacters()
@@ -398,14 +408,6 @@ public class Lobby : NetworkBehaviour
     {
         SceneManager.LoadScene(CurrentGameMode.gameModeSceneIndex);
         InputManager.Instance.PlayerControls.UI.Close.performed -= ShutdownOnEscape;
-    }
-
-    private void OnLevelWasLoaded(int level)
-    {
-        if(level != 0)
-        {
-            SetLoading(true);
-        }
     }
 
     public void SetLoading(bool value)

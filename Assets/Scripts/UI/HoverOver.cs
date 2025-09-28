@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public abstract class HoverOver<T> : MonoBehaviour
 {
@@ -20,6 +21,12 @@ public abstract class HoverOver<T> : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         Hide();
+        SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+    }
+
+    private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
+    {
+        Instance.gfx?.SetActive(false);
     }
 
     public static void Show(T item)
@@ -47,10 +54,5 @@ public abstract class HoverOver<T> : MonoBehaviour
             else
                 (gfx.transform as RectTransform).pivot = new Vector2(-0.02f, 0.03f);
         }
-    }
-
-    private void OnLevelWasLoaded(int level)
-    {
-        Instance.gfx?.SetActive(false);
     }
 }

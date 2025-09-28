@@ -27,21 +27,6 @@ public class ItemRegistry : Registry<Item>
         });
         potion.multiple = true;
 
-        /*var torch = AddItem("Torch", "torch", CharacterType.None, "On use place a torch", null, 50, 0, null, (Item item, CharacterStats stats, int slot) =>
-        {
-            var mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
-            var dir = (mouseWorldPos - stats.transform.position);
-            dir.z = 0;
-            Vector2 pos = Vector2.zero;
-            if (dir.magnitude >= 1.5f)
-                pos = stats.transform.position + dir.normalized * 1.5f;
-            else
-                pos = mouseWorldPos;
-            GameManager.instance.SetTorch(pos);
-            stats.GetComponent<Inventory>().RemoveItem(slot);
-        });
-        torch.multiple = true;*/
-
         AddConsumable("Runestone I", "runestone_1", CharacterType.None, "On buy unlocks the first upgrade of the special", null, 3000, (Item item, CharacterStats stats, int slot) =>
         {
             if (!stats.IsLocalPlayer) return;
@@ -95,6 +80,18 @@ public class ItemRegistry : Registry<Item>
         {
             item.variables["Damage"].value = (int)item.variables["BaseDamage"].value + (int)(stats.stats.health.Value * ((int)item.variables["MaxHealthPerc"].value / 100f));
         });
+
+        AddItemWithVariables("Void Chestplate", "crystal_chestplate", CharacterType.Tank, "Damage below {HPThreshold}% Maximum Health is reduced to 0", new StatBlock(0, 0, 0, 0, 400, 0), 1500, 0,
+            new Dictionary<string, Variable>() { { "HPThreshold", new Variable() { value = 2f } } }, (Item item, CharacterStats stats, int slot) =>
+            {
+                AddToAction(item, () => stats.OnServerTakeDamage, (value) => stats.OnServerTakeDamage = value, (ulong damager, ref int damage) =>
+                {
+                    if (damage <= stats.stats.health.Value * ((float)item.variables["HPThreshold"].value/100f))
+                    {
+                        damage = 0;
+                    }
+                });
+            }, null, null);
 
         AddItemWithVariables("Lifeline", "leather_armor", CharacterType.Tank, "After not beeing in combat for 10 seconds, start regenerating {HealAmount}% Max HP every {Time} seconds.", new StatBlock(0, 0, 0, 0, 300, 0), 1500, GameManager.OUT_OF_COMBAT_TIME,
             new Dictionary<string, Variable>() { { "Timer", new Variable() { value = 1f } }, { "HealAmount", new Variable() { value = 2.5f, color = "green" } }, { "Time", new Variable() { value = 2f } } }, (item, stats, _) =>
@@ -381,6 +378,26 @@ public class ItemRegistry : Registry<Item>
                });
            });
 
+        AddItemWithVariables("Mask of Happiness", "mask", CharacterType.Support, "Increases Healing amount by {HealIncrease}%, above {HPThreshold}% HP increase it by {HPHealIncrease}% instead",
+           new StatBlock(0, 25, 0, 5, 100, 0), 2000, 0,
+           new Dictionary<string, Variable>() { { "HealIncrease", new Variable() { value = 25f } }, { "HPThreshold", new Variable() { value = 80f, color = "green" } }, { "HPHealIncrease", new Variable() { value = 50f } } }, (item, stats, _) =>
+           {
+               var controller = stats.GetComponent<PlayerController>();
+               AddToAction(item, () => controller.OnHeal, (value) => controller.OnHeal = value, (ulong target, ulong user, ref int amount) =>
+               {
+                   var healIncrease = 1f;
+                   if(stats.Health >= stats.stats.health.Value * ((float)item.variables["HPThreshold"].value / 100f))
+                   {
+                       healIncrease = 1+((float)item.variables["HPHealIncrease"].value / 100f);
+                   }
+                   else
+                   {
+                       healIncrease = 1 + ((float)item.variables["HealIncrease"].value / 100f);
+                   }
+                   amount = (int)(amount * healIncrease);
+               });
+           });
+
         AddItemWithVariables("Void Wand", "wand_01", CharacterType.Damage, "While not using the special, gain {StackPerSecond} Stacks per second, up to {MaxStacks}. The next Special hit deals an additional damage equal to the amount of stacks",
            new StatBlock(0, 30, 0, 10, 0, 0), 2200, 3,
            new Dictionary<string, Variable>() { { "StackPerSecond", new Variable() { value = 2, color = "white" } }, { "MaxStacks", new Variable() { value = 200, color = "white" } }, { "Stacks", new Variable() { value = 0, color = "white" } }, { "Timer", new Variable() { value = 0f } } }, (item, stats, _) =>
@@ -520,21 +537,6 @@ public class ItemRegistry : Registry<Item>
                });
            });
 
-        /*var box = AddItem("Magical Box", "wooden_box", CharacterType.Support, "On use place a torch",
-           new StatBlock(0, 15, 0, 5, 0, 0), 1400, 10, null, (item, stats, _) =>
-           {
-               var mouseWorldPos = Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition);
-               var dir = (mouseWorldPos - stats.transform.position);
-               dir.z = 0;
-               Vector2 pos = Vector2.zero;
-               if (dir.magnitude >= 1.5f)
-                   pos = stats.transform.position + dir.normalized * 1.5f;
-               else
-                   pos = mouseWorldPos;
-               GameManager.instance.SetTorch(pos);
-               item.StartCooldown();
-           });*/
-
         var ring = AddItemWithVariables("Miners Ring", "ring_02", CharacterType.Support, "Increase own light range by {LightMult}x. Hitting a target applies lit to them for {LitDuration} seconds.", new StatBlock(0, 15, 0, 5, 50, 0), 1200,5,
             new Dictionary<string, Variable>() { { "LightMult", new Variable() { value = 2f } }, { "LitDuration", new Variable() { value = 5 } } }, (item, stats, _) =>
             {
@@ -554,8 +556,6 @@ public class ItemRegistry : Registry<Item>
                     item.StartCooldown();
                 });
             });
-        //ring.sameItems.Add(box.ID);
-        //box.sameItems.Add(ring.ID);
 
         AddItemWithVariables("Bleeding Scythe", "scythe", CharacterType.Damage, "Applies Bleeding for {BleedTime} seconds on attack. The Bleed deals {Damage} every 1 second. Can only happen every {Cooldown} seconds.", new StatBlock(25, 0, 10, 5, 25, 0), 1400, 2,
             new Dictionary<string, Variable>() { { "BleedTime", new Variable() { value = 5 } }, { "BaseDamage", new Variable() { value = 5 } }, { "Damage", new Variable() { value = 5, color = "red" } }, { "DamageScaling", new Variable() { value = 10f, color = "red" } } }, (item, stats, _) =>
@@ -735,7 +735,7 @@ public class ItemRegistry : Registry<Item>
                      item.UpdateText("");
                  }
              });
-        AddItemWithVariables("Ethereal Ring", "ring_01", CharacterType.Damage, "On use change into ethereal form. While in this form no damage will be taken but movement and attacking are disabled. Change back to normal after {Duration} seconds.", new StatBlock(15, 15, 0, 0, 0, 5), 1700, 60,
+        AddItemWithVariables("Ethereal Ring", "ring_01", CharacterType.Damage, "On use change into ethereal form. While in this form no damage will be taken but attacking is disabled. Change back to normal after {Duration} seconds.", new StatBlock(15, 15, 0, 0, 0, 5), 1700, 60,
             new Dictionary<string, Variable>() { { "Duration", new Variable() { value = 3 } }}, null,
             (item, stats, _) =>
             {

@@ -342,7 +342,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.health.baseValue
-      value: 800
+      value: 650
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.resource.baseValue
@@ -480,7 +480,6 @@ MonoBehaviour:
   MaxHPDamage: 3
   EscapeHP: 30
   InvisDuration: 3
-  InvisCooldown: 20
   arrowPrefab: {fileID: 7306826740333165070, guid: 33ccbb54135f1a949a933d239f0ab4e0, type: 3}
   arrowSpeed: 10
   dashForce: 60

@@ -434,7 +434,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.health.baseValue
-      value: 1100
+      value: 800
       objectReference: {fileID: 0}
     - target: {fileID: 8189507989608339147, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Controller

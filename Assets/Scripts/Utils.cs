@@ -13,4 +13,13 @@ public static class Utils
         }
         return null;
     }
+
+    public static bool IsEnemy(this GameObject gameObject, GameObject enemy, ref CharacterStats characterStats)
+    {
+        if (enemy == gameObject)
+            return false;
+        if (enemy.gameObject.layer == gameObject.layer) return false;
+        characterStats = enemy.GetComponent<CharacterStats>();
+        return (characterStats != null && !characterStats.IsDead);
+    }
 }

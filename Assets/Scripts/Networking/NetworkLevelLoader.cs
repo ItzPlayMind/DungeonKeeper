@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using static Cinemachine.DocumentationSortingAttribute;
 
 public class NetworkLevelLoader : NetworkBehaviour
 {
@@ -11,9 +13,14 @@ public class NetworkLevelLoader : NetworkBehaviour
 
     private int clientsLoaded = 0;
 
-    private void OnLevelWasLoaded(int level)
+    private void Awake()
     {
-        if (sceneIndices.Contains(level))
+        SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+    }
+
+    private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode _)
+    {
+        if (sceneIndices.Contains(scene.buildIndex))
             OnClientLoadedLevelServerRPC();
     }
 

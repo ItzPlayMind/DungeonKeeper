@@ -38,7 +38,7 @@ public class AttackDummy : NetworkBehaviour
             {
                 if (Vector2.Distance(transform.position, target.transform.position) < attackRange)
                 {
-                    target.TakeDamage(10, Vector2.zero, stats);
+                    target.TakeDamage(stats.stats.damage.Value, Vector2.zero, stats);
                 }
                 else
                     target = null;

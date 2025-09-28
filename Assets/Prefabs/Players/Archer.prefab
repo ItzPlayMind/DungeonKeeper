@@ -606,7 +606,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.health.baseValue
-      value: 800
+      value: 650
       objectReference: {fileID: 0}
     - target: {fileID: 7744259726815766372, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: stats.resource.baseValue
@@ -766,6 +766,7 @@ MonoBehaviour:
   attackRange: 0
   setRotation: 1
   knockBackForce: 0
+  stagger: 0.05
   projectileSpeed: 7
 --- !u!114 &5493047023415111658
 MonoBehaviour:
@@ -801,7 +802,7 @@ MonoBehaviour:
   damage: 30
   damageMultiplier: 0.3
   MaxCooldown: 10
-  activeTime: 10
+  activeTime: 5
   specialIcon: {fileID: 4617910281767162341}
   specialInUseIcon: {fileID: 3384574628130357759}
   resourceBar: {fileID: 7582518127970242362}

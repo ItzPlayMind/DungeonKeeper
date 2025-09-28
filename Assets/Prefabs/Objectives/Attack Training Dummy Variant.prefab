@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 905476966137159418, guid: 4320727618862304582915d38ccf781e, type: 3}
+      propertyPath: stats.damage.baseValue
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 2584460122205688096, guid: 4320727618862304582915d38ccf781e, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 951099334

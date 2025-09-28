@@ -56,23 +56,23 @@ public class EffectRegistry : Registry<Effect>
         });
         AddEffect("Ethereal", "ethereal", (Effect effect, CharacterStats stats) =>
         {
-            var movement = stats.GetComponent<PlayerMovement>();
+            //var movement = stats.GetComponent<PlayerMovement>();
             var attack = stats.GetComponent<PlayerAttack>();
             var controller = stats.GetComponent<PlayerController>();
-            var animator = controller.GFX.GetComponent<Animator>();
+            //var animator = controller.GFX.GetComponent<Animator>();
             effect.onEnd += (Effect effect, CharacterStats stats) =>
             {
-                movement.enabled = true;
+                //movement.enabled = true;
                 attack.enabled = true;
                 stats.enabled = true;
                 controller.GFX.color = Color.white;
-                animator.enabled = true;
+                //animator.enabled = true;
             };
-            movement.enabled = false;
+            //movement.enabled = false;
             attack.enabled = false;
             stats.enabled = false; 
-            controller.GFX.color = Color.grey;
-            animator.enabled = false;
+            controller.GFX.color = new Color(1,1,1,0.2f);
+            //animator.enabled = false;
         }, null);
         AddEffect("Invisible", "invisible", (Effect effect, CharacterStats stats) =>
         {

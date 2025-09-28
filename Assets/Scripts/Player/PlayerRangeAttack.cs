@@ -54,18 +54,15 @@ public class PlayerRangeAttack : PlayerAttack
         if (!IsLocalPlayer) return;
         obj.GetComponent<CollisionSender>().onCollisionEnter += (GameObject collider, ref bool _) =>
         {
+            Debug.Log("HIT " + collider.name);
             if(collider == null)
             {
                 DestroyServerRPC(obj.NetworkObjectId);
                 return;
-            }    
-            if (collider == gameObject)
-                return;
-            if (collider.gameObject.layer == gameObject.layer) return;
-            var stats = collider.GetComponent<CharacterStats>();
-            if (stats != null && !stats.IsDead)
+            }
+            CharacterStats stats = null;
+            if (gameObject.IsEnemy(collider, ref stats))
             {
-                
                 var damage = (int)(this.stats.stats.damage.Value);
                 OnAttack?.Invoke(stats.NetworkObjectId, this.stats.NetworkObjectId, ref damage);
                 stats.TakeDamage(damage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce), this.stats, stagger);

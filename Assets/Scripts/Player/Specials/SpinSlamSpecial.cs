@@ -42,7 +42,6 @@ public class SpinSlamSpecial : ComboSpecial
     {
         if(index == 0 && HasUpgradeUnlocked(1))
         {
-            Debug.Log("SET COOLDOWN TO MISS");
             StartCooldown(MissCooldown);
         }
     }
