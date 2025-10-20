@@ -8,17 +8,17 @@ public class Skeleton : NetworkBehaviour
 {
     [SerializeField] private SpriteRenderer gfx;
     [SerializeField] private bool isSpawned = false;
-    [SerializeField] private float explosionRange = 1.5f;
+
+    public bool Spawned { get => isSpawned; }
 
     private NetworkVariable<bool> facingRight = new NetworkVariable<bool>(false);
 
     private enum State
     {
-        Running, Explode
+        Running, Attacking
     }
     
-    private State state;
-    private CharacterStats target;
+    private State state = State.Attacking;
     private Animator animator;
     private NavMeshAgent agent;
 
@@ -28,7 +28,7 @@ public class Skeleton : NetworkBehaviour
         animator = GetComponent<Animator>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
-        agent.stoppingDistance = explosionRange-0.2f;
+        agent.stoppingDistance = 0;
     }
 
     public override void OnNetworkSpawn()
@@ -39,32 +39,32 @@ public class Skeleton : NetworkBehaviour
         };
     }
 
-    public void SetTarget(CharacterStats target)
-    {
-        this.target = target;
-    }
-
     private void Update()
     {
         if (!IsServer) return;
         if (!isSpawned) return;
-        if (target == null)
+        switch (state)
         {
-            Explode();
-            return;
+            case State.Running:
+                if (Vector3.Distance(transform.position,agent.destination) <= agent.stoppingDistance+0.1)
+                {
+                    animator.SetBool("Attacking", true);
+                    state = State.Attacking;
+                }
+                break;
+            case State.Attacking:
+                break;
         }
         if (state != State.Running) return;
-        Vector2 dir = (target.transform.position- transform.position).normalized;
+        Vector2 dir = (agent.destination - transform.position).normalized;
         facingRight.Value = dir.x < 0;
-        float distance = Vector2.Distance(transform.position, target.transform.position);
-        if (distance <= explosionRange)
-            Explode();
-        agent.SetDestination(target.transform.position);
-        if (agent.pathStatus != NavMeshPathStatus.PathComplete)
-        {
-            Explode();
-            return;
-        }
+    }
+
+    public void SetDestination(Vector3 position)
+    {
+        animator.SetBool("Attacking", false);
+        agent.SetDestination(position);
+        state = State.Running;
     }
 
     public void SpawnFinished()
@@ -72,11 +72,8 @@ public class Skeleton : NetworkBehaviour
         isSpawned = true;
     }
 
-    private void Explode()
+    public void Teleport(Vector3 position)
     {
-        agent.isStopped = true;
-        agent.velocity = Vector2.zero;
-        state = State.Explode;
-        animator.SetTrigger("Explode");
+        agent.Warp(position);
     }
 }

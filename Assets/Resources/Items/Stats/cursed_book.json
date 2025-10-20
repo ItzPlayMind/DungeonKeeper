@@ -1,0 +1,17 @@
+{
+    "name": "Cursed Book",
+    "id": "cursed_book",
+    "type": 2,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 15,
+        "attackSpeed": 0,
+        "speed": 5,
+        "health": 50,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "On use curse the target for {Duration} seconds, reducing healing by {Amount}%",
+    "cost": 1600,
+    "cooldown": 30.0
+}

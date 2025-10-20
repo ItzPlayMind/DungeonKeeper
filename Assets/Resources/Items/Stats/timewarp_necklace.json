@@ -1,0 +1,17 @@
+{
+    "name": "Timewarp Necklace",
+    "id": "timewarp_necklace",
+    "type": 1,
+    "stats": {
+        "damage": 20,
+        "specialDamage": 0,
+        "attackSpeed": 15,
+        "speed": 0,
+        "health": 50,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "On hit apply Timewarped to the target hit for {Duration} seconds, reducing Attack Speed and Speed by {Amount}, decaying over time. Can only happen every {Cooldown} seconds.",
+    "cost": 1600,
+    "cooldown": 5.0
+}

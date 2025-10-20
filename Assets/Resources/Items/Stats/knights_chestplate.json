@@ -1,0 +1,17 @@
+{
+    "name": "Knights Chestplate",
+    "id": "knights_chestplate",
+    "type": 0,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 0,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 250,
+        "damageReduction": 10,
+        "resource": 0
+    },
+    "description": "On beeing hit the damager takes {Damage} damage. Can only accure once every {Cooldown} seconds",
+    "cost": 1500,
+    "cooldown": 1.0
+}

@@ -9,6 +9,7 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.UIElements;
 using static PlayerAttack;
 
+[RequireComponent(typeof(TeamController))]
 public class PlayerController : NetworkBehaviour
 {
     public static PlayerController LocalPlayer { get; private set; }
@@ -26,6 +27,7 @@ public class PlayerController : NetworkBehaviour
     public System.Action OnKill;
 
     private PlayerAttack attack;
+    private TeamController teamController;
     private PlayerMovement movement;
 
     public PlayerAttack Attack { get => attack; }
@@ -35,10 +37,12 @@ public class PlayerController : NetworkBehaviour
     public CharacterStats HoveredStats { get; private set; }
     public SpriteRenderer GFX { get => gfx; }
 
+    public TeamController TeamController { get => teamController; }
 
     public override void OnNetworkSpawn()
     {
         inventory = GetComponent<Inventory>();
+        teamController = GetComponent<TeamController>();
         if (!IsLocalPlayer)
             return;
         attack = GetComponent<PlayerAttack>();
@@ -60,7 +64,7 @@ public class PlayerController : NetworkBehaviour
         if (stats == null) return;
         var currentAmount = amount;
         OnHeal?.Invoke(stats.NetworkObjectId, NetworkObjectId, ref currentAmount);
-        stats.Heal(currentAmount);
+        stats.Heal(currentAmount, this.stats);
     }
 
     public void ExitGame()
@@ -73,7 +77,7 @@ public class PlayerController : NetworkBehaviour
         inventory.OnTeamAssigned();
         if (!IsLocalPlayer)
         {
-            if (NetworkManager.Singleton.LocalClient.PlayerObject.gameObject.layer != gameObject.layer)
+            if (!TeamController.HasSameTeam(NetworkManager.Singleton.LocalClient.PlayerObject.gameObject))
             {
                 GetComponentInChildren<Light2D>().enabled = false;
             }
@@ -107,12 +111,19 @@ public class PlayerController : NetworkBehaviour
         if (scanTimer <= 0f)
         {
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(InputManager.Instance.MousePosition), Vector2.zero);
+            if (HoveredStats != null)
+                HoveredStats.Hover(false);
             if (hit.transform != null)
             {
                 if (hit.transform.gameObject == stats.gameObject) return;
                 var targetStats = hit.transform.GetComponent<CharacterStats>();
+                if (targetStats != null)
+                    if(!targetStats.IsDead)
+                        targetStats.Hover(true);
                 HoveredStats = targetStats;
             }
+            else
+                HoveredStats = null;
             scanTimer = 0.05f;
         }
         else

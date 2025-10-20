@@ -1,0 +1,17 @@
+{
+    "name": "Magical Pouch",
+    "id": "magical_pouch",
+    "type": 2,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 25,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 25,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "Increases maximum Resource by {Amount}%.",
+    "cost": 1400,
+    "cooldown": 0.0
+}

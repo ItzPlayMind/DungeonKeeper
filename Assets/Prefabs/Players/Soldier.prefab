@@ -1727,6 +1727,7 @@ GameObject:
   - component: {fileID: 7561610098053890371}
   - component: {fileID: 4963874884400546289}
   - component: {fileID: 3039757210799324523}
+  - component: {fileID: 2553146479012973554}
   m_Layer: 0
   m_Name: Soldier
   m_TagString: Untagged
@@ -1797,8 +1798,6 @@ MonoBehaviour:
   attackSpeedText: {fileID: 748753738817440782}
   healthText: {fileID: 1853331555425854853}
   damageReductionText: {fileID: 6665129275680624899}
-  reviveArea: {fileID: 3115875032820619169}
-  reviveTime: 30
 --- !u!114 &8370343492658521668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2093,6 +2092,21 @@ CapsuleCollider2D:
   m_Offset: {x: 0.006293734, y: 0.03597804}
   m_Size: {x: 0.18825492, y: 0.37218684}
   m_Direction: 0
+--- !u!114 &2553146479012973554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2490300795773199028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c7029fa6c75329498bbda0ca455e8b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gfx: {fileID: 3619899937381543572}
+  team:
+    m_InternalValue: 0
 --- !u!1 &2776798379147041144
 GameObject:
   m_ObjectHideFlags: 0
@@ -2277,7 +2291,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d1c4176b383bbcd43a36877e408f29e4, type: 2}
+  - {fileID: 2100000, guid: 75b96b25b3125df4982703c443b40d54, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -11,6 +11,19 @@ using System.Numerics;
 [System.Serializable]
 public class StatBlock
 {
+
+    [System.Serializable]
+    public class StatBlockJSONDTO
+    {
+        public int damage;
+        public int specialDamage;
+        public int attackSpeed;
+        public int speed;
+        public int health;
+        public int damageReduction;
+        public int resource;
+    }
+
     [System.Serializable]
     public class Stat<T>
     {

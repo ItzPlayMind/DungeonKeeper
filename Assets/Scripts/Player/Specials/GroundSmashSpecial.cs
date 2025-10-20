@@ -5,36 +5,40 @@ using UnityEngine;
 
 public class GroundSmashSpecial : KnockBackSpecial
 {
-    [SerializeField] private int hpToMaxResource = 50;
-    [SerializeField] private int damageToResource = 25; 
     [SerializeField]
-    [DescriptionCreator.DescriptionVariable("white")] private int hpToDamage = 2;
+    [DescriptionCreator.DescriptionVariable("white")] private int valueIncrease = 20;
     [SerializeField]
     [DescriptionCreator.DescriptionVariable("white")] private int rageGainIncrease = 100;
+
+    private Vector3 originalSize;
 
     protected override void _Start()
     {
         base._Start();
+        originalSize = transform.localScale;
         if (!IsLocalPlayer) return;
         characterStats.stats.resource.ChangeValueAdd += (ref int value, int old) =>
         {
             if (HasUpgradeUnlocked(0))
-                value += (int)(characterStats.stats.health.Value * (hpToMaxResource / 100f));
+                value += 100;
+        };
+        characterStats.stats.attackSpeed.ChangeValueAdd += (ref int value, int old) =>
+        {
+            if (HasUpgradeUnlocked(2) && Resource >= characterStats.stats.resource.Value)
+                value += valueIncrease;
+        };
+        characterStats.stats.damageReduction.ChangeValueAdd += (ref int value, int old) =>
+        {
+            if (HasUpgradeUnlocked(2) && Resource >= characterStats.stats.resource.Value)
+                value += valueIncrease;
         };
         characterStats.OnClientTakeDamage += (ulong damager, int damage) =>
         {
             if (HasUpgradeUnlocked(0)) {
-                float increase = damageToResource;
+                float increase = (damage / (float)characterStats.stats.health.Value) * 100 * 2;
                 if (HasUpgradeUnlocked(1))
                     increase *= 1 + (rageGainIncrease / 100f);
-                Resource += (int)(damage * (increase / 100f));
-            }
-        };
-        characterStats.stats.damage.ChangeValueAdd += (ref int value, int old) =>
-        {
-            if (HasUpgradeUnlocked(2) && Resource >= characterStats.stats.resource.Value)
-            {
-                value += (int)(characterStats.stats.health.Value * (hpToDamage / 100f));
+                Resource += (int)(increase);
             }
         };
     }
@@ -46,11 +50,24 @@ public class GroundSmashSpecial : KnockBackSpecial
             UpdateResourceBar();
     }
 
+    protected override void _Update()
+    {
+        base._Update();
+        if (!IsLocalPlayer) return;
+        if (HasUpgradeUnlocked(2))
+        {
+            if (Resource >= characterStats.stats.resource.Value)
+                transform.localScale = originalSize * (1+valueIncrease/100f);
+            else
+                transform.localScale = originalSize;
+        }
+    }
+
     protected override void _OnSpecialFinish(PlayerController controller)
     {
         base._OnSpecialFinish(controller);
         if (HasUpgradeUnlocked(0)) {
-            characterStats.Heal(Resource);
+            characterStats.Heal((int)((Resource/100f)*characterStats.stats.health.Value),characterStats);
             Resource = 0;
         }
     }

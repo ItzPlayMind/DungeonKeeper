@@ -15,12 +15,12 @@ public class InvisibilitySpecial : AbstractSpecial
     public override bool CanMoveWhileUsing() => true;
 
     private SpriteRenderer gfx;
-    private PlayerMeeleAttack controller;
+    private PlayerMeeleAttack attack;
     private PlayerController playerController;
     protected override void _Start()
     {
         gfx = transform.Find("GFX").GetComponent<SpriteRenderer>();
-        controller = GetComponent<PlayerMeeleAttack>();
+        attack = controller.Attack as PlayerMeeleAttack;
         if (!IsLocalPlayer) return;
         playerController = GetComponent<PlayerController>();
         playerController.OnKill += () =>
@@ -28,7 +28,7 @@ public class InvisibilitySpecial : AbstractSpecial
             if (HasUpgradeUnlocked(2))
                 SetCooldown(0);
         };
-        controller.OnAttackPress += () =>
+        attack.OnAttackPress += () =>
         {
             if (IsActive)
                 Visible();
@@ -44,9 +44,9 @@ public class InvisibilitySpecial : AbstractSpecial
 
     protected override void _OnSpecialFinish(PlayerController controller)
     {
-        this.controller.SetCurrentAttackIndex(1);
+        this.attack.SetCurrentAttackIndex(1);
         if(HasUpgradeUnlocked(1))
-            this.controller.OnAttack += CrippleTarget;
+            this.attack.OnAttack += CrippleTarget;
         if (!IsLocalPlayer) return;
         StartActive();
         InvisibleServerRPC(25, 0);
@@ -57,7 +57,7 @@ public class InvisibilitySpecial : AbstractSpecial
         var manager = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target]?.GetComponent<EffectManager>();
         if (manager != null)
             manager.AddEffect("slow", crippleTime, cripple, characterStats);
-        this.controller.OnAttack -= CrippleTarget;
+        this.attack.OnAttack -= CrippleTarget;
     }
 
     private void InvisSpeed(ref int speed, int oldSpeed)
@@ -89,7 +89,7 @@ public class InvisibilitySpecial : AbstractSpecial
     [ClientRpc]
     private void InvisibleClientRPC(int local, int others)
     {
-        if (PlayerController.LocalPlayer.gameObject.layer == gameObject.layer)
+        if (controller.TeamController.HasSameTeam(PlayerController.LocalPlayer.gameObject))
         {
             alpha = local;
         }

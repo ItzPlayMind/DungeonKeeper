@@ -98,7 +98,7 @@ public class ItemHoverOver : HoverOver<Item>
         var height = Mathf.Ceil(activeChildren / 2f) * 35;
         statBlock.sizeDelta = new Vector2(statBlock.sizeDelta.x,height);
         descriptionText.text = item.Description; 
-        cooldownText.text = item.cooldown > 0 ? item.cooldown + " sec" : "";
+        cooldownText.text = item.cooldown > 0 ? "(" + item.cooldown.ToString("###.##") + "s)" : "";
         description.offsetMax = new Vector2(description.offsetMax.x, -(40+40+15+height));
         if (!string.IsNullOrEmpty(item.Description)) {
             height += 200;

@@ -6,9 +6,9 @@ using UnityEngine;
 public class TrainingGameManager : GameManager
 {
     [SerializeField] private List<ObjectSpawner> trainingDummySpawns = new List<ObjectSpawner>();
-    public override void OnNetworkSpawn()
+
+    protected override void OnSetupFinished()
     {
-        base.OnNetworkSpawn();
         if (!IsServer) return;
         foreach (var spawn in trainingDummySpawns)
         {

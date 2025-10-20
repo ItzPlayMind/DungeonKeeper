@@ -1,0 +1,17 @@
+{
+    "name": "Rejuvenation Branch",
+    "id": "rejuvenation_branch",
+    "type": 2,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 20,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 300,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "On healing a player apply Rejuvenation for {Duration} seconds, healing the target for the same amount again over the duration.",
+    "cost": 1800,
+    "cooldown": 0
+}

@@ -346,6 +346,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2618143700635503365, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 3039757210799324523, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Size.x
       value: 0.29258943
@@ -1049,13 +1053,14 @@ MonoBehaviour:
   Name: Sword Replica
   icon: {fileID: 21300000, guid: efc3b6f008d6c4646aa846871efcd4c9, type: 3}
   hoverEvent: {fileID: 1759960633235569115}
-  description: On enemy hit heal all teammates by {Damage} HP.
+  description: Hitting a player either heals them for {HealAmount} HP or deals {Damage}
+    Damage, depending on if they are a teammate or an enemy.
   upgrades:
   - name: Adaptation
     description: Gain {ConversionRate}% of HP as Special damage
     hoverEvent: {fileID: 1605440968078198333}
   - name: Slimy Sword
-    description: Hitting a target with {Name} applies {SlowAmount}% Slow for {SlowDuration}
+    description: Hitting an enemy with {Name} applies {SlowAmount}% Slow for {SlowDuration}
       seconds
     hoverEvent: {fileID: 6937442660494973290}
   - name: Rare Slime
@@ -1064,7 +1069,7 @@ MonoBehaviour:
     hoverEvent: {fileID: 1361810888804869490}
   damage: 30
   damageMultiplier: 0.5
-  MaxCooldown: 10
+  MaxCooldown: 5
   activeTime: 0
   specialIcon: {fileID: 2657698992768915383}
   specialInUseIcon: {fileID: 5335775418337068973}

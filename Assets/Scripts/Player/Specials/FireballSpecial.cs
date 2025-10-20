@@ -99,7 +99,7 @@ public class FireballSpecial : AbstractSpecial
         {
             if (collider == gameObject)
                 return;
-            if (collider.layer == gameObject.layer) return;
+            if (controller.TeamController.HasSameTeam(collider.gameObject)) return;
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
@@ -132,7 +132,7 @@ public class FireballSpecial : AbstractSpecial
         {
             if (collider == gameObject)
                 return;
-            if (collider.layer == gameObject.layer) return;
+            if (controller.TeamController.HasSameTeam(collider.gameObject)) return;
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {
@@ -148,8 +148,8 @@ public class FireballSpecial : AbstractSpecial
         fireballScript.onDirectHit += (collider) =>
         {
             if (collider == gameObject)
-                return;
-            if (collider.layer == gameObject.layer) return;
+                return false;
+            if (controller.TeamController.HasSameTeam(collider.gameObject)) return false;
             var stats = collider.GetComponent<CharacterStats>();
             if ((collider.transform.tag != "Special"))
             {
@@ -162,7 +162,9 @@ public class FireballSpecial : AbstractSpecial
                     if (HasUpgradeUnlocked(2) && (effectManager?.HasEffect("flames") ?? false))
                         SpawnCombustionServerRpc(OwnerClientId, stats.transform.position, gameObject.layer);
                 }
+                return true;
             }
+            return false;
         };
         fireballScript.onExplosion += () =>
         {

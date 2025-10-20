@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,11 +78,11 @@ public class EffectManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void EndEffectServerRPC(string id)
     {
-        EndEffectClientRPC(id);
+        EndEffectsClientRPC(id);
     }
 
     [ClientRpc]
-    public void EndEffectClientRPC(string id)
+    public void EndEffectsClientRPC(string id)
     {
         activeEffects[id].End(stats);
     }
@@ -101,5 +102,14 @@ public class EffectManager : NetworkBehaviour
         }
         duration = -1;
         amount = -1;
+    }
+
+    public void EndAllEffects(Predicate<Effect> predicate)
+    {
+        var effects = activeEffects.Values.ToList().FindAll(predicate).Select(x=>x.ID);
+        foreach (var effectID in effects)
+        {
+            EndEffectServerRPC(effectID);
+        }
     }
 }

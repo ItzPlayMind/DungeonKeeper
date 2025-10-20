@@ -94,7 +94,7 @@ public class OnHitDamageAndHealSpecial : AbstractSpecial
 
     protected override void _OnSpecialFinish(PlayerController controller)
     {
-        characterStats.Heal(HealAmount);
+        characterStats.Heal(HealAmount,characterStats);
         Resource = 0;
         StartCooldown();
     }

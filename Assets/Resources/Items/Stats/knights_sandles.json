@@ -1,0 +1,17 @@
+{
+    "name": "Knights Sandles",
+    "id": "knights_sandles",
+    "type": 1,
+    "stats": {
+        "damage": 15,
+        "specialDamage": 0,
+        "attackSpeed": 0,
+        "speed": 10,
+        "health": 0,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "",
+    "cost": 500,
+    "cooldown": 0.0
+}

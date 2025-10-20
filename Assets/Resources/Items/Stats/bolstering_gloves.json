@@ -1,0 +1,17 @@
+{
+    "name": "Bolstering Gloves",
+    "id": "bolstering_gloves",
+    "type": 1,
+    "stats": {
+        "damage": 35,
+        "specialDamage": 0,
+        "attackSpeed": 0,
+        "speed": 5,
+        "health": 0,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "Gain {DamageReductionPerc}% Damage Reduction and {AttackSpeed}% Attack Speed until the first hit. Can only accure once every {Cooldown} seconds",
+    "cost": 1600,
+    "cooldown": 20.0
+}

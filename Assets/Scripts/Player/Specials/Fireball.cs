@@ -7,7 +7,7 @@ public class Fireball : NetworkBehaviour
 {
     public System.Action onExplosion;
     public CollisionSender.OnCollosion onExplosionCollision;
-    public System.Action<GameObject> onDirectHit;
+    public System.Func<GameObject,bool> onDirectHit;
     [SerializeField] private CollisionSender explosion;
 
     private Vector2 startPos;
@@ -37,8 +37,9 @@ public class Fireball : NetworkBehaviour
         if (!IsOwner) return;
         if (hits.Contains(collision.gameObject.GetInstanceID())) return;
         hits.Add(collision.gameObject.GetInstanceID());
-        onDirectHit?.Invoke(collision.gameObject);
-        Explode();
+        if (onDirectHit == null) return;
+        if (onDirectHit.Invoke(collision.gameObject))
+            Explode();
     }
 
     private void Explode()

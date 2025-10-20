@@ -35,6 +35,7 @@ public class PlayerMeeleAttack : PlayerAttack
                 if (collider == gameObject)
                     return;
                 var stats = collider.GetComponent<CharacterStats>();
+                if (controller.TeamController.HasSameTeam(stats.gameObject)) return;
                 if (stats != null && !stats.IsDead)
                 {
                     var damage = (int)(this.stats.stats.damage.Value * attackSettings[currentAttack].damageMultiplier);

@@ -1,0 +1,420 @@
+{
+    "knights_sandles": {
+        "name": "Knights Sandles",
+        "stats": {
+            "damage": 15,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 10,
+            "health": 0,
+            "armor": 0
+        }
+    },
+    "magical_sandles": {
+        "name": "Magical Sandles",
+        "stats": {
+            "damage": 0,
+            "special_damage": 15,
+            "attack_speed": 0,
+            "speed": 10,
+            "health": 0,
+            "armor": 0
+        }
+    },
+    "giant_boots": {
+        "name": "Giant Boots",
+        "stats": {
+            "damage": 0,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 10,
+            "health": 50,
+            "armor": 0
+        }
+    },
+    "plated_boots": {
+        "name": "Plated Boots",
+        "stats": {
+            "damage": 0,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 10,
+            "health": 0,
+            "armor": 5
+        }
+    },
+    "knights_chestplate": {
+        "name": "Knights Chestplate",
+        "stats": {
+            "damage": 0,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 250,
+            "armor": 10
+        }
+    },
+    "void_chestplate": {
+        "name": "Void Chestplate",
+        "stats": {
+            "damage": 0,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 400,
+            "armor": 0
+        }
+    },
+    "lifeline": {
+        "name": "Lifeline",
+        "stats": {
+            "damage": 0,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 300,
+            "armor": 0
+        }
+    },
+    "bloodlords_blade": {
+        "name": "Bloodlords Blade",
+        "stats": {
+            "damage": 20,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 150,
+            "armor": 0
+        }
+    },
+    "bloodlords_spear": {
+        "name": "Bloodlords Spear",
+        "stats": {
+            "damage": 30,
+            "special_damage": 0,
+            "attack_speed": 10,
+            "speed": 0,
+            "health": 150,
+            "armor": 0
+        }
+    },
+    "book_of_necromancy": {
+        "name": "Book of Necromancy",
+        "stats": {
+            "damage": 0,
+            "special_damage": 20,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 150,
+            "armor": 0
+        }
+    },
+    "last_stand": {
+        "name": "Last Stand",
+        "stats": {
+            "damage": 5,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 300,
+            "armor": 10
+        }
+    },
+    "wind_sigil": {
+        "name": "Wind Sigil",
+        "stats": {
+            "damage": 10,
+            "special_damage": 10,
+            "attack_speed": 10,
+            "speed": 5,
+            "health": 50,
+            "armor": 0
+        }
+    },
+    "jesters_dagger": {
+        "name": "Jesters Dagger",
+        "stats": {
+            "damage": 20,
+            "special_damage": 0,
+            "attack_speed": 15,
+            "speed": 5,
+            "health": 50,
+            "armor": 0
+        }
+    },
+    "future_orb": {
+        "name": "Future Orb",
+        "stats": {
+            "damage": 0,
+            "special_damage": 25,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 100,
+            "armor": 3
+        }
+    },
+    "wanted_poster": {
+        "name": "Wanted Poster",
+        "stats": {
+            "damage": 25,
+            "special_damage": 0,
+            "attack_speed": 10,
+            "speed": 0,
+            "health": 0,
+            "armor": 0
+        }
+    },
+    "guillotine": {
+        "name": "Guillotine",
+        "stats": {
+            "damage": 25,
+            "special_damage": 0,
+            "attack_speed": 10,
+            "speed": 5,
+            "health": 0,
+            "armor": 0
+        }
+    },
+    "bolstering_gloves": {
+        "name": "Bolstering Gloves",
+        "stats": {
+            "damage": 35,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 5,
+            "health": 0,
+            "armor": 0
+        }
+    },
+    "battlemage_spear": {
+        "name": "Battlemage Spear",
+        "stats": {
+            "damage": 0,
+            "special_damage": 20,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 50,
+            "armor": 0
+        }
+    },
+    "sharing_leaf": {
+        "name": "Sharing Leaf",
+        "stats": {
+            "damage": 0,
+            "special_damage": 25,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 50,
+            "armor": 0
+        }
+    },
+    "druids_wand": {
+        "name": "Druids Wand",
+        "stats": {
+            "damage": 0,
+            "special_damage": 25,
+            "attack_speed": 0,
+            "speed": 5,
+            "health": 0,
+            "armor": 0
+        }
+    },
+    "mask_of_happiness": {
+        "name": "Mask of Happiness",
+        "stats": {
+            "damage": 0,
+            "special_damage": 25,
+            "attack_speed": 0,
+            "speed": 5,
+            "health": 100,
+            "armor": 0
+        }
+    },
+    "void_wand": {
+        "name": "Void Wand",
+        "stats": {
+            "damage": 0,
+            "special_damage": 30,
+            "attack_speed": 0,
+            "speed": 10,
+            "health": 0,
+            "armor": 0
+        }
+    },
+    "scroll_of_sacrifice": {
+        "name": "Scroll of Sacrifice",
+        "stats": {
+            "damage": 0,
+            "special_damage": 15,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 100,
+            "armor": 0
+        }
+    },
+    "magic_blade": {
+        "name": "Magic Blade",
+        "stats": {
+            "damage": 25,
+            "special_damage": 20,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 0,
+            "armor": 0
+        }
+    },
+    "undying_helmet": {
+        "name": "Undying Helmet",
+        "stats": {
+            "damage": 0,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 200,
+            "armor": 10
+        }
+    },
+    "first_strike_dagger": {
+        "name": "First Strike Dagger",
+        "stats": {
+            "damage": 25,
+            "special_damage": 0,
+            "attack_speed": 15,
+            "speed": 0,
+            "health": 0,
+            "armor": 0
+        }
+    },
+    "magic-infused_glove": {
+        "name": "Magic-Infused Glove",
+        "stats": {
+            "damage": 0,
+            "special_damage": 30,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 0,
+            "armor": 0
+        }
+    },
+    "miners_ring": {
+        "name": "Miners Ring",
+        "stats": {
+            "damage": 0,
+            "special_damage": 15,
+            "attack_speed": 0,
+            "speed": 5,
+            "health": 50,
+            "armor": 0
+        }
+    },
+    "bleeding_scythe": {
+        "name": "Bleeding Scythe",
+        "stats": {
+            "damage": 25,
+            "special_damage": 0,
+            "attack_speed": 10,
+            "speed": 5,
+            "health": 25,
+            "armor": 0
+        }
+    },
+    "cursed_shield": {
+        "name": "Cursed Shield",
+        "stats": {
+            "damage": 0,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 150,
+            "armor": 5
+        }
+    },
+    "cursed_lantern": {
+        "name": "Cursed Lantern",
+        "stats": {
+            "damage": 20,
+            "special_damage": 0,
+            "attack_speed": 10,
+            "speed": 0,
+            "health": 50,
+            "armor": 0
+        }
+    },
+    "cursed_book": {
+        "name": "Cursed Book",
+        "stats": {
+            "damage": 0,
+            "special_damage": 15,
+            "attack_speed": 0,
+            "speed": 5,
+            "health": 50,
+            "armor": 0
+        }
+    },
+    "mantle_of_aura": {
+        "name": "Mantle of Aura",
+        "stats": {
+            "damage": 5,
+            "special_damage": 5,
+            "attack_speed": 5,
+            "speed": 5,
+            "health": 5,
+            "armor": 5
+        }
+    },
+    "magical_pouch": {
+        "name": "Magical Pouch",
+        "stats": {
+            "damage": 0,
+            "special_damage": 25,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 25,
+            "armor": 0
+        }
+    },
+    "timewarp_necklace": {
+        "name": "Timewarp Necklace",
+        "stats": {
+            "damage": 20,
+            "special_damage": 0,
+            "attack_speed": 15,
+            "speed": 0,
+            "health": 50,
+            "armor": 0
+        }
+    },
+    "absorption_shield": {
+        "name": "Absorption Shield",
+        "stats": {
+            "damage": 0,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 300,
+            "armor": 5
+        }
+    },
+    "highmetal_anvil": {
+        "name": "Highmetal Anvil",
+        "stats": {
+            "damage": 0,
+            "special_damage": 0,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 250,
+            "armor": 5
+        }
+    },
+    "ethereal_ring": {
+        "name": "Ethereal Ring",
+        "stats": {
+            "damage": 15,
+            "special_damage": 15,
+            "attack_speed": 0,
+            "speed": 0,
+            "health": 0,
+            "armor": 5
+        }
+    }
+}

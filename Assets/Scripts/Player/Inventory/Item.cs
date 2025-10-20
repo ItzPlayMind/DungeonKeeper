@@ -131,7 +131,7 @@ public class Item
         onUpdate?.Invoke(this, stats, slot);
         if (timer > 0)
         {
-            timer -= Time.deltaTime;
+            timer = Mathf.Min(timer - Time.deltaTime, cooldown);
         }
     }
 

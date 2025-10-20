@@ -1,0 +1,17 @@
+{
+    "name": "Highmetal Anvil",
+    "id": "highmetal_anvil",
+    "type": 0,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 0,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 250,
+        "damageReduction": 5,
+        "resource": 0
+    },
+    "description": "On taking damage gain {DamageReduction}% Damage Reduction stacking up to {StackAmount} times. At maximum stacks each Stack instead adds {MaxDamageReduction}% Damage Reduction. Stacks fall of after {Cooldown} seconds of not taking damage.",
+    "cost": 1700,
+    "cooldown": 5.0
+}

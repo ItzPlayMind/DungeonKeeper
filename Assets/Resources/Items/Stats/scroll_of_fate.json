@@ -1,0 +1,17 @@
+{
+    "name": "Scroll of Fate",
+    "id": "scroll_of_fate",
+    "type": 3,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 0,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 0,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "On buy gain 3 random Fates, 1 can be chosen",
+    "cost": 2000,
+    "cooldown": 0.0
+}

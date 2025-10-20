@@ -105,7 +105,7 @@ public class ArrowSpecial : AbstractSpecial
             var stats = collider.GetComponentInParent<CharacterStats>();
             if (stats != null)
             {
-                if (stats.gameObject.layer == gameObject.layer) return;
+                if (controller.TeamController.HasSameTeam(stats.gameObject)) return;
                 DealDamage(stats, DamageStacks, Vector2.zero);
                 stacks = Mathf.Clamp(stacks+1,0,maxStackCount);
                 UpdateAmountText(stacks.ToString());

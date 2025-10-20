@@ -1,0 +1,17 @@
+{
+    "name": "Last Stand",
+    "id": "last_stand",
+    "type": 0,
+    "stats": {
+        "damage": 5,
+        "specialDamage": 0,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 300,
+        "damageReduction": 10,
+        "resource": 0
+    },
+    "description": "Convert {HealthPerc}% of damage taken into a charge\r\nOn use heal for the amount of charge built up\r\nCharges fall of after {FallOfTimer} seconds",
+    "cost": 2000,
+    "cooldown": 30.0
+}

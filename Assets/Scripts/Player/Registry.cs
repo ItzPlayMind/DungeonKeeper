@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
-public abstract class Registry<T> : MonoBehaviour
+public abstract class Registry<T> : MonoBehaviour, IEditorRegistry
 {
     public static Registry<T> Instance;
 
@@ -135,5 +135,16 @@ public abstract class Registry<T> : MonoBehaviour
         {
             setAction(getAction() - a);
         };
+    }
+
+    private void Start()
+    {
+        Create();
+    }
+    protected abstract void Create();
+
+    public virtual void ExportToJSON()
+    {
+        throw new NotImplementedException();
     }
 }

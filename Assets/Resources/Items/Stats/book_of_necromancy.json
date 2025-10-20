@@ -1,0 +1,17 @@
+{
+    "name": "Book of Necromancy",
+    "id": "book_of_necromancy",
+    "type": 1,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 20,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 150,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "Heal for {HealAmount}% of the damage dealt by the special",
+    "cost": 2200,
+    "cooldown": 0.0
+}

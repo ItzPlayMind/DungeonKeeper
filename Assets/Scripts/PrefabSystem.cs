@@ -10,7 +10,9 @@ public class PrefabSystem : MonoBehaviour
 
     public void SpawnDamageNumber(Vector3 pos, int number, Color color)
     {
-        Instantiate(damageNumberPrefab, pos, Quaternion.identity).setNumber(number, color);
+        Vector3 offset = new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f));
+        var numberPrefab = Instantiate(damageNumberPrefab, pos + offset, Quaternion.identity);
+        numberPrefab.setNumber(number, color);
     }
 
     public void SetTorch(Vector2 pos)

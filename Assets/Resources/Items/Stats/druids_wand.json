@@ -1,0 +1,17 @@
+{
+    "name": "Druids Wand",
+    "id": "druids_wand",
+    "type": 2,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 25,
+        "attackSpeed": 0,
+        "speed": 5,
+        "health": 0,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "Targets below {Threshold}% HP gain an additional {Addition}% healing",
+    "cost": 1400,
+    "cooldown": 0.0
+}

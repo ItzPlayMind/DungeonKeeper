@@ -1,0 +1,17 @@
+{
+    "name": "Guillotine",
+    "id": "guillotine",
+    "type": 1,
+    "stats": {
+        "damage": 25,
+        "specialDamage": 0,
+        "attackSpeed": 10,
+        "speed": 5,
+        "health": 0,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "Executes players below {ExecutePerc}% of their Maximum Health. Can only accure once every {Cooldown} seconds",
+    "cost": 2000,
+    "cooldown": 10.0
+}

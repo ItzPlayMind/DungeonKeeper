@@ -48,6 +48,7 @@ public class ArenaGameManager : GameManager
     [SerializeField] private Transform redTeamArenaSpawn;
     [SerializeField] private Transform blueTeamArenaSpawn;
     [SerializeField] private Transform[] flaskPoints;
+    [SerializeField] private List<ObjectSpawner> trainingDummySpawns = new List<ObjectSpawner>();
     [SerializeField] private NetworkObject flaskObject;
     [SerializeField] private CharacterStats redTeamHealth;
     [SerializeField] private CharacterStats blueTeamHealth;
@@ -108,6 +109,11 @@ public class ArenaGameManager : GameManager
         if (IsServer)
         {
             SetupWinConditionForTeams();
+            foreach (var spawn in trainingDummySpawns)
+            {
+                var dummy = spawn.Instantiate();
+                dummy.Spawn();
+            }
             DebugConsole.OnCommand((_) =>
             {
                 phaseTimer.Value = 0;
@@ -338,7 +344,7 @@ public class ArenaGameManager : GameManager
             var player = NetworkManager.Singleton.ConnectedClients[id].PlayerObject;
             var stats = player.GetComponent<PlayerStats>();
             stats.Respawn();
-            stats.Heal(stats.stats.health.Value);
+            stats.Heal(stats.stats.health.Value, stats);
         }
     }
 

@@ -1,0 +1,17 @@
+{
+    "name": "Scroll of Sacrifice",
+    "id": "scroll_of_sacrifice",
+    "type": 2,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 15,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 100,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "Target a teammate to sacrifice {Sacrifice}% of own HP and heal the target for the same amount",
+    "cost": 1700,
+    "cooldown": 60.0
+}

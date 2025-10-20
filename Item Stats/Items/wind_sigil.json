@@ -1,0 +1,11 @@
+{
+    "name": "Wind Sigil",
+    "stats": {
+        "damage": 10,
+        "special_damage": 10,
+        "attack_speed": 10,
+        "speed": 5,
+        "health": 50,
+        "armor": 0
+    }
+}

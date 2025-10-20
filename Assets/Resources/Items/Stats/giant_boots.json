@@ -1,0 +1,17 @@
+{
+    "name": "Giant Boots",
+    "id": "giant_boots",
+    "type": 0,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 0,
+        "attackSpeed": 0,
+        "speed": 10,
+        "health": 50,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "",
+    "cost": 500,
+    "cooldown": 0.0
+}

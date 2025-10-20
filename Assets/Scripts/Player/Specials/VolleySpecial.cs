@@ -15,8 +15,6 @@ public class VolleySpecial : AbstractSpecial
     [SerializeField] private int hitAmount = 3;
     [DescriptionCreator.DescriptionVariable("green")]
     [SerializeField] private float MaxHPDamage = 2.5f;
-    [DescriptionCreator.DescriptionVariable("green")]
-    [SerializeField] private float EscapeHP = 30f;
     [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int InvisDuration = 3;
 
@@ -44,7 +42,7 @@ public class VolleySpecial : AbstractSpecial
             else
                 hits = 1;
 
-            if(hits == 3)
+            if(hits == hitAmount)
             {
                 var targetStats = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target].GetComponent<CharacterStats>();
                 amount += (int)(targetStats.stats.health.Value * (MaxHPDamage / 100f));
@@ -110,7 +108,7 @@ public class VolleySpecial : AbstractSpecial
                 var stats = collider.GetComponentInParent<CharacterStats>();
                 if (stats != null)
                 {
-                    if (stats.gameObject.layer == gameObject.layer) return;
+                    if (controller.TeamController.HasSameTeam(stats.gameObject)) return;
                     DealDamage(stats, Damage, Vector2.zero);
                 }
                 if (collider.tag != "Special")

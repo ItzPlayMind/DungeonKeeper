@@ -1,0 +1,17 @@
+{
+    "name": "Wind Sigil",
+    "id": "wind_sigil",
+    "type": 1,
+    "stats": {
+        "damage": 10,
+        "specialDamage": 10,
+        "attackSpeed": 10,
+        "speed": 5,
+        "health": 50,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "On use dash towards the targeted position. Moving for {MoveDuration} seconds adds {SpeedMult}% speed. The next attack on a target will slow it by {SpeedMult}% for {SlowDuration} seconds.",
+    "cost": 2200,
+    "cooldown": 20.0
+}

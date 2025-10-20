@@ -1,0 +1,17 @@
+{
+    "name": "Mantle of Aura",
+    "id": "mantle_of_aura",
+    "type": 2,
+    "stats": {
+        "damage": 5,
+        "specialDamage": 5,
+        "attackSpeed": 5,
+        "speed": 5,
+        "health": 5,
+        "damageReduction": 5,
+        "resource": 0
+    },
+    "description": "On use swap between 3 different auras (Speed, Damage, Survivability). \nAura of Speed: Gain {Amount}% Attack Speed and Movement Speed.",
+    "cost": 2000,
+    "cooldown": 5.0
+}

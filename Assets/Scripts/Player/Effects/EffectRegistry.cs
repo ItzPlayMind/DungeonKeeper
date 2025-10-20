@@ -9,9 +9,9 @@ public class EffectRegistry : Registry<Effect>
 {
     private Dictionary<string, Effect> effects = new Dictionary<string, Effect>();
 
-    private void Start()
+    protected override void Create()
     {
-        AddEffect("Slow", "slow", (Effect effect, CharacterStats stats) =>
+        AddEffect("Slow", "slow", Effect.EffectType.Debuff, (Effect effect, CharacterStats stats) =>
         {
             if (!stats.IsOwner) return;
             AddToAction(effect, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
@@ -19,7 +19,7 @@ public class EffectRegistry : Registry<Effect>
                     speed = (int)(speed * (1-(effect.amount / 100f)));
                 });
         });
-        AddEffect("Bleed", "bleed", new Dictionary<string, object>() { { "Timer", 1f } }, null, (Effect effect, CharacterStats stats) =>
+        AddEffect("Bleed", "bleed", Effect.EffectType.Debuff, new Dictionary<string, object>() { { "Timer", 1f } }, null, (Effect effect, CharacterStats stats) =>
         {if (!stats.IsOwner) return;
             if ((float)effect.variables["Timer"] <= 0f)
             {
@@ -29,7 +29,18 @@ public class EffectRegistry : Registry<Effect>
             else
                 effect.variables["Timer"] = (float)effect.variables["Timer"] - Time.deltaTime;
         });
-        AddEffect("Curse", "curse", (Effect effect, CharacterStats stats) =>
+        AddEffect("Rejuvenation", "rejuvenation", Effect.EffectType.Buff, new Dictionary<string, object>() { { "Timer", 1f } }, null, (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            if ((float)effect.variables["Timer"] <= 0f)
+            {
+                stats.Heal((int)(effect.amount/effect.duration),effect.applier);
+                effect.variables["Timer"] = 1f;
+            }
+            else
+                effect.variables["Timer"] = (float)effect.variables["Timer"] - Time.deltaTime;
+        });
+        AddEffect("Curse", "curse", Effect.EffectType.Debuff, (Effect effect, CharacterStats stats) =>
         {
             if (!stats.IsOwner) return;
             AddToAction(effect, () => stats.OnClientHeal, (value) => stats.OnClientHeal = value, (ref int heal) =>
@@ -37,7 +48,7 @@ public class EffectRegistry : Registry<Effect>
                 heal = (int)(heal * (1 - (float)effect.amount / 100f));
             });
         });
-        AddEffect("Timewarped", "timewarped", (Effect effect, CharacterStats stats) =>
+        AddEffect("Timewarped", "timewarped", Effect.EffectType.Debuff, (Effect effect, CharacterStats stats) =>
         {
             if (!stats.IsOwner) return;
             effect.variables["DecayFactor"] = effect.amount / effect.duration;
@@ -54,10 +65,11 @@ public class EffectRegistry : Registry<Effect>
             if (!stats.IsOwner) return;
             effect.amount -= (float)effect.variables["DecayFactor"] * Time.deltaTime;
         });
-        AddEffect("Ethereal", "ethereal", (Effect effect, CharacterStats stats) =>
+        AddEffect("Ethereal", "ethereal", Effect.EffectType.Buff, (Effect effect, CharacterStats stats) =>
         {
             //var movement = stats.GetComponent<PlayerMovement>();
             var attack = stats.GetComponent<PlayerAttack>();
+            var special = stats.GetComponent<AbstractSpecial>();
             var controller = stats.GetComponent<PlayerController>();
             //var animator = controller.GFX.GetComponent<Animator>();
             effect.onEnd += (Effect effect, CharacterStats stats) =>
@@ -65,16 +77,18 @@ public class EffectRegistry : Registry<Effect>
                 //movement.enabled = true;
                 attack.enabled = true;
                 stats.enabled = true;
+                special.enabled = true;
                 controller.GFX.color = Color.white;
                 //animator.enabled = true;
             };
             //movement.enabled = false;
             attack.enabled = false;
-            stats.enabled = false; 
+            stats.enabled = false;
+            special.enabled = false;
             controller.GFX.color = new Color(1,1,1,0.2f);
             //animator.enabled = false;
         }, null);
-        AddEffect("Invisible", "invisible", (Effect effect, CharacterStats stats) =>
+        AddEffect("Invisible", "invisible", Effect.EffectType.Buff, (Effect effect, CharacterStats stats) =>
         {
             var controller = stats.GetComponent<PlayerController>();
             var attack = stats.GetComponent<PlayerAttack>();
@@ -93,7 +107,7 @@ public class EffectRegistry : Registry<Effect>
                 controller.GFX.color = Color.white;
             };
         }, null);
-        AddEffect("Lit", "lit", (Effect effect, CharacterStats stats) =>
+        AddEffect("Lit", "lit", Effect.EffectType.Debuff, (Effect effect, CharacterStats stats) =>
         {
             var light = stats.GetComponentInChildren<Light2D>();
             if (light.enabled) return;
@@ -106,7 +120,7 @@ public class EffectRegistry : Registry<Effect>
                 light.enabled = false;
             };
         });
-        AddEffect("Flames", "flames", new Dictionary<string, object>() { { "Timer", 1f } }, (Effect effect, CharacterStats stats) =>
+        AddEffect("Flames", "flames", Effect.EffectType.Debuff, new Dictionary<string, object>() { { "Timer", 1f } }, (Effect effect, CharacterStats stats) =>
         {
             
         }, (Effect effect, CharacterStats stats) =>
@@ -120,18 +134,18 @@ public class EffectRegistry : Registry<Effect>
             else
                 effect.variables["Timer"] = (float)effect.variables["Timer"] - Time.deltaTime;
         });
-        AddEffect("Potion", "potion", new Dictionary<string, object>() { { "Timer", 1f } }, null, (Effect effect, CharacterStats stats) =>
+        AddEffect("Potion", "potion", Effect.EffectType.Buff, new Dictionary<string, object>() { { "Timer", 1f } }, null, (Effect effect, CharacterStats stats) =>
         {
             if (!stats.IsOwner) return;
             if ((float)effect.variables["Timer"] <= 0f)
             {
-                stats.Heal((int)effect.amount);
+                stats.Heal((int)effect.amount,stats);
                 effect.variables["Timer"] = 1f;
             }
             else
                 effect.variables["Timer"] = (float)effect.variables["Timer"] - Time.deltaTime;
         });
-        AddEffect("Frenzy", "frenzy", (Effect effect, CharacterStats stats) =>
+        AddEffect("Frenzy", "frenzy", Effect.EffectType.Buff, (Effect effect, CharacterStats stats) =>
         {
             if (!stats.IsOwner) return;
             AddToAction(effect, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
@@ -143,7 +157,7 @@ public class EffectRegistry : Registry<Effect>
                 speed += (int)effect.amount;
             }); 
         });
-        AddEffect("Windy", "windy", (Effect effect, CharacterStats stats) =>
+        AddEffect("Windy", "windy", Effect.EffectType.Buff, (Effect effect, CharacterStats stats) =>
         {
             if (!stats.IsOwner) return;
             AddToAction(effect, () => stats.stats.speed.ChangeValueMult, (value) => stats.stats.speed.ChangeValueMult = value, (ref int speed, int oldSpeed) =>
@@ -151,7 +165,7 @@ public class EffectRegistry : Registry<Effect>
                 speed = (int)(speed * (1 + (effect.amount / 100f)));
             });
         });
-        AddEffect("Stunned", "stunned", (Effect effect, CharacterStats stats) =>
+        AddEffect("Stunned", "stunned", Effect.EffectType.Debuff, (Effect effect, CharacterStats stats) =>
         {
             if (!stats.IsOwner) return;
             stats.GetComponent<PlayerMovement>().enabled = false;
@@ -162,7 +176,22 @@ public class EffectRegistry : Registry<Effect>
                 stats2.GetComponent<PlayerMovement>().enabled = true;
             };
         });
-        AddEffect("Rallied", "rallied", (Effect effect, CharacterStats stats) =>
+        AddEffect("Dazzing Strike", "dazzing_strike", Effect.EffectType.Buff, (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            var attack = stats.GetComponent<PlayerAttack>();
+            var effectManager = stats.GetComponent<EffectManager>();
+            AddToAction(effect, () => attack.OnAttack, (value) => attack.OnAttack = value, (ulong target, ulong user, ref int amount) =>
+            {
+                var targetManager = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target].GetComponent<EffectManager>();
+                if(targetManager != null)
+                {
+                    targetManager.AddEffect("stunned", (int)effect.amount, 1, stats);
+                    effectManager.EndEffect(effect.ID);
+                }
+            });
+        });
+        AddEffect("Rallied", "rallied", Effect.EffectType.Buff, (Effect effect, CharacterStats stats) =>
         {
             if (!stats.IsOwner) return;
             AddToAction(effect, () => stats.stats.attackSpeed.ChangeValueAdd, (value) => stats.stats.speed.ChangeValueAdd = value, (ref int speed, int oldSpeed) =>
@@ -178,7 +207,7 @@ public class EffectRegistry : Registry<Effect>
                 speed += (int)effect.amount;
             });
         });
-        AddEffect("Blocking", "blocking", (Effect effect, CharacterStats stats) =>
+        AddEffect("Blocking", "blocking", Effect.EffectType.Buff, (Effect effect, CharacterStats stats) =>
         {
             if (!stats.IsOwner) return;
             effect.variables["DecayFactor"] = effect.amount / effect.duration;
@@ -191,7 +220,7 @@ public class EffectRegistry : Registry<Effect>
             if (!stats.IsOwner) return;
             effect.amount -= (float)effect.variables["DecayFactor"] * Time.deltaTime;
         });
-        AddEffect("Slimy", "slimy", (Effect effect, CharacterStats stats) =>
+        AddEffect("Slimy", "slimy", Effect.EffectType.Buff, (Effect effect, CharacterStats stats) =>
         {
             if (!stats.IsOwner) return;
             AddToAction(effect, () => stats.stats.attackSpeed.ChangeValueAdd, (value) => stats.stats.attackSpeed.ChangeValueAdd = value, (ref int speed, int oldSpeed) =>
@@ -203,7 +232,7 @@ public class EffectRegistry : Registry<Effect>
                 speed = (int)(speed * (1+effect.amount/100f));
             });
         });
-        AddEffect("Wanted", "wanted", (Effect effect, CharacterStats stats) =>
+        AddEffect("Wanted", "wanted", Effect.EffectType.Debuff, (Effect effect, CharacterStats stats) =>
         {
             if (!stats.IsServer) return;
             AddToAction(effect, () => stats.OnServerTakeDamage, (value) => stats.OnServerTakeDamage = value, (ulong damager, ref int damage) =>
@@ -220,11 +249,20 @@ public class EffectRegistry : Registry<Effect>
                 }
             });
         });
+        AddEffect("Silenced",  "silenced", Effect.EffectType.Debuff, (Effect effect, CharacterStats stats) =>
+        {
+            if (!stats.IsOwner) return;
+            stats.GetComponent<AbstractSpecial>().enabled = false;
+            effect.onEnd += (Effect effect, CharacterStats stats2) =>
+            {
+                stats.GetComponent<AbstractSpecial>().enabled = true;
+            };
+        });
     }
 
-    public Effect AddEffect(string name, string iconName, Effect.EffectFunction onStart = null, Effect.EffectFunction onUpdate = null)
+    public Effect AddEffect(string name, string iconName, Effect.EffectType type, Effect.EffectFunction onStart = null, Effect.EffectFunction onUpdate = null)
     {
-        Effect effect = new Effect(name);
+        Effect effect = new Effect(name, type);
         effect.onStart = onStart;
         effect.onUpdate = onUpdate;
         effect.icon = Resources.Load<Sprite>("Effects/" + iconName);
@@ -232,9 +270,9 @@ public class EffectRegistry : Registry<Effect>
         return effect;
     }
 
-    public Effect AddEffect(string name, string iconName, Dictionary<string, object> variables, Effect.EffectFunction onStart = null, Effect.EffectFunction onUpdate = null)
+    public Effect AddEffect(string name, string iconName, Effect.EffectType type, Dictionary<string, object> variables, Effect.EffectFunction onStart = null, Effect.EffectFunction onUpdate = null)
     {
-        Effect effect = AddEffect(name, iconName, onStart, onUpdate);
+        Effect effect = AddEffect(name, iconName, type, onStart, onUpdate);
         effect.variables = variables;
         return effect;
     }

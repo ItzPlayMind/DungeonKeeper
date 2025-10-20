@@ -1,0 +1,11 @@
+{
+    "name": "Magical Pouch",
+    "stats": {
+        "damage": 0,
+        "special_damage": 25,
+        "attack_speed": 0,
+        "speed": 0,
+        "health": 25,
+        "armor": 0
+    }
+}

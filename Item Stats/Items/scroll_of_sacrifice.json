@@ -1,0 +1,11 @@
+{
+    "name": "Scroll of Sacrifice",
+    "stats": {
+        "damage": 0,
+        "special_damage": 15,
+        "attack_speed": 0,
+        "speed": 0,
+        "health": 100,
+        "armor": 0
+    }
+}

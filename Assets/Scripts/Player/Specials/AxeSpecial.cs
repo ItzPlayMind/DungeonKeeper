@@ -68,7 +68,7 @@ public class AxeSpecial : AbstractSpecial
         {
             if (collider == gameObject)
                 return;
-            if (collider.layer == gameObject.layer) return;
+            if (controller.TeamController.HasSameTeam(collider.gameObject)) return;
             if (collider.tag == "Special") return;
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)

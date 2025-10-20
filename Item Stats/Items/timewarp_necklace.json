@@ -1,0 +1,11 @@
+{
+    "name": "Timewarp Necklace",
+    "stats": {
+        "damage": 20,
+        "special_damage": 0,
+        "attack_speed": 15,
+        "speed": 0,
+        "health": 50,
+        "armor": 0
+    }
+}

@@ -7,6 +7,7 @@ public class Effect
     public string Name { get; private set; }
     public float duration;
     public float amount;
+    public EffectType Type { get; private set; }
     public string ID { get; private set; }
 
     public delegate void EffectFunction(Effect effect, CharacterStats stats);
@@ -20,13 +21,19 @@ public class Effect
 
     private float remainingTime;
 
-    public Effect(string name)
+    public enum EffectType
+    {
+        Buff, Debuff
+    }
+
+    public Effect(string name, EffectType type)
     {
         Name = name;
         ID = GetIDFromName(name);
+        Type = type;
     }
 
-    public Effect(Effect effect) : this(effect.Name)
+    public Effect(Effect effect) : this(effect.Name, effect.Type)
     {
         ID = effect.ID;
         this.onStart = effect.onStart;

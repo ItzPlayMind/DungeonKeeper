@@ -345,7 +345,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 76d2035a66a07ab4190cab013f91c280, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -508,6 +508,7 @@ GameObject:
   - component: {fileID: 5700929745545267369}
   - component: {fileID: 3876041926249644039}
   - component: {fileID: 7917400475593196779}
+  - component: {fileID: 4805123219310794750}
   m_Layer: 0
   m_Name: Training Dummy
   m_TagString: Untagged
@@ -739,6 +740,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80d7c879794dfda4687da0e400131852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4805123219310794750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9042775466893084746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c7029fa6c75329498bbda0ca455e8b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gfx: {fileID: 5721952419502536840}
+  team:
+    m_InternalValue: 0
 --- !u!1 &9085593840091006615
 GameObject:
   m_ObjectHideFlags: 0

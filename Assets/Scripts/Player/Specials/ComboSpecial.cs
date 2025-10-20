@@ -54,7 +54,7 @@ public class ComboSpecial : AbstractSpecial
                 var target = collider.GetComponent<CharacterStats>();
                 if (target == null) return;
                 if (target.gameObject == gameObject) return;
-                if (target.gameObject.layer == gameObject.layer)
+                if (controller.TeamController.HasSameTeam(target.gameObject))
                     return;
                 this.hit = true;
                 int damage = (int)(Damage * hitbox.damageMultiplier);

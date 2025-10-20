@@ -1,0 +1,11 @@
+{
+    "name": "Guillotine",
+    "stats": {
+        "damage": 25,
+        "special_damage": 0,
+        "attack_speed": 10,
+        "speed": 5,
+        "health": 0,
+        "armor": 0
+    }
+}

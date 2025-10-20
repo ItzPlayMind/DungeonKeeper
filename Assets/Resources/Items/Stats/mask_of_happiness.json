@@ -1,0 +1,17 @@
+{
+    "name": "Mask of Happiness",
+    "id": "mask_of_happiness",
+    "type": 2,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 25,
+        "attackSpeed": 0,
+        "speed": 5,
+        "health": 100,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "Increases Healing amount by {HealIncrease}%, above {HPThreshold}% HP increase it by {HPHealIncrease}% instead",
+    "cost": 2000,
+    "cooldown": 0.0
+}

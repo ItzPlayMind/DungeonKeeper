@@ -1,0 +1,17 @@
+{
+    "name": "Battlemage Spear",
+    "id": "battlemage_spear",
+    "type": 2,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 20,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 50,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "On use silence the target for {Duration} seconds. Healing a player reduces the cooldown by {CooldownReduce} seconds until it has reached {MinCooldown} seconds.",
+    "cost": 2000,
+    "cooldown": 60.0
+}

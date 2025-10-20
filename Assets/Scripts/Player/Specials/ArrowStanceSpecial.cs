@@ -17,7 +17,6 @@ public class ArrowStanceSpecial : AbstractSpecial
     [DescriptionCreator.DescriptionVariable("white")]
     [SerializeField] private int durationIncrease = 5;
     private Animator animator;
-    private PlayerController controller;
     private bool isInStance = false;
 
     private PlayerProjectileAttack attack;
@@ -29,7 +28,6 @@ public class ArrowStanceSpecial : AbstractSpecial
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        controller = GetComponent<PlayerController>();
         animator = GetComponentInChildren<Animator>();
         attack = GetComponent<PlayerProjectileAttack>();
         normalArrowPrefab = attack.projectile;

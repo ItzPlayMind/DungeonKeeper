@@ -25,7 +25,7 @@ public class SlashSpecial : ComboSpecial
         if (HasUpgradeUnlocked(0))
             effectManager.AddEffect("windy", windyDuration, windyAmount, characterStats);
         if (HasUpgradeUnlocked(1))
-            characterStats.Heal((int)(damage * (hpAmount / 100f)));
+            characterStats.Heal((int)(damage * (hpAmount / 100f)), characterStats);
         if (index == 2 && HasUpgradeUnlocked(2))
             target.GetComponent<EffectManager>()?.AddEffect("stunned", stunDuration, 1, characterStats);
     }

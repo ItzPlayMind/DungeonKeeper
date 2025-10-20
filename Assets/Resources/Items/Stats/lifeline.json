@@ -1,0 +1,17 @@
+{
+    "name": "Lifeline",
+    "id": "lifeline",
+    "type": 0,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 0,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 300,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "After not beeing in combat for 10 seconds, start regenerating {HealAmount}% Max HP every {Time} seconds.",
+    "cost": 1500,
+    "cooldown": 10.0
+}

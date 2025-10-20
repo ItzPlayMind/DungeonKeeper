@@ -1,0 +1,11 @@
+{
+    "name": "Bloodlords Spear",
+    "stats": {
+        "damage": 30,
+        "special_damage": 0,
+        "attack_speed": 10,
+        "speed": 0,
+        "health": 150,
+        "armor": 0
+    }
+}

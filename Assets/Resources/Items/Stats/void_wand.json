@@ -1,0 +1,17 @@
+{
+    "name": "Void Wand",
+    "id": "void_wand",
+    "type": 1,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 30,
+        "attackSpeed": 0,
+        "speed": 10,
+        "health": 0,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "While not using the special, gain {StackPerSecond} Stacks per second, up to {MaxStacks}. The next Special hit deals an additional damage equal to the amount of stacks",
+    "cost": 2200,
+    "cooldown": 3.0
+}

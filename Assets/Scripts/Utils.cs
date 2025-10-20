@@ -18,7 +18,8 @@ public static class Utils
     {
         if (enemy == gameObject)
             return false;
-        if (enemy.gameObject.layer == gameObject.layer) return false;
+        var teamController = gameObject.GetComponent<TeamController>();
+        if (teamController.HasSameTeam(enemy.gameObject)) return false;
         characterStats = enemy.GetComponent<CharacterStats>();
         return (characterStats != null && !characterStats.IsDead);
     }

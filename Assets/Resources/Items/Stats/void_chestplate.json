@@ -1,0 +1,17 @@
+{
+    "name": "Void Chestplate",
+    "id": "void_chestplate",
+    "type": 0,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 0,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 400,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "Damage below {HPThreshold}% Maximum Health is reduced to 0",
+    "cost": 1500,
+    "cooldown": 0.0
+}

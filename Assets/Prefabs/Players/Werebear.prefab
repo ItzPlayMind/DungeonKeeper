@@ -738,6 +738,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9183395292445946165, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 1622906011, guid: 9c252f8e3c0ef8a43836f3a29f97cf50, type: 3}
+    - target: {fileID: 9183395292445946165, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Color.b
       value: 0
       objectReference: {fileID: 0}
@@ -865,17 +869,18 @@ MonoBehaviour:
   upgrades:
   - name: Beast Skin
     description: Gain Rage on beeing hit. Using {Name} restores Health equal to stored
-      Rage
+      Rage as precentage of Maximum HP
     hoverEvent: {fileID: 747255469709064226}
   - name: Unstable Mind
     description: Increase Rage gain by {RageGainIncrease}%
     hoverEvent: {fileID: 8962123375302502261}
   - name: Bestial Instinct
-    description: At full Rage gain {HPToDamage}% HP as damage
+    description: At full Rage fall into a frenzy, increasing in size and increasing
+      Damage Reduction and Attack Speed by {ValueIncrease}%
     hoverEvent: {fileID: 1080717846384335725}
   damage: 35
   damageMultiplier: 1
-  MaxCooldown: 15
+  MaxCooldown: 25
   activeTime: 0
   specialIcon: {fileID: 4105998394654681512}
   specialInUseIcon: {fileID: 6202898795264407986}
@@ -885,9 +890,7 @@ MonoBehaviour:
   effectName: slow
   amount: 90
   duration: 3
-  hpToMaxResource: 50
-  damageToResource: 25
-  hpToDamage: 2
+  valueIncrease: 20
   rageGainIncrease: 100
 --- !u!114 &8962123375302502261 stripped
 MonoBehaviour:

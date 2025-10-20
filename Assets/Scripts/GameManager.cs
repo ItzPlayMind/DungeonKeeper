@@ -40,6 +40,9 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private LayerMask redCameraLayer;
     [SerializeField] private LayerMask blueCameraLayer;
 
+    public LayerMask RedCameraLayer { get => redCameraLayer; }
+    public LayerMask BlueCameraLayer { get => blueCameraLayer; }
+
     [SerializeField] private ShopPanel shopPanel;
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private DeathScreen deathScreen;
@@ -142,24 +145,22 @@ public class GameManager : NetworkBehaviour
     {
         var spawnIndex = clientSetupCount / 2;
         var spawn = redTeamSpawns[spawnIndex];
-        var teamLayer = 0;
+        Lobby.Team team = Lobby.Team.None;
         if (Lobby.Instance.GetTeam(Lobby.Team.Red).Contains(id))
         {
             spawn = redTeamSpawns[spawnIndex];
-            teamLayer = LayerMask.NameToLayer(redTeamlayer);
+            team = Lobby.Team.Red;
         }
         if (Lobby.Instance.GetTeam(Lobby.Team.Blue).Contains(id))
         {
             spawn = blueTeamSpawns[spawnIndex];
-            teamLayer = LayerMask.NameToLayer(blueTeamlayer);
+            team = Lobby.Team.Blue;
         }
         var character = Instantiate(Lobby.Instance.GetCharacterByIndex(index), spawn.transform.position, Quaternion.identity);
-        character.layer = teamLayer;
         var network = character.GetComponent<NetworkObject>();
         network.SpawnAsPlayerObject(id);
         playerIDNetworkID.Add(id,NetworkObjectId);
-        SetTeamLayerClientRPC(teamLayer, network.NetworkObjectId);
-        SetTeamLightLayerClientRPC(teamLayer, new ClientRpcParams() { Send = new ClientRpcSendParams() { TargetClientIds = new List<ulong>() { id } } });
+        SetTeamLayerClientRPC(team, network.NetworkObjectId);
         OnPlayerSpawned(network);
         clientSetupCount++;
         if (clientSetupCount == Lobby.Instance.PlayerCount)
@@ -179,24 +180,17 @@ public class GameManager : NetworkBehaviour
 
     }
 
+    protected virtual void OnSetupFinished() { }
+
     public Light2D[] GetLights() => lights.ToArray();
 
     public ulong GetNetworkIDFromPlayerID(ulong id) => playerIDNetworkID[id];
 
     [ClientRpc]
-    private void SetTeamLayerClientRPC(int id, ulong networkObjectID)
+    private void SetTeamLayerClientRPC(Lobby.Team team, ulong networkObjectID)
     {
         var player = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectID];
-        player.gameObject.layer = id;
-    }
-
-    [ClientRpc]
-    private void SetTeamLightLayerClientRPC(int id, ClientRpcParams param)
-    {
-        if (id == LayerMask.NameToLayer(redTeamlayer))
-            Camera.main.cullingMask = redCameraLayer;
-        else
-            Camera.main.cullingMask = blueCameraLayer;
+        player.GetComponent<TeamController>()?.SetTeam(team);
     }
 
     [ClientRpc]
@@ -208,6 +202,7 @@ public class GameManager : NetworkBehaviour
         {
             NetworkManager.Singleton.SpawnManager.SpawnedObjects[client].GetComponent<PlayerController>().OnTeamAssigned();
         }
+        OnSetupFinished();
     }
 
     public void Win(Lobby.Team team)

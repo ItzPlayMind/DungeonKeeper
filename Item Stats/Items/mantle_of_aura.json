@@ -1,0 +1,11 @@
+{
+    "name": "Mantle of Aura",
+    "stats": {
+        "damage": 5,
+        "special_damage": 5,
+        "attack_speed": 5,
+        "speed": 5,
+        "health": 5,
+        "armor": 5
+    }
+}

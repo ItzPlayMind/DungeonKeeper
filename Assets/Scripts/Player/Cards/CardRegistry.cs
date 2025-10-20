@@ -8,7 +8,7 @@ public class CardRegistry : Registry<Card>
 {
     private Dictionary<string, Card> cards = new Dictionary<string, Card>();
 
-    private void Start()
+    protected override void Create()
     {
         AddCard("Damage I", "Adds {Value} to Damage", new Dictionary<string, Variable>() { { "Value", new Variable() { value = 10, color = "red" } } }, (Card card, CharacterStats stats) =>
         {

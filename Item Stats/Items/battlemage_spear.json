@@ -1,0 +1,11 @@
+{
+    "name": "Battlemage Spear",
+    "stats": {
+        "damage": 0,
+        "special_damage": 20,
+        "attack_speed": 0,
+        "speed": 0,
+        "health": 50,
+        "armor": 0
+    }
+}

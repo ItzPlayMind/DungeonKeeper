@@ -1,0 +1,17 @@
+{
+  "name": "Pendant of Time",
+  "id": "pendant_of_time",
+  "type": 2,
+  "stats": {
+    "damage": 0,
+    "specialDamage": 10,
+    "attackSpeed": 0,
+    "speed": 15,
+    "health": 150,
+    "damageReduction": 0,
+    "resource": 0
+  },
+  "description": "On use empower an ally with Dazzing Strike for {DazzingStrikeDuration} seconds. The next attack the ally does stuns the hit target for {DazzingStrikeAmount} seconds",
+  "cost": 2200,
+  "cooldown": 30.0
+}

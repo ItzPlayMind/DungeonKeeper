@@ -1,0 +1,17 @@
+{
+    "name": "Future Orb",
+    "id": "future_orb",
+    "type": 1,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 25,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 100,
+        "damageReduction": 3,
+        "resource": 0
+    },
+    "description": "Store {DamagePercent}% of damage dealt by special. Hitting a target with a special below the stored amount instantly kills them",
+    "cost": 2400,
+    "cooldown": 20.0
+}

@@ -23,6 +23,8 @@ public class CharacterStats : NetworkBehaviour
     public delegate void HealDelegate(ref int amount);
     public delegate void DeathDelegate(ulong killer);
 
+    private Material outlineMaterial;
+
     public int Health { get => currentHealth.Value; }
     public System.Action<int, int> OnHealthChange;
     public ServerDamageDelegate OnServerTakeDamage;
@@ -43,6 +45,7 @@ public class CharacterStats : NetworkBehaviour
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        
         healthBar?.gameObject.SetActive(alwayShowHealthbar);
         OnHealthChange += (int _, int value) =>
         {
@@ -70,6 +73,12 @@ public class CharacterStats : NetworkBehaviour
         };
     }
 
+    public void Hover(bool value)
+    {
+        outlineMaterial.SetInt("_Show", value ? 1 : 0);
+        healthBar.gameObject.SetActive(value);
+    }
+
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -77,6 +86,28 @@ public class CharacterStats : NetworkBehaviour
             currentHealth.Value = stats.health.Value;
         }
         currentHealth.OnValueChanged += (int oldValue, int newValue) => OnHealthChange?.Invoke(oldValue, newValue);
+        healthBar.transform.rotation = Quaternion.identity;
+
+        if (gfx != null)
+        {
+            outlineMaterial = Instantiate(gfx.material);
+            gfx.material = outlineMaterial;
+        }
+
+        var teamController = GetComponent<TeamController>();
+
+        teamController.OnTeamChanged += (team) => SetOutlineForTeam();
+        SetOutlineForTeam();
+    }
+
+    private void SetOutlineForTeam()
+    {
+        if (PlayerController.LocalPlayer == null) return;
+        var teamController = GetComponent<TeamController>();
+        if (teamController.HasSameTeam(PlayerController.LocalPlayer.gameObject))
+        {
+            outlineMaterial.SetColor("_OutlineColor", Color.green);
+        }
     }
 
     public void TakeDamage(int damage, Vector2 knockback, CharacterStats damager, float stagger = 0f)
@@ -188,21 +219,21 @@ public class CharacterStats : NetworkBehaviour
         healthBar?.UpdateBar(1f);
     }
 
-    public void Heal(int health)
+    public void Heal(int health,CharacterStats healer)
     {
         if (!enabled) return;
         if (IsDead)
             return;
         OnClientHeal?.Invoke(ref health);
-        HealServerRPC(health);
+        HealServerRPC(health, healer == null ? ulong.MaxValue : healer.NetworkObjectId);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void HealServerRPC(int health)
+    private void HealServerRPC(int health, ulong healerID)
     {
         currentHealth.Value += health;
         currentHealth.Value = Mathf.Clamp(currentHealth.Value, 0, stats.health.Value);
-        HealClientRPC(health);
+        HealClientRPC(health,healerID);
     }
 
     public void ShowHealtBar()
@@ -211,8 +242,10 @@ public class CharacterStats : NetworkBehaviour
     }
 
     [ClientRpc]
-    protected virtual void HealClientRPC(int health)
+    protected virtual void HealClientRPC(int health, ulong healerID)
     {
+        if (healerID == PlayerController.LocalPlayer.NetworkObjectId)
+            GameManager.instance.PrefabSystem.SpawnDamageNumber(transform.position, health, Color.green);
         if (healCoroutine != null)
             StopCoroutine(healCoroutine);
         if (gfx != null)

@@ -66,6 +66,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
     public SpecialDelegate onSpecial;
 
     protected PlayerStats characterStats;
+    protected PlayerController controller;
     [DescriptionVariable("white")]
     public virtual float Cooldown { get => MaxCooldown; }
     [DescriptionVariable]
@@ -104,7 +105,8 @@ public abstract class AbstractSpecial : NetworkBehaviour
 
     protected void UpdateResourceBar()
     {
-        resourceBar.UpdateBar(Resource / (float)characterStats.stats.resource.Value);
+        if(characterStats.stats.resource.Value != 0)
+            resourceBar.UpdateBar(Resource / (float)characterStats.stats.resource.Value);
         if (resource.Value == 0 && characterStats.stats.resource.Value == 0) return;
         resourceBar.Text = Resource + "/" + characterStats.stats.resource.Value;
     }
@@ -119,6 +121,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
         hoverEvent.onPointerEnter += () => AbilityHoverOver.Show(this);
         hoverEvent.onPointerExit += () => AbilityHoverOver.Hide();
         characterStats = GetComponent<PlayerStats>();
+        controller = GetComponent<PlayerController>();
         if (IsLocalPlayer)
         {
             DebugConsole.OnCommand((_) =>
@@ -181,7 +184,7 @@ public abstract class AbstractSpecial : NetworkBehaviour
     protected virtual void _Start() { }
 
     public bool OnCooldown { get => cooldown > 0; }
-    public virtual bool canUse() { return !OnCooldown && !used && HasResource(); }
+    public virtual bool canUse() { return !OnCooldown && !used && HasResource() && enabled; }
 
     public bool UseRotation { get; protected set; }
 

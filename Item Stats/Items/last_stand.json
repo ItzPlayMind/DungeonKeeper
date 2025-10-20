@@ -1,0 +1,11 @@
+{
+    "name": "Last Stand",
+    "stats": {
+        "damage": 5,
+        "special_damage": 0,
+        "attack_speed": 0,
+        "speed": 0,
+        "health": 300,
+        "armor": 10
+    }
+}

@@ -24,7 +24,7 @@ public class PlayerProjectileAttack : PlayerRangeAttack
     protected override void OnAttackHit(NetworkObject obj, GameObject collider)
     {
         var stats = collider.GetComponent<CharacterStats>();
-        if (((stats == null && isPiercing) || !isPiercing) && collider.tag != "Special")
+        if (((stats == null && isPiercing) || !isPiercing) && collider.tag != "Special" && !controller.TeamController.HasSameTeam(collider))
         {
             rb.velocity = Vector3.zero;
             DestroyServerRPC(obj.NetworkObjectId);

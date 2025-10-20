@@ -4,6 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using System.Linq;
 
+[RequireComponent(typeof(TeamController))]
 public abstract class ObjectiveAI : NetworkBehaviour
 {
     [SerializeField] protected float attackTime = 2f;
@@ -12,6 +13,8 @@ public abstract class ObjectiveAI : NetworkBehaviour
     protected CharacterStats baseTarget = null;
     protected CharacterStats stats;
     protected CharacterStats target;
+
+    private TeamController teamController;
 
     protected float attackTimer = 0f;
 
@@ -32,6 +35,7 @@ public abstract class ObjectiveAI : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        teamController = GetComponent<TeamController>();
         if (!IsServer) return;
         stats = GetComponent<CharacterStats>();
         stats.stats.damageReduction.ChangeValueAdd += (ref int value, int _) =>
@@ -49,7 +53,7 @@ public abstract class ObjectiveAI : NetworkBehaviour
         List<CharacterStats > result = new List<CharacterStats>();
         foreach (var item in collider)
         {
-            if (item.gameObject.layer == gameObject.layer) continue;
+            if (teamController.HasSameTeam(item.gameObject)) continue;
             var stats = item.GetComponent<CharacterStats>();
             if(stats != null && !stats.IsDead)
                 result.Add(stats);

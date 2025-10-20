@@ -4243,6 +4243,51 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &4342719384199826634
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2893570600481241318}
+  - component: {fileID: 4713911178604339334}
+  m_Layer: 0
+  m_Name: TrainingDummy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2893570600481241318
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4342719384199826634}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 11, y: -1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6622692167120537382}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &4713911178604339334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4342719384199826634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9660b28ff35f264e85a5c9619299066, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 2584460122205688096, guid: 4320727618862304582915d38ccf781e, type: 3}
 --- !u!1 &4424489805171156329
 GameObject:
   m_ObjectHideFlags: 0
@@ -4608,6 +4653,7 @@ Transform:
   - {fileID: 5028289945534094612}
   - {fileID: 4319493458014164221}
   - {fileID: 7145456778818411185}
+  - {fileID: 2893570600481241318}
   m_Father: {fileID: 2170392852626595167}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4966041819571927921
@@ -5724,6 +5770,7 @@ Transform:
   - {fileID: 2825858827875793481}
   - {fileID: 3799221299065052424}
   - {fileID: 1762744539049045578}
+  - {fileID: 9151030217906403989}
   m_Father: {fileID: 2170392852626595167}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6334114703855294077
@@ -7930,6 +7977,51 @@ RectTransform:
   m_AnchoredPosition: {x: 586, y: -75}
   m_SizeDelta: {x: 1172, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &8132712281391169188
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9151030217906403989}
+  - component: {fileID: 2521047813976516228}
+  m_Layer: 0
+  m_Name: TrainingDummy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9151030217906403989
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8132712281391169188}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -11, y: -1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7456795587521246655}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2521047813976516228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8132712281391169188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9660b28ff35f264e85a5c9619299066, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 2584460122205688096, guid: 4320727618862304582915d38ccf781e, type: 3}
 --- !u!1 &8223468831081788507
 GameObject:
   m_ObjectHideFlags: 0
@@ -8600,16 +8692,15 @@ MonoBehaviour:
   bonusObjectiveText: {fileID: 8826545264688883880}
   GOLD_PER_ROUND: 500
   DAMAGE_PER_ROUND: 20
-  bonusObjectives:
-  - name: Ghost
-    description: The first team to kill the ghost wins the round.
-    objective: {fileID: 7279530120181344131, guid: e1bb3a001afd3ad4cb667482b2fd56cb, type: 3}
-    active: 0
+  bonusObjectives: []
   redTeamArenaSpawn: {fileID: 7385558926922389872}
   blueTeamArenaSpawn: {fileID: 4248579537891546531}
   flaskPoints:
   - {fileID: 852938467809864245}
   - {fileID: 5309932241987822396}
+  trainingDummySpawns:
+  - {fileID: 2521047813976516228}
+  - {fileID: 4713911178604339334}
   flaskObject: {fileID: 4614186668340890074, guid: adfeb60a8809a0c4d9d66463f3db287f, type: 3}
   redTeamHealth: {fileID: 4948339717562896329}
   blueTeamHealth: {fileID: 5679870993714017266}

@@ -18,7 +18,6 @@ public class SelfHealHitSpecial : AbstractSpecial
     [SerializeField] private int stackHealthIncrease = 5;
 
     private List<ulong> hits = new List<ulong>();
-    private PlayerController controller;
 
     private int stacks = 0;
     private int stacksPerHit = 0;
@@ -30,11 +29,10 @@ public class SelfHealHitSpecial : AbstractSpecial
     {
         if (!IsLocalPlayer) return;
         hitbox.gameObject.layer = gameObject.layer;
-        controller = GetComponent<PlayerController>();
         baseScale = transform.localScale;
         hitbox.onCollisionEnter += (GameObject collider, ref bool hit) =>
         {
-            if (collider.gameObject.layer == gameObject.layer) return;
+            if (controller.TeamController.HasSameTeam(collider.gameObject)) return;
             if (collider.gameObject == gameObject) return;
             var stats = collider.GetComponent<CharacterStats>();
             if (stats == null) return;

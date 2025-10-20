@@ -1,0 +1,11 @@
+{
+    "name": "Ethereal Ring",
+    "stats": {
+        "damage": 15,
+        "special_damage": 15,
+        "attack_speed": 0,
+        "speed": 0,
+        "health": 0,
+        "armor": 5
+    }
+}

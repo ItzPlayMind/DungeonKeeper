@@ -44,7 +44,7 @@ public class FlameSwordSpecial : KnockBackSpecial
     {
         base.OnSpecialHit(enemyStats);
         if(HasUpgradeUnlocked(1))
-            characterStats.Heal((int)(Damage * (healAmount / 100f)));
+            characterStats.Heal((int)(Damage * (healAmount / 100f)), characterStats);
     }
 
     protected override void _Start()

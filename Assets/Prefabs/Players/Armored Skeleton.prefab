@@ -160,6 +160,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2618143700635503365, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 3039757210799324523, guid: d3cde68862fde5d4088cd1cacfbd278a, type: 3}
       propertyPath: m_Size.x
       value: 0.26368546
@@ -560,26 +564,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3df4d4e95a2193f4190b3a9cb3a07c20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: Arise
+  Name: Command
   icon: {fileID: 21300000, guid: 4818f8b7c9734c34b9cee21b2a892f82, type: 3}
   hoverEvent: {fileID: 1163448007265055814}
-  description: 'Spawn a Skeleton Minion at the targeted position. The Minion runs
-    towards the last hit target. Once reaching the target it explodes, dealing {Damage}
-    damage to all hit.
-
-    Every {hitsNeededForResource} attack on a target grants
-    1 Resource'
+  description: On Game start spawn a minion. Using {Name} moves the minion to a new
+    location. Once the location has been reached attacks the surrounding enemies
+    for {Damage} damage.
   upgrades:
   - name: Commanders Will
-    description: Reduces the amount of hits needed to {newHitsNeeded}
+    description: Increases Command Range to {NewCommandRange}
     hoverEvent: {fileID: 2165786250008529824}
   - name: Underworld Lord
     description: Curses all targets hit by the explosion, reducing healing by {CurseAmount}%
       for {CurseDuration} seconds
     hoverEvent: {fileID: 7498344140690134263}
   - name: Army Commander
-    description: Every time {Name} is used, spawn another Skeleton Minion at the
-      players location
+    description: Spawn a second minion. Every use of {Name} swaps between the minions.
     hoverEvent: {fileID: 1922993999669307631}
   damage: 50
   damageMultiplier: 1
@@ -588,11 +588,10 @@ MonoBehaviour:
   specialIcon: {fileID: 3218890884391213610}
   specialInUseIcon: {fileID: 4775430144996674096}
   resourceBar: {fileID: 398380323086976245}
-  spawnRange: 0.5
+  commandRange: 2
   skullPrefab: {fileID: 7493297399804552110, guid: 0ad5f5a5b96ceae4c8e168b8cf6a78a3, type: 3}
-  hitsNeededForResource: 5
   knockBackForce: 10
-  newHitsNeeded: 3
+  newCommandRange: 3
   curseAmount: 50
   curseDuration: 3
 --- !u!114 &7498344140690134263 stripped

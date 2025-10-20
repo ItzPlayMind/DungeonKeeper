@@ -1,0 +1,17 @@
+{
+    "name": "Cleansing Ring",
+    "id": "cleansing_ring",
+    "type": 2,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 15,
+        "attackSpeed": 0,
+        "speed": 5,
+        "health": 50,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "On use either remove all debuffs from a teammate or remove all buffs from an enemy.",
+    "cost": 1800,
+    "cooldown": 60.0
+}

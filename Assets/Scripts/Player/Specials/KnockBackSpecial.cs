@@ -19,9 +19,7 @@ public class KnockBackSpecial : AbstractSpecial
         hitbox.gameObject.layer = gameObject.layer;
         hitbox.onCollisionEnter += (GameObject collider, ref bool hit) =>
         {
-            if (collider == gameObject) return;
-            if (collider.layer == gameObject.layer)
-                return;
+            if (controller.TeamController.HasSameTeam(collider.gameObject)) return;
             var stats = collider.GetComponent<CharacterStats>();
             if (stats != null)
             {

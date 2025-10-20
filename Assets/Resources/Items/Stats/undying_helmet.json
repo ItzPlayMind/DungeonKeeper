@@ -1,0 +1,17 @@
+{
+    "name": "Undying Helmet",
+    "id": "undying_helmet",
+    "type": 0,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 0,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 200,
+        "damageReduction": 10,
+        "resource": 0
+    },
+    "description": "When falling below {Threshold}% HP regenerate {HP}% HP every {Time} seconds until at {HPThreshold}% health. Can only happen every {Cooldown} seconds.",
+    "cost": 2000,
+    "cooldown": 90.0
+}

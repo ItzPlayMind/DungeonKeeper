@@ -1,0 +1,17 @@
+{
+    "name": "Cursed Shield",
+    "id": "cursed_shield",
+    "type": 0,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 0,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 150,
+        "damageReduction": 5,
+        "resource": 0
+    },
+    "description": "On taking damage curse the target for {Duration} seconds, reducing healing by {Amount}%",
+    "cost": 1600,
+    "cooldown": 0.0
+}

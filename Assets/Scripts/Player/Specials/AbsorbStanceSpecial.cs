@@ -10,15 +10,17 @@ public class AbsorbStanceSpecial : AbstractSpecial
 
     [DescriptionCreator.DescriptionVariable]
     [SerializeField] private int ResourceDrain = 5;
+    [SerializeField] private int ResourceGain = 2;
     [SerializeField] private AnimatorOverrideController originalAnimator;
     [SerializeField] private AnimationClip walkAnimation;
     [SerializeField] private AnimationClip walkBlockAnimation;
     [SerializeField] private AnimationClip idleAnimation;
     [SerializeField] private AnimationClip idleBlockAnimation;
+    [SerializeField] private ParticleSystem healEffect;
 
     [SerializeField]
     [DescriptionCreator.DescriptionVariable("white")]
-    private int valueIncrease = 10;
+    private int resourceRecover = 1;
 
     [SerializeField]
     [DescriptionCreator.DescriptionVariable("white")]
@@ -40,20 +42,6 @@ public class AbsorbStanceSpecial : AbstractSpecial
     {
         animator = GetComponentInChildren<Animator>();
         attack = GetComponent<PlayerAttack>();
-        characterStats.stats.specialDamage.ChangeValueAdd += (ref int current, int old) =>
-        {
-            if (HasUpgradeUnlocked(0) && isInStance)
-            {
-                current += valueIncrease;
-            }
-        };
-        characterStats.stats.damage.ChangeValueAdd += (ref int current, int old) =>
-        {
-            if (HasUpgradeUnlocked(0) && !isInStance)
-            {
-                current += valueIncrease;
-            }
-        };
         characterStats.OnServerTakeDamage += (ulong damagerID, ref int damage) =>
         {
             if (HasUpgradeUnlocked(2) && isInStance)
@@ -64,13 +52,6 @@ public class AbsorbStanceSpecial : AbstractSpecial
                 }
             }
         };
-        if (IsLocalPlayer)
-        {
-            attack.OnAttack += (ulong target, ulong user, ref int amount) =>
-            {
-                Resource += 10;
-            };
-        }
         base._Start();
     }
 
@@ -95,6 +76,7 @@ public class AbsorbStanceSpecial : AbstractSpecial
     protected override void _Update()
     {
         base._Update();
+        if (!IsLocalPlayer) return;
         if (timer > 0)
             timer -= Time.deltaTime;
         else
@@ -102,24 +84,31 @@ public class AbsorbStanceSpecial : AbstractSpecial
             if (isInStance)
             {
                 List<int> ids = new List<int>();
-                var colliders = Physics2D.OverlapCircleAll(transform.position, 5, LayerMask.GetMask(LayerMask.LayerToName(gameObject.layer)));
+                var colliders = Physics2D.OverlapCircleAll(transform.position, 3);
                 foreach (var collider in colliders)
                 {
-                    var stats = collider.GetComponent<PlayerStats>();
+                    if (!controller.TeamController.HasSameTeam(collider.gameObject)) continue;
+                    var stats = collider.GetComponent<CharacterStats>();
                     var effectManager = collider.GetComponent<EffectManager>();
-                    if (ids.Contains(collider.gameObject.GetInstanceID()))
+                    if (ids.Contains(collider.transform.root.gameObject.GetInstanceID()))
                         continue;
                     if (stats != null)
                     {
-                        ids.Add(stats.GetInstanceID());
-                        stats.Heal(Damage);
+                        ids.Add(stats.transform.root.gameObject.GetInstanceID());
+                        controller.Heal(stats,Damage);
+                        if(HasUpgradeUnlocked(0))
+                            Resource += resourceRecover;
                         if(effectManager != null && HasUpgradeUnlocked(1))
                             effectManager.AddEffect("rallied", rallyDuration, rallyAmount, characterStats);
-                        Resource -= ResourceDrain;
                     }
                 }
+                Resource -= ResourceDrain;
                 if (Resource <= 0)
                     ChangeStance();
+            }
+            else
+            {
+                Resource += ResourceGain;
             }
             timer = 1;
         }
@@ -147,6 +136,10 @@ public class AbsorbStanceSpecial : AbstractSpecial
         isInStance = !isInStance;
         if (IsLocalPlayer)
             attack.enabled = !isInStance;
+        if (isInStance)
+            healEffect.Play();
+        else
+            healEffect.Stop();
         var overrideAnimator = new AnimatorOverrideController(animator.runtimeAnimatorController);
         var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
         for (int i = 0; i < overrideAnimator.animationClips.Length; i++)

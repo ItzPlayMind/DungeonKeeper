@@ -1,0 +1,17 @@
+{
+    "name": "Magical Sandles",
+    "id": "magical_sandles",
+    "type": 1,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 15,
+        "attackSpeed": 0,
+        "speed": 10,
+        "health": 0,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "",
+    "cost": 500,
+    "cooldown": 0.0
+}

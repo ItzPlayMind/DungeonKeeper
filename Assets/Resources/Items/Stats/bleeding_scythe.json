@@ -1,0 +1,17 @@
+{
+    "name": "Bleeding Scythe",
+    "id": "bleeding_scythe",
+    "type": 1,
+    "stats": {
+        "damage": 25,
+        "specialDamage": 0,
+        "attackSpeed": 10,
+        "speed": 5,
+        "health": 25,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "Applies Bleeding for {BleedTime} seconds on attack. The Bleed deals {Damage} every 1 second. Can only happen every {Cooldown} seconds.",
+    "cost": 1400,
+    "cooldown": 2.0
+}

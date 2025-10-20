@@ -1,0 +1,17 @@
+{
+    "name": "Jesters Dagger",
+    "id": "jesters_dagger",
+    "type": 1,
+    "stats": {
+        "damage": 20,
+        "specialDamage": 0,
+        "attackSpeed": 15,
+        "speed": 5,
+        "health": 50,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "On use blink to the targeted position. Afterwards become invisible for {InvisibleDuration} seconds",
+    "cost": 2100,
+    "cooldown": 40.0
+}

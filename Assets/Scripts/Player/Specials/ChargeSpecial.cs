@@ -71,13 +71,14 @@ public class ChargeSpecial : AbstractSpecial
             return;
         if (collision == gameObject)
             return;
+        if (controller.TeamController.HasSameTeam(collision.gameObject)) return;
         var stats = collision.GetComponent<CharacterStats>();
         if(stats != null)
         {
             DealDamage(stats, ChargeDamage, stats.GenerateKnockBack(stats.transform, transform, knockBackForce));
             if (HasUpgradeUnlocked(2))
             {
-                characterStats.Heal((int)(characterStats.stats.health.Value * (healAmount / 100f)));
+                characterStats.Heal((int)(characterStats.stats.health.Value * (healAmount / 100f)),characterStats);
             }
         }
     }

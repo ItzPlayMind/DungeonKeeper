@@ -26,7 +26,7 @@ public class HealField : NetworkBehaviour
         {
             var target = col.GetComponent<CharacterStats>();
             if (target == null) return;
-            if (target.gameObject.layer != gameObject.layer) return;
+            if (!controller.TeamController.HasSameTeam(target.gameObject)) return;
             healTargets.Add(target);
         };
         collisionSender.onCollisionExit += (GameObject col, ref bool hit) =>

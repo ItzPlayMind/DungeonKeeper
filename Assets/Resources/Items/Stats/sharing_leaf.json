@@ -1,0 +1,17 @@
+{
+    "name": "Sharing Leaf",
+    "id": "sharing_leaf",
+    "type": 2,
+    "stats": {
+        "damage": 0,
+        "specialDamage": 25,
+        "attackSpeed": 0,
+        "speed": 0,
+        "health": 50,
+        "damageReduction": 0,
+        "resource": 0
+    },
+    "description": "On heal reduce the cooldown of the special by {CooldownReduce} seconds. Can only accure once every {Cooldown} seconds",
+    "cost": 2000,
+    "cooldown": 2.0
+}

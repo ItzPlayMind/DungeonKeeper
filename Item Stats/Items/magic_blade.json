@@ -1,0 +1,11 @@
+{
+    "name": "Magic Blade",
+    "stats": {
+        "damage": 25,
+        "special_damage": 20,
+        "attack_speed": 0,
+        "speed": 0,
+        "health": 0,
+        "armor": 0
+    }
+}
